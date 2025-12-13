@@ -42,33 +42,21 @@ export function Header() {
       }`}
     >
       <div className="container-wide">
-        {/* Logo Row */}
-        <div className="flex h-14 items-center justify-center">
-          <Link href="/" className="group">
-            <h1 className={`font-display text-lg md:text-xl lg:text-2xl tracking-tight whitespace-nowrap transition-all duration-300 ${
-              isScrolled ? 'text-foreground' : 'text-white'
-            }`}>
-              LE JOURNAL DE MARÉE
-            </h1>
-          </Link>
-        </div>
-
-        {/* Navigation Row - Desktop: Actions + Nav + Actions | Mobile: Menu + Actions */}
-        <div className={`flex h-10 items-center justify-between transition-all duration-300 ${
-          isScrolled ? 'border-t border-border/30' : 'border-t border-white/10'
+        {/* Top Bar - Actions (compact on mobile) */}
+        <div className={`flex h-8 lg:h-10 items-center justify-between text-xs transition-all duration-300 ${
+          isScrolled ? 'border-b border-border/50' : 'border-b border-white/10'
         }`}>
-          {/* Left Side */}
-          <div className="flex items-center gap-2">
-            {/* Mobile Menu */}
+          {/* Left: Mobile Menu */}
+          <div className="flex items-center">
             <Sheet>
               <SheetTrigger asChild className="lg:hidden">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`-ml-2 h-8 px-2 ${!isScrolled ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`-ml-2 h-7 lg:h-8 px-2 ${!isScrolled ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   <Menu className="h-4 w-4" />
-                  <span className="sr-only">메뉴</span>
+                  <span className="sr-only">MENU</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[320px] bg-background border-r border-border">
@@ -106,10 +94,10 @@ export function Header() {
             {/* Desktop: Subscribe */}
             <Link
               href="/subscribe"
-              className={`hidden lg:inline-flex items-center gap-1 text-[11px] tracking-wider uppercase transition-colors ${
+              className={`hidden lg:inline-flex items-center gap-1.5 tracking-wider transition-colors ${
                 isScrolled
                   ? 'text-muted-foreground hover:text-foreground'
-                  : 'text-white/60 hover:text-white'
+                  : 'text-white/70 hover:text-white'
               }`}
             >
               <Bell className="h-3 w-3" />
@@ -117,47 +105,63 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Center: Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {categories.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/category/${category.slug}`}
-                className={`text-[11px] font-medium tracking-[0.15em] uppercase transition-all duration-300 relative group ${
-                  isScrolled
-                    ? 'text-muted-foreground hover:text-foreground'
-                    : 'text-white/70 hover:text-white'
-                }`}
-              >
-                {category.name}
-                <span className={`absolute -bottom-1 left-0 w-0 h-px group-hover:w-full transition-all duration-300 ${
-                  isScrolled ? 'bg-rose-gold' : 'bg-white/50'
-                }`} />
-              </Link>
-            ))}
-          </nav>
-
-          {/* Right Side */}
+          {/* Right: Search + Language */}
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className={`h-8 w-8 p-0 ${!isScrolled ? 'text-white/70 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`h-7 lg:h-8 px-2 ${!isScrolled ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
             >
               <Search className="h-3.5 w-3.5" />
               <span className="sr-only">{t.admin.search}</span>
             </Button>
 
-            <div className={`${!isScrolled ? '[&_button]:text-white/70 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
+            <div className={`${!isScrolled ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
               <LanguageSelector />
             </div>
           </div>
         </div>
 
+        {/* Main Header - Logo Centered (compact on mobile) */}
+        <div className="flex h-10 lg:h-14 items-center justify-center">
+          <Link href="/" className="group">
+            <h1 className={`font-display text-lg md:text-xl lg:text-2xl tracking-tight whitespace-nowrap transition-all duration-300 ${
+              isScrolled ? 'text-foreground' : 'text-white'
+            }`}>
+              LE JOURNAL DE MARÉE
+            </h1>
+            <div className={`h-px w-0 group-hover:w-full transition-all duration-500 mx-auto ${
+              isScrolled ? 'bg-rose-gold' : 'bg-white/50'
+            }`} />
+          </Link>
+        </div>
+
+        {/* Desktop Navigation - Below Logo */}
+        <nav className={`hidden lg:flex items-center justify-center gap-12 pb-4 transition-all duration-300 ${
+          isScrolled ? 'pb-3' : ''
+        }`}>
+          {categories.map((category) => (
+            <Link
+              key={category.slug}
+              href={`/category/${category.slug}`}
+              className={`text-[11px] font-medium tracking-[0.2em] uppercase transition-all duration-300 relative group ${
+                isScrolled
+                  ? 'text-muted-foreground hover:text-foreground'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              {category.name}
+              <span className={`absolute -bottom-1 left-0 w-0 h-px group-hover:w-full transition-all duration-300 ${
+                isScrolled ? 'bg-rose-gold' : 'bg-white/50'
+              }`} />
+            </Link>
+          ))}
+        </nav>
+
         {/* Search bar (expandable) */}
         {isSearchOpen && (
-          <div className={`border-t py-3 animate-fade-in ${isScrolled ? 'border-border' : 'border-white/20'}`}>
+          <div className={`border-t py-4 animate-fade-in ${isScrolled ? 'border-border' : 'border-white/20'}`}>
             <form action="/search" method="GET" className="flex gap-2 max-w-xl mx-auto">
               <input
                 type="search"
