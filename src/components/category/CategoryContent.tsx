@@ -65,17 +65,55 @@ export function CategoryContent({
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative py-24 bg-muted">
-        <div className="container-wide text-center">
-          <p className="label-text mb-4">{t.sections.category}</p>
-          <h1 className="font-display text-4xl md:text-5xl mb-6">{displayName}</h1>
+      {/* Hero with Dark Background */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/bg.png"
+            alt="Muse de Marée"
+            fill
+            className="object-cover scale-105"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+        </div>
+
+        <div className="container-wide relative z-10 text-center text-white">
+          {/* Decorative Element */}
+          <div className="flex items-center justify-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="w-16 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/60" />
+            <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold/80" />
+            <div className="w-16 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/60" />
+          </div>
+
+          {/* Category Label */}
+          <p
+            className="uppercase text-[10px] md:text-xs tracking-[0.4em] text-white/50 mb-8 font-light animate-fade-in-up"
+            style={{ animationDelay: '0.3s' }}
+          >
+            {t.sections.category}
+          </p>
+
+          <h1
+            className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 leading-[1.2] animate-fade-in-up"
+            style={{ animationDelay: '0.4s' }}
+          >
+            {displayName}
+          </h1>
+
           {displayDescription && (
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p
+              className="text-base md:text-lg text-white/60 max-w-2xl mx-auto font-light leading-relaxed animate-fade-in-up"
+              style={{ animationDelay: '0.5s' }}
+            >
               {displayDescription}
             </p>
           )}
         </div>
+
+        {/* Corner Accents */}
+        <div className="hidden md:block absolute top-24 left-10 w-16 h-16 border-l border-t border-white/[0.08]" />
+        <div className="hidden md:block absolute top-24 right-10 w-16 h-16 border-r border-t border-white/[0.08]" />
       </section>
 
       {/* Filter/Sort */}

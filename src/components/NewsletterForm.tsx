@@ -1,14 +1,16 @@
 'use client'
 
 import { useState } from 'react'
+import { ArrowRight, Check } from 'lucide-react'
 import { subscribe } from '@/lib/actions/subscribers'
 import { useTranslation } from '@/lib/i18n'
 
 interface NewsletterFormProps {
   source?: string
+  variant?: 'light' | 'dark'
 }
 
-export function NewsletterForm({ source = 'website' }: NewsletterFormProps) {
+export function NewsletterForm({ source = 'website', variant = 'light' }: NewsletterFormProps) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
@@ -38,14 +40,60 @@ export function NewsletterForm({ source = 'website' }: NewsletterFormProps) {
     }
   }
 
+  const isDark = variant === 'dark'
+
   if (status === 'success') {
     return (
-      <div className="text-center py-4">
-        <p className="text-green-600 font-medium">{message}</p>
+      <div className="flex flex-col items-center justify-center py-4">
+        <div className={`w-12 h-12 mb-4 border flex items-center justify-center ${
+          isDark ? 'border-rose-gold' : 'border-rose-gold'
+        }`}>
+          <Check className={`w-6 h-6 ${isDark ? 'text-rose-gold' : 'text-rose-gold'}`} />
+        </div>
+        <p className={`font-medium ${isDark ? 'text-white' : 'text-foreground'}`}>
+          {message}
+        </p>
       </div>
     )
   }
 
+  if (isDark) {
+    // Dark variant for footer/dark sections
+    return (
+      <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t.newsletter.placeholder}
+              className="w-full bg-white/[0.05] border border-white/[0.1] px-5 py-4 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all"
+              required
+              disabled={status === 'loading'}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={status === 'loading'}
+            className="group relative overflow-hidden bg-rose-gold/90 px-8 py-4 uppercase text-sm tracking-[0.15em] font-medium text-black hover:bg-rose-gold transition-colors disabled:opacity-50"
+          >
+            <span className="relative z-10 flex items-center justify-center gap-2">
+              {status === 'loading' ? t.newsletter.processing : t.newsletter.subscribe}
+              {status !== 'loading' && (
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              )}
+            </span>
+          </button>
+        </div>
+        {status === 'error' && (
+          <p className="text-red-400 text-sm mt-4 text-center">{message}</p>
+        )}
+      </form>
+    )
+  }
+
+  // Light variant (default)
   return (
     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
       <input
@@ -60,9 +108,12 @@ export function NewsletterForm({ source = 'website' }: NewsletterFormProps) {
       <button
         type="submit"
         disabled={status === 'loading'}
-        className="bg-foreground text-background px-6 py-3 uppercase text-sm tracking-wider font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
+        className="group flex items-center justify-center gap-2 bg-foreground text-background px-6 py-3 uppercase text-sm tracking-wider font-medium hover:bg-foreground/90 transition-colors disabled:opacity-50"
       >
         {status === 'loading' ? t.newsletter.processing : t.newsletter.subscribe}
+        {status !== 'loading' && (
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        )}
       </button>
       {status === 'error' && (
         <p className="text-red-500 text-sm mt-2 sm:col-span-2">{message}</p>

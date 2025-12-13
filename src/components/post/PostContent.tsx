@@ -71,17 +71,17 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
   return (
     <article>
       {/* Header */}
-      <div className="container-wide py-4 flex justify-between items-center border-b border-border">
+      <div className="container-wide pt-16 md:pt-28 pb-4 flex justify-between items-center border-b border-border">
         <Link
           href={post.category ? `/category/${post.category.slug}` : '/category/all'}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
           {post.category?.name || t.post.allPosts}
         </Link>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={handleShare}>
-            <Share2 className="h-4 w-4" />
+          <Button variant="ghost" size="icon" onClick={handleShare} className="h-8 w-8 md:h-9 md:w-9">
+            <Share2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
             <span className="sr-only">{t.common.share}</span>
           </Button>
         </div>

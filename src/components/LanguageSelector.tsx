@@ -3,6 +3,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { useLocale, locales, localeFlags, type Locale } from '@/lib/i18n'
 
+const localeNames: Record<Locale, string> = {
+  ko: '한국어',
+  en: 'English',
+}
+
 export function LanguageSelector() {
   const { locale, setLocale } = useLocale()
   const [isOpen, setIsOpen] = useState(false)
@@ -35,16 +40,19 @@ export function LanguageSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 bg-background border border-border shadow-lg z-50">
+        <div className="absolute right-0 top-full mt-1 bg-[#FAF8F5]/80 backdrop-blur-xl shadow-xl z-50 min-w-[130px] overflow-hidden">
           {locales.map((loc) => (
             <button
               key={loc}
               onClick={() => handleSelect(loc)}
-              className={`w-full flex items-center justify-center w-12 h-10 text-xl hover:bg-muted transition-colors ${
-                locale === loc ? 'bg-muted' : ''
+              className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
+                locale === loc
+                  ? 'bg-white/20'
+                  : 'hover:bg-white/10'
               }`}
             >
-              {localeFlags[loc]}
+              <span className="text-lg">{localeFlags[loc]}</span>
+              <span className="text-foreground drop-shadow-sm">{localeNames[loc]}</span>
             </button>
           ))}
         </div>

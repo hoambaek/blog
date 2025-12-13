@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronRight } from 'lucide-react'
 import { useTranslation, useLocale } from '@/lib/i18n'
 
 interface Post {
@@ -101,9 +101,14 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             className="text-base md:text-lg text-white/50 max-w-xl mx-auto mb-14 font-light leading-relaxed animate-fade-in-up"
             style={{ animationDelay: '0.8s' }}
           >
-            {locale === 'ko'
-              ? '프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인, 뮤즈드마레의 이야기.'
-              : 'The story of Muse de Marée, where French Champagne tradition meets the passage of time in Korean waters.'}
+            {locale === 'ko' ? (
+              <>
+                <span className="hidden md:inline">프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인,<br />뮤즈드마레의 이야기.</span>
+                <span className="md:hidden">프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인, 뮤즈드마레의 이야기.</span>
+              </>
+            ) : (
+              'The story of Muse de Marée, where French Champagne tradition meets the passage of time in Korean waters.'
+            )}
           </p>
 
           {/* CTA */}
@@ -111,22 +116,18 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             {mainFeatured ? (
               <Link
                 href={`/post/${mainFeatured.slug}`}
-                className="group inline-flex items-center gap-4"
+                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-rose-gold hover:text-white"
               >
-                <span className="relative px-8 py-4 bg-white text-stone-900 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 group-hover:bg-rose-gold group-hover:text-white">
-                  {t.hero.cta}
-                </span>
-                <ArrowRight className="h-5 w-5 text-white/60 transition-all duration-300 group-hover:text-white group-hover:translate-x-1" />
+                {t.hero.cta}
+                <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             ) : (
               <Link
                 href="/category/all"
-                className="group inline-flex items-center gap-4"
+                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-rose-gold hover:text-white"
               >
-                <span className="relative px-8 py-4 bg-white text-stone-900 text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 group-hover:bg-rose-gold group-hover:text-white">
-                  {t.sections.viewAll}
-                </span>
-                <ArrowRight className="h-5 w-5 text-white/60 transition-all duration-300 group-hover:text-white group-hover:translate-x-1" />
+                {t.sections.viewAll}
+                <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             )}
           </div>
@@ -318,32 +319,6 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
           </div>
         </section>
       )}
-
-      {/* Newsletter Section */}
-      <section className="py-24 md:py-32 bg-foreground text-background">
-        <div className="container-narrow text-center">
-          <div className="flex items-center justify-center gap-6 mb-8">
-            <div className="w-16 h-[1px] bg-background/20" />
-            <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold" />
-            <div className="w-16 h-[1px] bg-background/20" />
-          </div>
-          <h2 className="font-display text-3xl md:text-4xl mb-6">
-            {locale === 'ko' ? '뮤즈드마레의 이야기를 받아보세요' : 'Subscribe to Our Stories'}
-          </h2>
-          <p className="text-background/60 mb-10 max-w-md mx-auto">
-            {locale === 'ko'
-              ? '바다의 시간이 빚어낸 이야기를 가장 먼저 전해드립니다.'
-              : 'Be the first to receive stories crafted by the ocean\'s time.'}
-          </p>
-          <Link
-            href="/subscribe"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-rose-gold text-white text-xs font-semibold uppercase tracking-[0.15em] hover:bg-rose-gold/90 transition-colors"
-          >
-            {t.nav.subscribe}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
 
       {/* Empty State */}
       {featuredPosts.length === 0 && latestPosts.length === 0 && (

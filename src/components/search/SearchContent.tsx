@@ -65,6 +65,7 @@ export function SearchContent({
   const text = {
     ko: {
       title: '검색',
+      subtitle: '뮤즈드마레의 이야기에서 찾고 싶은 것을 검색해보세요.',
       placeholder: '검색어를 입력하세요...',
       results: `"${query}"에 대한 검색 결과`,
       count: `${total}개의 결과`,
@@ -75,6 +76,7 @@ export function SearchContent({
     },
     en: {
       title: 'Search',
+      subtitle: 'Search for what you want to find in the stories of Muse de Marée.',
       placeholder: 'Enter your search...',
       results: `Search results for "${query}"`,
       count: `${total} results`,
@@ -89,19 +91,58 @@ export function SearchContent({
 
   return (
     <div>
-      {/* Search Hero */}
-      <section className="bg-muted py-16">
-        <div className="container-narrow text-center">
-          <h1 className="font-display text-4xl md:text-5xl mb-8">{c.title}</h1>
+      {/* Hero with Dark Background */}
+      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <Image
+            src="/bg.png"
+            alt="Muse de Marée"
+            fill
+            className="object-cover scale-105"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+        </div>
+
+        <div className="container-narrow relative z-10 text-center text-white">
+          {/* Decorative Element */}
+          <div className="flex items-center justify-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="w-16 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/60" />
+            <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold/80" />
+            <div className="w-16 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/60" />
+          </div>
+
+          <p
+            className="uppercase text-[10px] md:text-xs tracking-[0.4em] text-white/50 mb-6 font-light animate-fade-in-up"
+            style={{ animationDelay: '0.3s' }}
+          >
+            Search
+          </p>
+          <h1
+            className="font-display text-3xl md:text-4xl lg:text-5xl mb-4 animate-fade-in-up"
+            style={{ animationDelay: '0.4s' }}
+          >
+            {c.title}
+          </h1>
+          <p
+            className="text-base md:text-lg text-white/60 mb-10 font-light animate-fade-in-up"
+            style={{ animationDelay: '0.5s' }}
+          >
+            {c.subtitle}
+          </p>
 
           {/* Search Form */}
-          <form onSubmit={handleSubmit} className="relative max-w-xl mx-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="relative max-w-xl mx-auto animate-fade-in-up"
+            style={{ animationDelay: '0.6s' }}
+          >
             <input
               type="search"
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               placeholder={c.placeholder}
-              className="w-full bg-background border border-border px-6 py-4 pr-24 text-lg focus:outline-none focus:border-foreground transition-colors"
+              className="w-full bg-white/10 backdrop-blur-sm border border-white/20 px-6 py-4 pr-24 text-base md:text-lg text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 focus:bg-white/15 transition-all"
               autoFocus
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -109,20 +150,24 @@ export function SearchContent({
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="p-2 text-white/60 hover:text-white transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
               )}
               <button
                 type="submit"
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="p-2 text-white/60 hover:text-white transition-colors"
               >
                 <Search className="h-5 w-5" />
               </button>
             </div>
           </form>
         </div>
+
+        {/* Corner Accents */}
+        <div className="hidden md:block absolute top-24 left-10 w-16 h-16 border-l border-t border-white/[0.08]" />
+        <div className="hidden md:block absolute top-24 right-10 w-16 h-16 border-r border-t border-white/[0.08]" />
       </section>
 
       {/* Results */}
@@ -130,20 +175,22 @@ export function SearchContent({
         {!query ? (
           /* No Query State */
           <div className="text-center py-20">
-            <Search className="h-12 w-12 mx-auto text-muted-foreground/50 mb-6" />
-            <h2 className="font-display text-2xl mb-2">{c.noQuery}</h2>
+            <div className="w-16 h-16 mx-auto mb-6 border border-border flex items-center justify-center">
+              <Search className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h2 className="font-display text-2xl mb-3">{c.noQuery}</h2>
             <p className="text-muted-foreground">{c.noQueryDesc}</p>
           </div>
         ) : posts.length === 0 ? (
           /* No Results State */
           <div className="text-center py-20">
-            <h2 className="font-display text-2xl mb-2">{c.noResults}</h2>
+            <h2 className="font-display text-2xl mb-3">{c.noResults}</h2>
             <p className="text-muted-foreground">{c.noResultsDesc}</p>
           </div>
         ) : (
           /* Results Grid */
           <>
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
               <h2 className="font-display text-xl">{c.results}</h2>
               <p className="text-sm text-muted-foreground">{c.count}</p>
             </div>
