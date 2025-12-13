@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { Search, Menu, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Menu, X, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -14,7 +14,16 @@ import { useTranslation } from '@/lib/i18n'
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const t = useTranslation()
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const categories = [
     { name: t.nav.seaLog, slug: 'sea-log' },
@@ -25,66 +34,110 @@ export function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header
+      className={`fixed top-0 z-50 w-full transition-all duration-500 ${
+        isScrolled
+          ? 'bg-background/98 backdrop-blur-md border-b border-border shadow-sm'
+          : 'bg-transparent'
+      }`}
+    >
       <div className="container-wide">
-        {/* Top bar */}
-        <div className="flex h-16 items-center justify-between">
-          {/* Mobile menu */}
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="mr-2">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">메뉴 열기</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-              <nav className="flex flex-col gap-4 mt-8">
-                {categories.map((category) => (
+        {/* Main Header Bar */}
+        <div className="flex h-20 items-center justify-between">
+          {/* Left: Mobile Menu + Navigation */}
+          <div className="flex items-center gap-8">
+            {/* Mobile menu */}
+            <Sheet>
+              <SheetTrigger asChild className="lg:hidden">
+                <Button variant="ghost" size="icon" className={`${!isScrolled ? 'text-white hover:bg-white/10' : ''}`}>
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">메뉴 열기</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[320px] bg-background border-r border-border">
+                <div className="mt-8 mb-12">
+                  <h2 className="font-display text-2xl tracking-tight">LE JOURNAL DE MARÉE</h2>
+                </div>
+                <nav className="flex flex-col gap-1">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={`/category/${category.slug}`}
+                      className="text-base font-medium py-3 px-4 hover:bg-muted transition-colors border-l-2 border-transparent hover:border-rose-gold"
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                  <div className="h-px bg-border my-6" />
                   <Link
-                    key={category.slug}
-                    href={`/category/${category.slug}`}
-                    className="text-lg font-medium hover:text-muted-foreground transition-colors"
+                    href="/about"
+                    className="text-base font-medium py-3 px-4 hover:bg-muted transition-colors text-muted-foreground"
                   >
-                    {category.name}
+                    {t.footer.aboutJournal}
                   </Link>
-                ))}
-                <hr className="my-4 border-border" />
-                <Link
-                  href="/about"
-                  className="text-lg font-medium hover:text-muted-foreground transition-colors"
-                >
-                  {t.footer.aboutJournal}
-                </Link>
-                <Link
-                  href="/subscribe"
-                  className="text-lg font-medium hover:text-muted-foreground transition-colors"
-                >
-                  {t.footer.newsletterSubscribe}
-                </Link>
-              </nav>
-            </SheetContent>
-          </Sheet>
+                  <Link
+                    href="/subscribe"
+                    className="mt-4 mx-4 py-3 bg-foreground text-background text-center text-sm font-medium tracking-wide hover:bg-foreground/90 transition-colors"
+                  >
+                    {t.footer.newsletterSubscribe}
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
 
-          {/* Logo */}
-          <Link href="/" className="flex-1 md:flex-none">
-            <h1 className="font-display text-xl md:text-2xl tracking-tight text-center md:text-left">
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-8">
+              {categories.map((category) => (
+                <Link
+                  key={category.slug}
+                  href={`/category/${category.slug}`}
+                  className={`text-[13px] font-medium tracking-wide transition-colors link-underline ${
+                    isScrolled
+                      ? 'text-muted-foreground hover:text-foreground'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {category.name}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* Center: Logo */}
+          <Link href="/" className="absolute left-1/2 -translate-x-1/2">
+            <h1 className={`font-display text-xl md:text-2xl tracking-tight whitespace-nowrap transition-colors duration-300 ${
+              isScrolled ? 'text-foreground' : 'text-white'
+            }`}>
               LE JOURNAL DE MARÉE
             </h1>
           </Link>
 
-          {/* Right actions */}
-          <div className="flex items-center justify-center gap-1">
+          {/* Right: Actions */}
+          <div className="flex items-center gap-2">
+            {/* Search Button */}
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className={`${!isScrolled ? 'text-white hover:bg-white/10' : ''}`}
             >
               <Search className="h-5 w-5" />
               <span className="sr-only">{t.admin.search}</span>
             </Button>
-            <LanguageSelector />
-            <Link href="/subscribe">
-              <span className="hidden sm:inline-flex px-4 py-1.5 text-xs tracking-wider text-muted-foreground hover:text-foreground border border-border/50 rounded-full hover:border-foreground/30 transition-all duration-300">
+
+            {/* Language Selector */}
+            <div className={`${!isScrolled ? '[&_button]:text-white [&_button]:hover:bg-white/10' : ''}`}>
+              <LanguageSelector />
+            </div>
+
+            {/* Subscribe Button - More Prominent */}
+            <Link href="/subscribe" className="hidden sm:block ml-2">
+              <span className={`inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
+                isScrolled
+                  ? 'bg-foreground text-background hover:bg-foreground/90'
+                  : 'bg-white text-stone-900 hover:bg-white/90'
+              }`}>
+                <Bell className="h-3.5 w-3.5" />
                 {t.nav.subscribe}
               </span>
             </Link>
@@ -93,16 +146,25 @@ export function Header() {
 
         {/* Search bar (expandable) */}
         {isSearchOpen && (
-          <div className="border-t border-border py-4">
-            <form action="/search" method="GET" className="flex gap-2">
+          <div className={`border-t py-4 animate-fade-in ${isScrolled ? 'border-border' : 'border-white/20'}`}>
+            <form action="/search" method="GET" className="flex gap-2 max-w-xl mx-auto">
               <input
                 type="search"
                 name="q"
                 placeholder={`${t.admin.search}...`}
-                className="flex-1 bg-transparent border-b border-border px-0 py-2 text-base focus:outline-none focus:border-foreground transition-colors"
+                className={`flex-1 bg-transparent border-b px-0 py-2 text-base focus:outline-none transition-colors ${
+                  isScrolled
+                    ? 'border-border focus:border-foreground text-foreground placeholder:text-muted-foreground'
+                    : 'border-white/30 focus:border-white text-white placeholder:text-white/50'
+                }`}
                 autoFocus
               />
-              <Button type="submit" variant="ghost" size="icon">
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon"
+                className={`${!isScrolled ? 'text-white hover:bg-white/10' : ''}`}
+              >
                 <Search className="h-5 w-5" />
               </Button>
               <Button
@@ -110,25 +172,13 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(false)}
+                className={`${!isScrolled ? 'text-white hover:bg-white/10' : ''}`}
               >
                 <X className="h-5 w-5" />
               </Button>
             </form>
           </div>
         )}
-
-        {/* Desktop navigation */}
-        <nav className="hidden md:flex h-12 items-center gap-8 border-t border-border">
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/category/${category.slug}`}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors link-underline"
-            >
-              {category.name}
-            </Link>
-          ))}
-        </nav>
       </div>
     </header>
   )
