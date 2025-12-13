@@ -120,7 +120,8 @@ export async function POST(request: NextRequest) {
         numberOfImages: 1,
         aspectRatio,
         // 사람 얼굴 생성 방지 (브랜드 가이드라인)
-        personGeneration: 'DONT_ALLOW' as const,
+        // @ts-expect-error - personGeneration type not fully typed in SDK
+        personGeneration: 'DONT_ALLOW',
       },
     })
 
