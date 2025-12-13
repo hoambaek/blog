@@ -1,0 +1,139 @@
+import type { Dictionary } from './ko'
+
+export const en: Dictionary = {
+  // Navigation
+  nav: {
+    journal: 'Journal',
+    seaLog: 'Sea Log',
+    maison: 'Maison Stories',
+    culture: 'Culture & Art',
+    table: 'At the Table',
+    news: 'News & Events',
+    about: 'About',
+    subscribe: 'Subscribe',
+  },
+
+  // Hero Section
+  hero: {
+    subtitle: 'Le Journal de Marée',
+    title1: 'Crafted by the Depths',
+    title2: 'of Time and Sea',
+    description: 'The story of Muse de Marée, where French Champagne tradition meets the passage of time in Korean waters.',
+    cta: 'Read Latest Post',
+    imageAlt: 'Sea',
+  },
+
+  // Sections
+  sections: {
+    featured: 'FEATURED',
+    latest: 'LATEST',
+    relatedStories: 'RELATED STORIES',
+    category: 'CATEGORY',
+    viewAll: 'View All Posts',
+    emptyTitle: 'No posts yet',
+    emptyDescription: 'New stories coming soon.',
+  },
+
+  // Posts
+  post: {
+    readingTime: 'min read',
+    prevPost: 'Previous Post',
+    nextPost: 'Next Post',
+    allPosts: 'All Posts',
+    viewAllPosts: 'View All Posts',
+    noPosts: 'No posts yet',
+    noPostsDescription: 'New stories coming soon.',
+    postsCount: 'posts',
+    sortLatest: 'Latest',
+  },
+
+  // Newsletter
+  newsletter: {
+    title: 'Stay Updated from the Sea',
+    description: 'Be the first to receive stories from the depths and new content updates.',
+    placeholder: 'Email address',
+    button: 'Subscribe',
+    subscribe: 'Subscribe',
+    loading: 'Processing...',
+    processing: 'Processing...',
+    success: 'Thank you for subscribing!',
+    error: 'An error occurred.',
+    errorRetry: 'An error occurred. Please try again.',
+    alreadySubscribed: 'This email is already subscribed.',
+    resubscribed: 'You have been resubscribed!',
+    moreStories: 'More Stories Await',
+    moreStoriesDescription: 'Be the first to receive updates from Muse de Marée.',
+  },
+
+  // Footer
+  footer: {
+    journal: 'Journal',
+    info: 'Info',
+    social: 'Social',
+    brand: 'Brand',
+    brandDescription: 'Muse de Marée is a sea-aged champagne brand born from the union of French Champagne tradition and the passage of time in Korean waters.',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
+    aboutJournal: 'About Journal',
+    newsletterSubscribe: 'Newsletter',
+    privacyConsent: 'By subscribing, you agree to our Privacy Policy.',
+  },
+
+  // Common
+  common: {
+    share: 'Share',
+    back: 'Back',
+    loading: 'Loading...',
+    error: 'An error occurred',
+    notFound: 'Page not found',
+  },
+
+  // Admin
+  admin: {
+    dashboard: 'Dashboard',
+    posts: 'Posts',
+    newPost: 'New Post',
+    editPost: 'Edit Post',
+    media: 'Media',
+    subscribers: 'Subscribers',
+    settings: 'Settings',
+    save: 'Save',
+    publish: 'Publish',
+    preview: 'Preview',
+    delete: 'Delete',
+    edit: 'Edit',
+    status: 'Status',
+    draft: 'Draft',
+    published: 'Published',
+    scheduled: 'Scheduled',
+    category: 'Category',
+    selectCategory: 'Select Category',
+    title: 'Title',
+    slug: 'Slug',
+    excerpt: 'Excerpt',
+    coverImage: 'Cover Image',
+    featured: 'Set as Featured',
+    featuredDescription: 'Will be displayed at the top of the homepage',
+    seo: 'SEO Settings',
+    metaTitle: 'Meta Title',
+    metaDescription: 'Meta Description',
+    totalPosts: 'Total Posts',
+    thisMonth: 'This Month',
+    subscriberCount: 'Subscribers',
+    totalViews: 'Total Views',
+    recentPosts: 'Recent Posts',
+    viewAll: 'View All',
+    quickActions: 'Quick Actions',
+    writeNewPost: 'Write New Post',
+    manageMedia: 'Manage Media',
+    manageSubscribers: 'Manage Subscribers',
+    search: 'Search',
+    allStatus: 'All Status',
+    allCategories: 'All Categories',
+    actions: 'Actions',
+    date: 'Date',
+    unpublished: 'Unpublished',
+    previous: 'Previous',
+    next: 'Next',
+  },
+}

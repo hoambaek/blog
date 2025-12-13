@@ -1,0 +1,320 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ═══════════════════════════════════════════════════
+   Le Journal de Marée - Design System
+   ═══════════════════════════════════════════════════ */
+
+@theme inline {
+  /* Typography */
+  --font-sans: var(--font-noto-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Brand Colors */
+  --color-navy: var(--navy);
+  --color-rose-gold: var(--rose-gold);
+
+  /* Radius - Angular design (per PRD) */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+}
+
+:root {
+  /* Base radius - 0 for angular design */
+  --radius: 0;
+
+  /* Light Mode - Canvas & Paper aesthetic */
+  --background: #FAFAF9;        /* Canvas */
+  --foreground: #1C1917;        /* Ink */
+  --card: #FFFFFF;              /* Paper */
+  --card-foreground: #1C1917;   /* Ink */
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1917;
+  --primary: #1C1917;           /* Ink */
+  --primary-foreground: #FAFAF9;
+  --secondary: #F5F5F4;
+  --secondary-foreground: #1C1917;
+  --muted: #F5F5F4;
+  --muted-foreground: #78716C;  /* Muted text */
+  --accent: #F5F5F4;
+  --accent-foreground: #1C1917;
+  --destructive: #DC2626;
+  --border: #E7E5E4;            /* Line */
+  --input: #E7E5E4;
+  --ring: #1C1917;
+
+  /* Brand Colors */
+  --navy: #1A365D;              /* Deep Navy */
+  --rose-gold: #B7916E;         /* Rose Gold */
+}
+
+.dark {
+  /* Dark Mode */
+  --background: #171717;        /* Canvas Dark */
+  --foreground: #FAFAF9;        /* Ink Light */
+  --card: #262626;              /* Paper Dark */
+  --card-foreground: #FAFAF9;
+  --popover: #262626;
+  --popover-foreground: #FAFAF9;
+  --primary: #FAFAF9;
+  --primary-foreground: #171717;
+  --secondary: #404040;
+  --secondary-foreground: #FAFAF9;
+  --muted: #404040;
+  --muted-foreground: #A8A29E;
+  --accent: #404040;
+  --accent-foreground: #FAFAF9;
+  --destructive: #EF4444;
+  --border: #404040;
+  --input: #404040;
+  --ring: #FAFAF9;
+
+  /* Brand Colors Dark */
+  --navy: #3B82F6;
+  --rose-gold: #D4A574;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Typography Scale - PRD Specifications */
+  h1 {
+    @apply font-display text-4xl md:text-5xl lg:text-6xl font-normal leading-tight tracking-tight;
+  }
+
+  h2 {
+    @apply font-sans text-2xl md:text-3xl font-semibold leading-snug;
+  }
+
+  h3 {
+    @apply font-sans text-lg md:text-xl font-semibold leading-normal;
+  }
+
+  p {
+    @apply text-base md:text-lg leading-relaxed;
+    line-height: 1.8;
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: var(--rose-gold);
+    color: white;
+  }
+
+  /* Focus styles */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Display Typography (Playfair) */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Blockquote - Brand style */
+  .blockquote {
+    @apply border-l-2 border-rose-gold pl-6 py-4 my-8;
+    @apply font-display text-xl md:text-2xl italic text-muted-foreground;
+  }
+
+  /* Caption text */
+  .caption {
+    @apply text-sm text-muted-foreground;
+  }
+
+  /* Label text */
+  .label-text {
+    @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
+  }
+
+  /* Divider with decorative element */
+  .divider {
+    @apply flex items-center gap-4 my-12;
+  }
+
+  .divider::before,
+  .divider::after {
+    @apply flex-1 h-px bg-border;
+    content: "";
+  }
+
+  /* Card hover effect */
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .card-hover:hover {
+    @apply -translate-y-1;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Link underline reveal */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::after {
+    @apply absolute bottom-0 left-0 w-0 h-px bg-current transition-all duration-300;
+    content: "";
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Container widths */
+  .container-narrow {
+    @apply max-w-3xl mx-auto px-5 md:px-8;
+  }
+
+  .container-wide {
+    @apply max-w-7xl mx-auto px-5 md:px-20;
+  }
+
+  /* Image fade-in on load */
+  .img-fade {
+    @apply opacity-0 scale-[1.02] transition-all duration-500 ease-out;
+  }
+
+  .img-fade.loaded {
+    @apply opacity-100 scale-100;
+  }
+}
+
+@layer utilities {
+  /* Text balance for better line breaks */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Brand colors as utilities */
+  .text-navy {
+    color: var(--navy);
+  }
+
+  .text-rose-gold {
+    color: var(--rose-gold);
+  }
+
+  .bg-navy {
+    background-color: var(--navy);
+  }
+
+  .bg-rose-gold {
+    background-color: var(--rose-gold);
+  }
+
+  .border-rose-gold {
+    border-color: var(--rose-gold);
+  }
+
+  /* via-rose-gold for gradients */
+  .via-rose-gold {
+    --tw-gradient-via-position: 50%;
+    --tw-gradient-to: var(--rose-gold) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from) var(--tw-gradient-from-position), var(--rose-gold) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   Hero Section Animations
+   ═══════════════════════════════════════════════════ */
+
+/* Slow zoom animation for background */
+@keyframes slow-zoom {
+  0% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1.15);
+  }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 20s ease-out forwards;
+}
+
+/* Fade in and slide up animation */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fade-in-up 1s ease-out forwards;
+}
+
+/* Scroll indicator line animation */
+@keyframes scroll-line {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-scroll-line {
+  animation: scroll-line 1.5s ease-in-out infinite;
+}
