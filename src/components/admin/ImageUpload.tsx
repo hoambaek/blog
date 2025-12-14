@@ -21,7 +21,7 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
 
   const t = {
     dragOrClick: '이미지를 드래그하거나 클릭하여 업로드',
-    formats: 'JPEG, PNG, GIF, WebP (최대 10MB)',
+    formats: 'JPEG, PNG, GIF, WebP, AVIF (최대 10MB)',
     uploading: '업로드 중...',
     remove: '이미지 제거',
     change: '이미지 변경',
@@ -33,7 +33,7 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
 
   const handleFile = async (file: File) => {
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif']
     if (!allowedTypes.includes(file.type)) {
       setError(t.unsupportedType)
       showToast(t.unsupportedType, 'error')
@@ -142,7 +142,7 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
+          accept="image/jpeg,image/png,image/gif,image/webp,image/avif"
           onChange={handleChange}
           className="hidden"
         />
@@ -168,7 +168,7 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/gif,image/webp"
+          accept="image/jpeg,image/png,image/gif,image/webp,image/avif"
           onChange={handleChange}
           className="hidden"
         />

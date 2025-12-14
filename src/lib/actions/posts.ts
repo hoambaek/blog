@@ -136,7 +136,11 @@ export async function getPostBySlug(slug: string): Promise<PostWithCategory | nu
     .single()
 
   if (error) {
-    console.error('Error fetching post:', error)
+    // PGRST116 means no rows found - this is expected for non-existent posts
+    if (error.code === 'PGRST116') {
+      return null
+    }
+    console.error('Error fetching post:', error.message || error.code || JSON.stringify(error))
     return null
   }
 

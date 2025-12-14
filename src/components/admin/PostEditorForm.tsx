@@ -86,16 +86,35 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
   })
 
   const handleTitleChange = (title: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      title,
+    setFormData((prev) => {
       // Only auto-generate slug if it's a new post or slug is empty
-      slug: prev.slug || title
-        .toLowerCase()
-        .replace(/[^a-z0-9가-힣\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-'),
-    }))
+      let newSlug = prev.slug
+      if (!newSlug) {
+        // Extract only English characters and numbers for slug
+        const englishOnly = title
+          .toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '')
+
+        // If no English characters, generate date-based slug
+        if (!englishOnly) {
+          const now = new Date()
+          const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`
+          const randomStr = Math.random().toString(36).substring(2, 8)
+          newSlug = `post-${dateStr}-${randomStr}`
+        } else {
+          newSlug = englishOnly
+        }
+      }
+
+      return {
+        ...prev,
+        title,
+        slug: newSlug,
+      }
+    })
   }
 
   const handleDocumentParsed = (post: {
@@ -105,23 +124,26 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     metaTitle: string
     metaDescription: string
     category: string
+    categoryId: string
     content: string
   }) => {
-    // Find category ID from slug
-    const matchedCategory = categories.find(c => c.slug === post.category)
+    // Use provided slug or generate English-only slug
+    let finalSlug = post.slug
+    if (!finalSlug) {
+      const now = new Date()
+      const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`
+      const randomStr = Math.random().toString(36).substring(2, 8)
+      finalSlug = `post-${dateStr}-${randomStr}`
+    }
 
     setFormData((prev) => ({
       ...prev,
       title: post.title || prev.title,
-      slug: post.slug || prev.slug || post.title
-        .toLowerCase()
-        .replace(/[^a-z0-9가-힣\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-'),
+      slug: finalSlug || prev.slug,
       excerpt: post.excerpt || prev.excerpt,
       metaTitle: post.metaTitle || prev.metaTitle,
       metaDescription: post.metaDescription || prev.metaDescription,
-      categoryId: matchedCategory?.id || prev.categoryId,
+      categoryId: post.categoryId || prev.categoryId,
       content: post.content,
     }))
   }
@@ -244,14 +266,15 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
             />
           </div>
 
-          {/* Document Upload */}
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium">{t.content}</Label>
-            <DocumentUpload
-              onParsed={handleDocumentParsed}
-              currentCategory={getCurrentCategorySlug()}
-            />
-          </div>
+          {/* Document Upload - Always visible */}
+          <DocumentUpload
+            onParsed={handleDocumentParsed}
+            currentCategory={getCurrentCategorySlug()}
+            categories={categories}
+          />
+
+          {/* Content Label */}
+          <Label className="text-sm font-medium">{t.content}</Label>
 
           {/* Editor */}
           <TiptapEditor

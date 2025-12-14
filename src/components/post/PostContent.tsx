@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, Share2, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation, useLocale } from '@/lib/i18n'
 
 interface Post {
@@ -64,60 +63,22 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
     return categoryMap[slug] || t.post.allPosts
   }
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: post.title,
-          text: post.excerpt || '',
-          url: window.location.href,
-        })
-      } catch (err) {
-        console.log('Share cancelled')
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href)
-    }
-  }
-
   return (
     <article>
-      {/* Hero Image - Mobile optimized aspect ratio */}
-      <div className="relative aspect-[4/3] sm:aspect-[16/10] md:aspect-[21/9] bg-muted mt-0 md:mt-[100px]">
+      {/* Hero Image - Full image on mobile, cropped on larger screens */}
+      <div className="relative bg-muted mt-12 md:mt-[100px]">
         {post.cover_image_url && (
           <Image
             src={post.cover_image_url}
             alt={post.title}
-            fill
-            className="object-cover"
+            width={1920}
+            height={1080}
+            className="w-full h-auto md:aspect-[21/9] md:object-cover"
             priority
           />
         )}
-        {/* Gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/40" />
-        <div className="absolute bottom-0 left-0 right-0 h-20 md:h-16 bg-gradient-to-t from-background to-transparent" />
-
-        {/* Navigation Header - Mobile only */}
-        <div className="absolute top-3 sm:top-4 left-0 right-0 px-4 sm:px-6 md:hidden">
-          <div className="flex justify-between items-center">
-            <Link
-              href={post.category ? `/category/${post.category.slug}` : '/category/all'}
-              className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs text-white/90 hover:text-white transition-colors backdrop-blur-sm bg-black/20 px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-full"
-            >
-              <ArrowLeft className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-              <span className="font-medium">{getCategoryName(post.category?.slug)}</span>
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleShare}
-              className="h-8 w-8 sm:h-9 sm:w-9 text-white/90 hover:text-white backdrop-blur-sm bg-black/20 rounded-full hover:bg-black/30"
-            >
-              <Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="sr-only">{t.common.share}</span>
-            </Button>
-          </div>
-        </div>
+        {/* Gradient overlay - black from bottom to middle */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
       </div>
 
       {/* Content */}
@@ -172,7 +133,8 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
             prose-blockquote:text-center prose-blockquote:text-foreground
             prose-blockquote:not-italic prose-blockquote:bg-muted/30
             prose-a:text-navy prose-a:underline prose-a:underline-offset-4 prose-a:decoration-rose-gold/50
-            prose-img:my-8 prose-img:sm:my-12 prose-img:md:my-16 prose-img:rounded-lg prose-img:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+            prose-img:my-10 prose-img:sm:my-14 prose-img:md:my-20 prose-img:rounded-lg prose-img:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+            prose-figure:my-10 prose-figure:sm:my-14 prose-figure:md:my-20
             prose-strong:text-foreground prose-strong:font-medium
             prose-li:text-muted-foreground prose-li:leading-relaxed prose-li:text-[15px] prose-li:sm:text-base
             first-letter:text-4xl first-letter:sm:text-5xl first-letter:font-display first-letter:float-left first-letter:mr-2 first-letter:sm:mr-3 first-letter:mt-0.5 first-letter:sm:mt-1 first-letter:text-foreground
