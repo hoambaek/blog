@@ -317,7 +317,7 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
           </Button>
 
           <p className="text-xs text-muted-foreground">
-            Imagen 4를 사용하여 뮤즈드마레 브랜드 스타일의 커버 이미지를 생성합니다.
+            Gemini 3 Pro를 사용하여 뮤즈드마레 브랜드 스타일의 커버 이미지를 생성합니다.
           </p>
         </div>
       )}

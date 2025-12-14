@@ -113,31 +113,35 @@ export async function POST(request: NextRequest) {
     // Google GenAI 클라이언트 생성
     const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
-    // Imagen 4로 이미지 생성
-    const response = await genAI.models.generateImages({
-      model: 'imagen-4.0-generate-001',
-      prompt: enhancedPrompt,
+    // Gemini 3 Pro Preview로 이미지 생성 (텍스트 없이 이미지만)
+    const response = await genAI.models.generateContent({
+      model: 'gemini-3-pro-preview',
+      contents: enhancedPrompt,
       config: {
-        numberOfImages: 1,
-        aspectRatio,
-        // 사람 얼굴 생성 방지 (브랜드 가이드라인)
-        // @ts-expect-error - personGeneration type not fully typed in SDK
-        personGeneration: 'DONT_ALLOW',
+        responseModalities: ['IMAGE'],
       },
     })
 
     // 생성된 이미지 추출
-    if (!response.generatedImages || response.generatedImages.length === 0) {
+    const candidates = response.candidates
+    if (!candidates || candidates.length === 0) {
       return NextResponse.json(
         { error: 'No images generated' },
         { status: 500 }
       )
     }
 
-    const image = response.generatedImages[0]
+    // 이미지 데이터 찾기
+    const parts = candidates[0].content?.parts || []
+    let base64Data: string | undefined
 
-    // Base64 이미지 데이터를 Buffer로 변환
-    const base64Data = image.image?.imageBytes
+    for (const part of parts) {
+      if (part.inlineData) {
+        base64Data = part.inlineData.data
+        break
+      }
+    }
+
     if (!base64Data) {
       return NextResponse.json(
         { error: 'No image data in response' },
