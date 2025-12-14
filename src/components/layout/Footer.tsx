@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ArrowRight } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n'
@@ -33,30 +32,23 @@ export function Footer() {
 
   return (
     <footer className="relative">
-      {/* Newsletter Section - Dark Elegant */}
+      {/* Newsletter Section - Subtle & Refined */}
       {!hideNewsletter && (
-      <section className="relative bg-[#0a0a0a] text-white overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#0a0a0a]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-rose-gold/[0.03] blur-[100px] rounded-full" />
-
-        <div className="container-narrow relative py-14 sm:py-20 md:py-28 px-5 sm:px-6">
-          {/* Decorative Element */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6 sm:mb-10">
-            <div className="w-10 sm:w-16 h-[1px] bg-gradient-to-r from-transparent to-white/20" />
-            <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rotate-45 bg-rose-gold" />
-            <div className="w-10 sm:w-16 h-[1px] bg-gradient-to-l from-transparent to-white/20" />
-          </div>
-
-          {/* Content */}
-          <div className="text-center">
-            <p className="text-[9px] sm:text-[10px] md:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-rose-gold mb-4 sm:mb-6">
+      <section className="bg-[#0a0a0a] text-white border-b border-white/[0.04]">
+        <div className="container-narrow py-8 sm:py-10 md:py-14 px-5 sm:px-6">
+          <div className="text-center max-w-lg mx-auto">
+            {/* Minimal label */}
+            <p className="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-white/25 mb-2 sm:mb-4">
               Newsletter
             </p>
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-4 sm:mb-6 leading-tight">
+
+            {/* Subtle title */}
+            <h2 className="font-display text-base sm:text-xl md:text-2xl text-white/70 mb-1.5 sm:mb-3 font-normal">
               {t.newsletter.title}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-white/50 mb-8 sm:mb-10 max-w-none mx-auto font-light leading-relaxed md:whitespace-nowrap">
+
+            {/* Muted description */}
+            <p className="text-[11px] sm:text-sm text-white/30 mb-5 sm:mb-8 font-light leading-relaxed">
               {t.newsletter.description}
             </p>
 
@@ -64,141 +56,230 @@ export function Footer() {
             <NewsletterForm source="footer" variant="dark" />
           </div>
         </div>
-
-        {/* Corner Accents */}
-        <div className="hidden md:block absolute top-12 left-10 w-16 h-16 border-l border-t border-white/[0.05]" />
-        <div className="hidden md:block absolute top-12 right-10 w-16 h-16 border-r border-t border-white/[0.05]" />
       </section>
       )}
 
-      {/* Main Footer */}
+      {/* Main Footer - Compact on Mobile */}
       <section className="bg-[#0a0a0a] border-t border-white/[0.06]">
-        <div className="container-wide py-12 sm:py-16 md:py-20 px-5 sm:px-6">
-          {/* Top Section - Brand + Links */}
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 mb-12 sm:mb-16">
-            {/* Brand Column */}
-            <div className="lg:col-span-4">
-              <Link href="/" className="inline-block mb-4 sm:mb-6">
-                <h3 className="font-display text-lg sm:text-xl text-white tracking-tight">
-                  LE JOURNAL DE MARÉE
-                </h3>
-              </Link>
-              <p className="text-xs sm:text-sm text-white/40 leading-relaxed max-w-xs mb-4 sm:mb-6">
-                {t.footer.brandDescription}
+        <div className="container-wide py-8 sm:py-12 md:py-20 px-5 sm:px-6">
+          {/* Mobile: Simple stacked layout */}
+          <div className="md:hidden">
+            {/* Brand */}
+            <Link href="/" className="inline-block mb-5">
+              <h3 className="font-display text-base text-white tracking-tight">
+                LE JOURNAL DE MARÉE
+              </h3>
+            </Link>
+
+            {/* Compact Link Grid - 3 columns on mobile */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {/* Journal - only show 3 items */}
+              <div>
+                <h4 className="text-[8px] uppercase tracking-[0.2em] text-rose-gold/70 mb-2.5">
+                  {t.footer.journal}
+                </h4>
+                <ul className="space-y-1.5">
+                  {footerLinks.journal.slice(0, 3).map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-[11px] text-white/40 hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Info */}
+              <div>
+                <h4 className="text-[8px] uppercase tracking-[0.2em] text-rose-gold/70 mb-2.5">
+                  {t.footer.info}
+                </h4>
+                <ul className="space-y-1.5">
+                  {footerLinks.about.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-[11px] text-white/40 hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Social */}
+              <div>
+                <h4 className="text-[8px] uppercase tracking-[0.2em] text-rose-gold/70 mb-2.5">
+                  {t.footer.social}
+                </h4>
+                <ul className="space-y-1.5">
+                  {footerLinks.social.map((link) => (
+                    <li key={link.href}>
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-white/40 hover:text-white transition-colors"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-white/[0.06] mb-4" />
+
+            {/* Bottom - Compact */}
+            <div className="flex justify-between items-center">
+              <p className="text-[9px] text-white/25">
+                © {currentYear} Muse de Marée
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-[1px] bg-gradient-to-r from-rose-gold/60 to-transparent" />
-                <span className="text-rose-gold/60 text-[8px]">◆</span>
-              </div>
-            </div>
-
-            {/* Links Columns */}
-            <div className="lg:col-span-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-                {/* Journal */}
-                <div>
-                  <h4 className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-rose-gold/80 mb-4 sm:mb-5">
-                    {t.footer.journal}
-                  </h4>
-                  <ul className="space-y-2.5 sm:space-y-3">
-                    {footerLinks.journal.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          className="group inline-flex items-center text-xs sm:text-sm text-white/50 hover:text-white transition-colors"
-                        >
-                          <span>{link.name}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Info */}
-                <div>
-                  <h4 className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-rose-gold/80 mb-4 sm:mb-5">
-                    {t.footer.info}
-                  </h4>
-                  <ul className="space-y-2.5 sm:space-y-3">
-                    {footerLinks.about.map((link) => (
-                      <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          className="group inline-flex items-center text-xs sm:text-sm text-white/50 hover:text-white transition-colors"
-                        >
-                          <span>{link.name}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Social */}
-                <div>
-                  <h4 className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-rose-gold/80 mb-4 sm:mb-5">
-                    {t.footer.social}
-                  </h4>
-                  <ul className="space-y-2.5 sm:space-y-3">
-                    {footerLinks.social.map((link) => (
-                      <li key={link.href}>
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-2 text-xs sm:text-sm text-white/50 hover:text-white transition-colors"
-                        >
-                          <span>{link.name}</span>
-                          <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Brand Quote */}
-                <div className="hidden md:block">
-                  <h4 className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-rose-gold/80 mb-4 sm:mb-5">
-                    {t.footer.brand}
-                  </h4>
-                  <blockquote className="text-xs sm:text-sm text-white/40 italic leading-relaxed whitespace-pre-line">
-                    "{t.footer.brandQuote}"
-                  </blockquote>
-                </div>
+                <Link href="/privacy" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
+                  {t.footer.privacy}
+                </Link>
+                <Link href="/terms" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
+                  {t.footer.terms}
+                </Link>
               </div>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4 mb-6 sm:mb-8">
-            <div className="flex-1 h-px bg-white/[0.06]" />
-            <span className="text-rose-gold/40 text-[6px]">◆</span>
-            <div className="flex-1 h-px bg-white/[0.06]" />
-          </div>
+          {/* Desktop: Full layout */}
+          <div className="hidden md:block">
+            {/* Top Section - Brand + Links */}
+            <div className="grid lg:grid-cols-12 gap-8 mb-16">
+              {/* Brand Column */}
+              <div className="lg:col-span-4">
+                <Link href="/" className="inline-block mb-6">
+                  <h3 className="font-display text-xl text-white tracking-tight">
+                    LE JOURNAL DE MARÉE
+                  </h3>
+                </Link>
+                <p className="text-sm text-white/40 leading-relaxed max-w-xs mb-6">
+                  {t.footer.brandDescription}
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-[1px] bg-gradient-to-r from-rose-gold/60 to-transparent" />
+                  <span className="text-rose-gold/60 text-[8px]">◆</span>
+                </div>
+              </div>
 
-          {/* Bottom Section */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4">
-            <p className="text-[10px] sm:text-xs text-white/30">
-              © {currentYear} Muse de Marée. All rights reserved.
-            </p>
-            <div className="flex items-center gap-4 sm:gap-6">
-              <Link
-                href="/privacy"
-                className="text-[10px] sm:text-xs text-white/30 hover:text-white/60 transition-colors"
-              >
-                {t.footer.privacy}
-              </Link>
-              <Link
-                href="/terms"
-                className="text-[10px] sm:text-xs text-white/30 hover:text-white/60 transition-colors"
-              >
-                {t.footer.terms}
-              </Link>
-              <Link
-                href="/admin"
-                className="text-[10px] sm:text-xs text-white/20 hover:text-white/40 transition-colors"
-              >
-                Admin
-              </Link>
+              {/* Links Columns */}
+              <div className="lg:col-span-8">
+                <div className="grid grid-cols-4 gap-8">
+                  {/* Journal */}
+                  <div>
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-rose-gold/80 mb-5">
+                      {t.footer.journal}
+                    </h4>
+                    <ul className="space-y-3">
+                      {footerLinks.journal.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="group inline-flex items-center text-sm text-white/50 hover:text-white transition-colors"
+                          >
+                            <span>{link.name}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Info */}
+                  <div>
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-rose-gold/80 mb-5">
+                      {t.footer.info}
+                    </h4>
+                    <ul className="space-y-3">
+                      {footerLinks.about.map((link) => (
+                        <li key={link.href}>
+                          <Link
+                            href={link.href}
+                            className="group inline-flex items-center text-sm text-white/50 hover:text-white transition-colors"
+                          >
+                            <span>{link.name}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Social */}
+                  <div>
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-rose-gold/80 mb-5">
+                      {t.footer.social}
+                    </h4>
+                    <ul className="space-y-3">
+                      {footerLinks.social.map((link) => (
+                        <li key={link.href}>
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors"
+                          >
+                            <span>{link.name}</span>
+                            <ArrowRight className="w-3 h-3 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Brand Quote */}
+                  <div>
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-rose-gold/80 mb-5">
+                      {t.footer.brand}
+                    </h4>
+                    <blockquote className="text-sm text-white/40 italic leading-relaxed whitespace-pre-line">
+                      "{t.footer.brandQuote}"
+                    </blockquote>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex-1 h-px bg-white/[0.06]" />
+              <span className="text-rose-gold/40 text-[6px]">◆</span>
+              <div className="flex-1 h-px bg-white/[0.06]" />
+            </div>
+
+            {/* Bottom Section */}
+            <div className="flex justify-between items-center">
+              <p className="text-xs text-white/30">
+                © {currentYear} Muse de Marée. All rights reserved.
+              </p>
+              <div className="flex items-center gap-6">
+                <Link
+                  href="/privacy"
+                  className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                >
+                  {t.footer.privacy}
+                </Link>
+                <Link
+                  href="/terms"
+                  className="text-xs text-white/30 hover:text-white/60 transition-colors"
+                >
+                  {t.footer.terms}
+                </Link>
+                <Link
+                  href="/admin"
+                  className="text-xs text-white/20 hover:text-white/40 transition-colors"
+                >
+                  Admin
+                </Link>
+              </div>
             </div>
           </div>
         </div>

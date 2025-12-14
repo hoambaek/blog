@@ -58,17 +58,17 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
   }
 
   if (isDark) {
-    // Dark variant for footer/dark sections
+    // Dark variant - subtle and refined
     return (
-      <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+      <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
+        <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.newsletter.placeholder}
-              className="w-full bg-white/[0.05] border border-white/[0.1] px-4 py-3 sm:px-5 sm:py-4 text-sm sm:text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all"
+              className="w-full bg-transparent border border-white/[0.08] px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-white/60 placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors"
               required
               disabled={status === 'loading'}
             />
@@ -76,18 +76,18 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="group relative overflow-hidden bg-rose-gold/90 px-6 py-3 sm:px-8 sm:py-4 uppercase text-xs sm:text-sm tracking-[0.15em] font-medium text-black hover:bg-rose-gold transition-colors disabled:opacity-50"
+            className="group border border-white/[0.15] px-4 py-2.5 sm:px-5 sm:py-3 text-[10px] sm:text-xs uppercase tracking-[0.15em] text-white/40 hover:text-white/70 hover:border-white/30 transition-all disabled:opacity-50"
           >
-            <span className="relative z-10 flex items-center justify-center gap-2">
+            <span className="flex items-center justify-center gap-1.5">
               {status === 'loading' ? t.newsletter.processing : t.newsletter.subscribe}
               {status !== 'loading' && (
-                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3 h-3 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
               )}
             </span>
           </button>
         </div>
         {status === 'error' && (
-          <p className="text-red-400 text-xs sm:text-sm mt-3 sm:mt-4 text-center">{message}</p>
+          <p className="text-red-400/70 text-[10px] sm:text-xs mt-3 text-center">{message}</p>
         )}
       </form>
     )
