@@ -55,7 +55,12 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
       <Body style={styles.body}>
         <Container style={styles.container}>
           {/* Header */}
@@ -140,10 +145,10 @@ const styles = {
   },
 
   logo: {
-    fontFamily: 'Georgia, "Times New Roman", serif',
+    fontFamily: '"Playfair Display", Georgia, serif',
     fontSize: '18px',
     fontWeight: '400' as const,
-    letterSpacing: '0.15em',
+    letterSpacing: '0.12em',
     color: '#ffffff',
     margin: '0',
   },
@@ -154,7 +159,7 @@ const styles = {
   },
 
   greeting: {
-    fontFamily: 'Georgia, "Times New Roman", serif',
+    fontFamily: '"Playfair Display", Georgia, serif',
     fontSize: '28px',
     fontWeight: '400' as const,
     color: colors.foreground,
@@ -228,7 +233,7 @@ const styles = {
   },
 
   signature: {
-    fontFamily: 'Georgia, "Times New Roman", serif',
+    fontFamily: '"Playfair Display", Georgia, serif',
     fontSize: '14px',
     color: colors.foreground,
     margin: '0',
