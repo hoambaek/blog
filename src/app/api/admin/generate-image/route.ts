@@ -108,23 +108,31 @@ export async function POST(request: NextRequest) {
     }
 
     // 브랜드 가이드라인에 맞는 프롬프트 생성
-    const enhancedPrompt = generateBrandPrompt(category, prompt, additionalDetails)
+    const basePrompt = generateBrandPrompt(category, prompt, additionalDetails)
+    // 이미지 생성을 명시적으로 요청
+    const enhancedPrompt = `Generate a high-quality photograph image of: ${basePrompt}. Do not include any text in the image.`
 
     // Google GenAI 클라이언트 생성
     const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
-    // Gemini 3 Pro Preview로 이미지 생성 (텍스트 없이 이미지만)
+    // Gemini 3 Pro Image Preview로 이미지 생성
     const response = await genAI.models.generateContent({
-      model: 'gemini-3-pro-preview',
+      model: 'gemini-3-pro-image-preview',
       contents: enhancedPrompt,
       config: {
-        responseModalities: ['IMAGE'],
+        imageConfig: {
+          aspectRatio: aspectRatio,
+          imageSize: '4K',
+        },
       },
     })
+
+    console.log('Gemini response:', JSON.stringify(response, null, 2))
 
     // 생성된 이미지 추출
     const candidates = response.candidates
     if (!candidates || candidates.length === 0) {
+      console.error('No candidates in response')
       return NextResponse.json(
         { error: 'No images generated' },
         { status: 500 }
@@ -133,35 +141,46 @@ export async function POST(request: NextRequest) {
 
     // 이미지 데이터 찾기
     const parts = candidates[0].content?.parts || []
+    console.log('Response parts:', JSON.stringify(parts, null, 2))
+
     let base64Data: string | undefined
+    let mimeType: string = 'image/png'
 
     for (const part of parts) {
+      // @ts-expect-error - inlineData type might not be fully typed
       if (part.inlineData) {
+        // @ts-expect-error - inlineData type might not be fully typed
         base64Data = part.inlineData.data
+        // @ts-expect-error - inlineData type might not be fully typed
+        mimeType = part.inlineData.mimeType || 'image/png'
         break
       }
     }
 
     if (!base64Data) {
+      console.error('No inlineData found in parts:', parts)
       return NextResponse.json(
         { error: 'No image data in response' },
         { status: 500 }
       )
     }
 
+    // mimeType에 따른 파일 확장자 결정
+    const extension = mimeType === 'image/jpeg' ? 'jpg' : 'png'
+
     // Buffer로 변환하여 R2에 업로드
     const buffer = Buffer.from(base64Data, 'base64')
-    const filename = generateUniqueFilename('ai-generated.png')
+    const filename = generateUniqueFilename(`ai-generated.${extension}`)
     const key = `posts/${filename}`
 
-    const imageUrl = await uploadToR2(buffer, key, 'image/png')
+    const imageUrl = await uploadToR2(buffer, key, mimeType)
 
     return NextResponse.json({
       success: true,
       imageUrl,
       image: {
         base64: base64Data,
-        mimeType: 'image/png',
+        mimeType,
       },
       prompt: enhancedPrompt,
     })
