@@ -61,14 +61,14 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
     // Dark variant for footer/dark sections
     return (
       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <div className="relative flex-1">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.newsletter.placeholder}
-              className="w-full bg-white/[0.05] border border-white/[0.1] px-5 py-4 text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all"
+              className="w-full bg-white/[0.05] border border-white/[0.1] px-4 py-3 sm:px-5 sm:py-4 text-sm sm:text-base text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/[0.08] transition-all"
               required
               disabled={status === 'loading'}
             />
@@ -76,18 +76,18 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="group relative overflow-hidden bg-rose-gold/90 px-8 py-4 uppercase text-sm tracking-[0.15em] font-medium text-black hover:bg-rose-gold transition-colors disabled:opacity-50"
+            className="group relative overflow-hidden bg-rose-gold/90 px-6 py-3 sm:px-8 sm:py-4 uppercase text-xs sm:text-sm tracking-[0.15em] font-medium text-black hover:bg-rose-gold transition-colors disabled:opacity-50"
           >
             <span className="relative z-10 flex items-center justify-center gap-2">
               {status === 'loading' ? t.newsletter.processing : t.newsletter.subscribe}
               {status !== 'loading' && (
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
               )}
             </span>
           </button>
         </div>
         {status === 'error' && (
-          <p className="text-red-400 text-sm mt-4 text-center">{message}</p>
+          <p className="text-red-400 text-xs sm:text-sm mt-3 sm:mt-4 text-center">{message}</p>
         )}
       </form>
     )

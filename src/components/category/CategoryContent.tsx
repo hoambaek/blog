@@ -66,7 +66,7 @@ export function CategoryContent({
   return (
     <div>
       {/* Hero with Dark Background */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-28 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/bg.png"

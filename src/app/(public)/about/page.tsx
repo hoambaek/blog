@@ -69,7 +69,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 overflow-hidden">
+      <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/bg.png"
@@ -100,7 +100,7 @@ export default function AboutPage() {
           <h1 className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 leading-[1.2] animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             {c.heroTitle}
           </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl mx-auto font-light leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+          <p className="text-base md:text-lg text-white/60 max-w-2xl mx-auto font-light leading-relaxed animate-fade-in-up lg:whitespace-nowrap" style={{ animationDelay: '0.5s' }}>
             {c.heroSubtitle}
           </p>
         </div>
