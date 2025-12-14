@@ -68,7 +68,7 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.newsletter.placeholder}
-              className="w-full bg-transparent border border-white/[0.08] px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-white/60 placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors"
+              className="w-full bg-transparent border border-rose-gold/30 px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-white/60 placeholder:text-rose-gold/40 focus:outline-none focus:border-rose-gold/50 transition-colors"
               required
               disabled={status === 'loading'}
             />
@@ -76,7 +76,7 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="group border border-white/[0.15] px-4 py-2.5 sm:px-5 sm:py-3 text-[10px] sm:text-xs uppercase tracking-[0.15em] text-white/40 hover:text-white/70 hover:border-white/30 transition-all disabled:opacity-50"
+            className="group bg-rose-gold/10 border border-rose-gold/40 px-4 py-2.5 sm:px-5 sm:py-3 text-[10px] sm:text-xs uppercase tracking-[0.15em] text-rose-gold/70 hover:bg-rose-gold/20 hover:text-rose-gold hover:border-rose-gold/60 transition-all disabled:opacity-50"
           >
             <span className="flex items-center justify-center gap-1.5">
               {status === 'loading' ? t.newsletter.processing : t.newsletter.subscribe}

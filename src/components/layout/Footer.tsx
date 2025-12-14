@@ -38,7 +38,7 @@ export function Footer() {
         <div className="container-narrow py-8 sm:py-10 md:py-14 px-5 sm:px-6">
           <div className="text-center max-w-lg mx-auto">
             {/* Minimal label */}
-            <p className="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-white/25 mb-2 sm:mb-4">
+            <p className="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-rose-gold/70 mb-2 sm:mb-4">
               Newsletter
             </p>
 
