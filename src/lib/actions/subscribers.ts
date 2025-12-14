@@ -2,6 +2,7 @@
 
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { resend, FROM_EMAIL, isResendConfigured } from '@/lib/resend/client'
+import { render } from '@react-email/render'
 import { WelcomeEmail, getWelcomeEmailSubject } from '@/lib/resend/templates/WelcomeEmail'
 import type { Subscriber } from '@/lib/supabase/types'
 
@@ -87,11 +88,14 @@ async function sendWelcomeEmail(email: string, locale: 'ko' | 'en') {
       return
     }
 
+    // Render React component to HTML string
+    const html = await render(WelcomeEmail({ email, locale }))
+
     await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: getWelcomeEmailSubject(locale),
-      react: WelcomeEmail({ email, locale }),
+      html,
     })
 
     console.log('Welcome email sent to:', email)
