@@ -64,10 +64,14 @@ export function DocumentUpload({ onParsed, currentCategory }: DocumentUploadProp
   }
 
   const parseMarkdown = (content: string): ParsedPost => {
-    // Parse frontmatter
-    const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/)
+    // Normalize line endings (CRLF -> LF)
+    const normalizedContent = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+
+    // Parse frontmatter - handle various formats
+    const frontmatterMatch = normalizedContent.match(/^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/)
 
     if (!frontmatterMatch) {
+      console.log('No frontmatter found, content starts with:', normalizedContent.substring(0, 100))
       // No frontmatter, treat entire content as body
       return {
         title: '',
@@ -76,7 +80,7 @@ export function DocumentUpload({ onParsed, currentCategory }: DocumentUploadProp
         metaTitle: '',
         metaDescription: '',
         category: currentCategory || 'sea-log',
-        content: convertMarkdownToHtml(content),
+        content: convertMarkdownToHtml(normalizedContent),
       }
     }
 
@@ -85,11 +89,19 @@ export function DocumentUpload({ onParsed, currentCategory }: DocumentUploadProp
 
     // Parse frontmatter key-value pairs
     frontmatter.split('\n').forEach(line => {
-      const match = line.match(/^(\w+):\s*(.*)$/)
-      if (match) {
-        metadata[match[1]] = match[2].trim()
+      const trimmedLine = line.trim()
+      if (!trimmedLine) return
+
+      // Match key: value pattern (key can have underscores)
+      const colonIndex = trimmedLine.indexOf(':')
+      if (colonIndex > 0) {
+        const key = trimmedLine.substring(0, colonIndex).trim()
+        const value = trimmedLine.substring(colonIndex + 1).trim()
+        metadata[key] = value
       }
     })
+
+    console.log('Parsed metadata:', metadata)
 
     return {
       title: metadata.title || '',
