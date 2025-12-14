@@ -34,12 +34,19 @@ export default function SubscribersPage() {
     setLoading(true)
     try {
       const status = filter === 'all' ? undefined : filter
-      const res = await fetch(`/api/admin/subscribers?status=${status || ''}`)
-      const data = await res.json()
-      setSubscribers(data.subscribers || [])
 
-      const statsRes = await fetch('/api/admin/subscribers/stats')
-      const statsData = await statsRes.json()
+      // Fetch subscribers and stats in parallel
+      const [subscribersRes, statsRes] = await Promise.all([
+        fetch(`/api/admin/subscribers?status=${status || ''}`),
+        fetch('/api/admin/subscribers/stats'),
+      ])
+
+      const [subscribersData, statsData] = await Promise.all([
+        subscribersRes.json(),
+        statsRes.json(),
+      ])
+
+      setSubscribers(subscribersData.subscribers || [])
       setStats(statsData)
     } catch (error) {
       console.error('Error fetching subscribers:', error)

@@ -11,29 +11,30 @@ export async function GET() {
   try {
     const supabase = await createAdminClient()
 
-    const { count: total } = await supabase
-      .from('subscribers')
-      .select('*', { count: 'exact', head: true })
-
-    const { count: active } = await supabase
-      .from('subscribers')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'active')
-
-    // This month's new subscribers
+    // This month's start date
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
 
-    const { count: thisMonth } = await supabase
-      .from('subscribers')
-      .select('*', { count: 'exact', head: true })
-      .gte('subscribed_at', startOfMonth.toISOString())
+    // Run all queries in parallel
+    const [totalResult, activeResult, thisMonthResult] = await Promise.all([
+      supabase
+        .from('subscribers')
+        .select('*', { count: 'exact', head: true }),
+      supabase
+        .from('subscribers')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active'),
+      supabase
+        .from('subscribers')
+        .select('*', { count: 'exact', head: true })
+        .gte('subscribed_at', startOfMonth.toISOString()),
+    ])
 
     return NextResponse.json({
-      total: total || 0,
-      active: active || 0,
-      thisMonth: thisMonth || 0,
+      total: totalResult.count || 0,
+      active: activeResult.count || 0,
+      thisMonth: thisMonthResult.count || 0,
     })
   } catch (error) {
     console.error('Error:', error)
