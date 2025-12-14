@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { FileText, Users, Eye, TrendingUp, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { useLocale } from '@/lib/i18n'
 import type { PostWithCategory } from '@/lib/supabase/types'
 
 interface DashboardStats {
@@ -26,10 +25,10 @@ interface AdminDashboardContentProps {
   recentPosts: PostWithCategory[]
 }
 
-function formatDate(dateString: string | null, locale: string) {
-  if (!dateString) return locale === 'ko' ? '미발행' : 'Unpublished'
+function formatDate(dateString: string | null) {
+  if (!dateString) return '미발행'
   const date = new Date(dateString)
-  return date.toLocaleDateString(locale === 'ko' ? 'ko-KR' : 'en-US', {
+  return date.toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -41,66 +40,33 @@ export function AdminDashboardContent({
   subscriberStats,
   recentPosts
 }: AdminDashboardContentProps) {
-  const { locale } = useLocale()
-
-  const text = {
-    ko: {
-      dashboard: '대시보드',
-      manage: 'Le Journal de Marée 관리',
-      newPost: '새 포스트',
-      totalPosts: '전체 포스트',
-      publishedDraft: (published: number, draft: number) => `발행 ${published} / 초안 ${draft}`,
-      thisMonth: '이번 달 발행',
-      newPosts: '새로운 포스트',
-      subscribers: '구독자 수',
-      thisMonthNew: (count: number) => `이번 달 +${count}`,
-      totalViews: '총 조회수',
-      allTime: '전체 기간',
-      recentPosts: '최근 포스트',
-      recentPostsDesc: '최근 작성 및 수정된 포스트',
-      viewAll: '모두 보기',
-      noPosts: '아직 포스트가 없습니다.',
-      edit: '편집',
-      published: '발행',
-      draft: '초안',
-      scheduled: '예약',
-      createPost: '새 포스트 작성',
-      createPostDesc: '새로운 포스트를 작성합니다',
-      mediaManage: '미디어 관리',
-      mediaManageDesc: '이미지와 파일을 관리합니다',
-      subscribersManage: '구독자 관리',
-      subscribersManageDesc: '뉴스레터 구독자를 관리합니다',
-    },
-    en: {
-      dashboard: 'Dashboard',
-      manage: 'Manage Le Journal de Marée',
-      newPost: 'New Post',
-      totalPosts: 'Total Posts',
-      publishedDraft: (published: number, draft: number) => `Published ${published} / Draft ${draft}`,
-      thisMonth: 'This Month',
-      newPosts: 'New posts',
-      subscribers: 'Subscribers',
-      thisMonthNew: (count: number) => `+${count} this month`,
-      totalViews: 'Total Views',
-      allTime: 'All time',
-      recentPosts: 'Recent Posts',
-      recentPostsDesc: 'Recently created and updated posts',
-      viewAll: 'View All',
-      noPosts: 'No posts yet.',
-      edit: 'Edit',
-      published: 'Published',
-      draft: 'Draft',
-      scheduled: 'Scheduled',
-      createPost: 'Create New Post',
-      createPostDesc: 'Write a new post',
-      mediaManage: 'Media Library',
-      mediaManageDesc: 'Manage images and files',
-      subscribersManage: 'Subscribers',
-      subscribersManageDesc: 'Manage newsletter subscribers',
-    },
+  const t = {
+    dashboard: '대시보드',
+    manage: 'Le Journal de Marée 관리',
+    newPost: '새 포스트',
+    totalPosts: '전체 포스트',
+    publishedDraft: (published: number, draft: number) => `발행 ${published} / 초안 ${draft}`,
+    thisMonth: '이번 달 발행',
+    newPosts: '새로운 포스트',
+    subscribers: '구독자 수',
+    thisMonthNew: (count: number) => `이번 달 +${count}`,
+    totalViews: '총 조회수',
+    allTime: '전체 기간',
+    recentPosts: '최근 포스트',
+    recentPostsDesc: '최근 작성 및 수정된 포스트',
+    viewAll: '모두 보기',
+    noPosts: '아직 포스트가 없습니다.',
+    edit: '편집',
+    published: '발행',
+    draft: '초안',
+    scheduled: '예약',
+    createPost: '새 포스트 작성',
+    createPostDesc: '새로운 포스트를 작성합니다',
+    mediaManage: '미디어 관리',
+    mediaManageDesc: '이미지와 파일을 관리합니다',
+    subscribersManage: '구독자 관리',
+    subscribersManageDesc: '뉴스레터 구독자를 관리합니다',
   }
-
-  const t = locale === 'ko' ? text.ko : text.en
 
   const statusLabels: Record<string, { label: string; className: string }> = {
     published: { label: t.published, className: 'bg-green-100 text-green-800' },
@@ -207,7 +173,7 @@ export function AdminDashboardContent({
                         {post.title}
                       </Link>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(post.published_at, locale)}
+                        {formatDate(post.published_at)}
                       </p>
                     </div>
                     <div className="flex items-center gap-4">

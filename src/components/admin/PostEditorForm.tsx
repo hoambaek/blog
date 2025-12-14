@@ -12,7 +12,6 @@ import { ImageUpload } from '@/components/admin/ImageUpload'
 import { DocumentUpload } from '@/components/admin/DocumentUpload'
 import { AICoverImageGenerator } from '@/components/admin/AICoverImageGenerator'
 import { createPost, updatePost } from '@/lib/actions/posts'
-import { useLocale } from '@/lib/i18n'
 import { useToast } from '@/components/ui/toast'
 import type { Category, PostWithCategory } from '@/lib/supabase/types'
 
@@ -23,87 +22,46 @@ interface PostEditorFormProps {
 
 export function PostEditorForm({ categories, post }: PostEditorFormProps) {
   const router = useRouter()
-  const { locale } = useLocale()
   const { showToast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const text = {
-    ko: {
-      editPost: '포스트 수정',
-      newPost: '새 포스트',
-      editPostDesc: '포스트를 수정합니다',
-      newPostDesc: '새로운 포스트를 작성합니다',
-      view: '보기',
-      save: '저장',
-      publish: '발행',
-      titlePlaceholder: '제목을 입력하세요',
-      status: '상태',
-      draft: '초안',
-      published: '발행',
-      scheduled: '예약',
-      category: '카테고리',
-      selectCategory: '카테고리 선택',
-      slug: '슬러그',
-      excerpt: '발췌문',
-      excerptPlaceholder: '포스트의 간단한 설명...',
-      coverImage: '커버 이미지',
-      dragOrClick: '이미지를 드래그하거나 클릭하여 업로드',
-      orImageUrl: '또는 이미지 URL 입력',
-      featuredPost: '피처드 포스트로 설정',
-      featuredDesc: '홈페이지 상단에 노출됩니다',
-      seoSettings: 'SEO 설정',
-      metaTitle: '메타 타이틀',
-      metaDescription: '메타 설명',
-      postTitle: '포스트 제목',
-      postDescription: '포스트 설명',
-      titleRequired: '제목을 입력해주세요.',
-      slugRequired: '슬러그를 입력해주세요.',
-      saveError: '저장 중 오류가 발생했습니다.',
-      documentUpload: '문서 업로드',
-      content: '본문',
-      savedSuccess: '포스트가 저장되었습니다.',
-      publishedSuccess: '포스트가 발행되었습니다.',
-    },
-    en: {
-      editPost: 'Edit Post',
-      newPost: 'New Post',
-      editPostDesc: 'Edit your post',
-      newPostDesc: 'Create a new post',
-      view: 'View',
-      save: 'Save',
-      publish: 'Publish',
-      titlePlaceholder: 'Enter title',
-      status: 'Status',
-      draft: 'Draft',
-      published: 'Published',
-      scheduled: 'Scheduled',
-      category: 'Category',
-      selectCategory: 'Select category',
-      slug: 'Slug',
-      excerpt: 'Excerpt',
-      excerptPlaceholder: 'Brief description of the post...',
-      coverImage: 'Cover Image',
-      dragOrClick: 'Drag or click to upload image',
-      orImageUrl: 'Or enter image URL',
-      featuredPost: 'Set as Featured Post',
-      featuredDesc: 'Will be displayed on homepage',
-      seoSettings: 'SEO Settings',
-      metaTitle: 'Meta Title',
-      metaDescription: 'Meta Description',
-      postTitle: 'Post title',
-      postDescription: 'Post description',
-      titleRequired: 'Please enter a title.',
-      slugRequired: 'Please enter a slug.',
-      saveError: 'An error occurred while saving.',
-      documentUpload: 'Upload Document',
-      content: 'Content',
-      savedSuccess: 'Post saved successfully.',
-      publishedSuccess: 'Post published successfully.',
-    },
+  const t = {
+    editPost: '포스트 수정',
+    newPost: '새 포스트',
+    editPostDesc: '포스트를 수정합니다',
+    newPostDesc: '새로운 포스트를 작성합니다',
+    view: '보기',
+    save: '저장',
+    publish: '발행',
+    titlePlaceholder: '제목을 입력하세요',
+    status: '상태',
+    draft: '초안',
+    published: '발행',
+    scheduled: '예약',
+    category: '카테고리',
+    selectCategory: '카테고리 선택',
+    slug: '슬러그',
+    excerpt: '발췌문',
+    excerptPlaceholder: '포스트의 간단한 설명...',
+    coverImage: '커버 이미지',
+    dragOrClick: '이미지를 드래그하거나 클릭하여 업로드',
+    orImageUrl: '또는 이미지 URL 입력',
+    featuredPost: '피처드 포스트로 설정',
+    featuredDesc: '홈페이지 상단에 노출됩니다',
+    seoSettings: 'SEO 설정',
+    metaTitle: '메타 타이틀',
+    metaDescription: '메타 설명',
+    postTitle: '포스트 제목',
+    postDescription: '포스트 설명',
+    titleRequired: '제목을 입력해주세요.',
+    slugRequired: '슬러그를 입력해주세요.',
+    saveError: '저장 중 오류가 발생했습니다.',
+    documentUpload: '문서 업로드',
+    content: '본문',
+    savedSuccess: '포스트가 저장되었습니다.',
+    publishedSuccess: '포스트가 발행되었습니다.',
   }
-
-  const t = locale === 'ko' ? text.ko : text.en
 
   // Get HTML content from post
   const getHtmlContent = () => {

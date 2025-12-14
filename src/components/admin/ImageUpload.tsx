@@ -4,7 +4,6 @@ import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { Upload, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useLocale } from '@/lib/i18n'
 import { useToast } from '@/components/ui/toast'
 
 interface ImageUploadProps {
@@ -14,47 +13,37 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadProps) {
-  const { locale } = useLocale()
   const { showToast } = useToast()
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [dragActive, setDragActive] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const text = {
-    ko: {
-      dragOrClick: '이미지를 드래그하거나 클릭하여 업로드',
-      formats: 'JPEG, PNG, GIF, WebP (최대 10MB)',
-      uploading: '업로드 중...',
-      remove: '이미지 제거',
-      change: '이미지 변경',
-    },
-    en: {
-      dragOrClick: 'Drag or click to upload image',
-      formats: 'JPEG, PNG, GIF, WebP (max 10MB)',
-      uploading: 'Uploading...',
-      remove: 'Remove image',
-      change: 'Change image',
-    },
+  const t = {
+    dragOrClick: '이미지를 드래그하거나 클릭하여 업로드',
+    formats: 'JPEG, PNG, GIF, WebP (최대 10MB)',
+    uploading: '업로드 중...',
+    remove: '이미지 제거',
+    change: '이미지 변경',
+    unsupportedType: '지원하지 않는 파일 형식입니다.',
+    fileTooLarge: '파일 크기가 10MB를 초과합니다.',
+    uploadSuccess: '이미지가 업로드되었습니다.',
+    uploadFailed: '업로드에 실패했습니다.',
   }
-
-  const t = locale === 'ko' ? text.ko : text.en
 
   const handleFile = async (file: File) => {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
-      const errorMsg = locale === 'ko' ? '지원하지 않는 파일 형식입니다.' : 'Unsupported file type.'
-      setError(errorMsg)
-      showToast(errorMsg, 'error')
+      setError(t.unsupportedType)
+      showToast(t.unsupportedType, 'error')
       return
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      const errorMsg = locale === 'ko' ? '파일 크기가 10MB를 초과합니다.' : 'File size exceeds 10MB.'
-      setError(errorMsg)
-      showToast(errorMsg, 'error')
+      setError(t.fileTooLarge)
+      showToast(t.fileTooLarge, 'error')
       return
     }
 
@@ -78,12 +67,11 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
       }
 
       onChange(data.url)
-      showToast(locale === 'ko' ? '이미지가 업로드되었습니다.' : 'Image uploaded successfully.', 'success')
+      showToast(t.uploadSuccess, 'success')
     } catch (err) {
       console.error('Upload error:', err)
-      const errorMsg = locale === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.'
-      setError(errorMsg)
-      showToast(errorMsg, 'error')
+      setError(t.uploadFailed)
+      showToast(t.uploadFailed, 'error')
     } finally {
       setIsUploading(false)
     }
