@@ -15,6 +15,7 @@ import {
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { ToastProvider } from '@/components/ui/toast'
 import { useLocale } from '@/lib/i18n'
 
 function SidebarContent() {
@@ -120,6 +121,7 @@ export default function AdminLayout({
   const t = locale === 'ko' ? text.ko : text.en
 
   return (
+    <ToastProvider>
     <div className="min-h-screen bg-background">
       {/* Mobile header */}
       <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b border-border bg-background px-4 lg:hidden">
@@ -162,5 +164,6 @@ export default function AdminLayout({
         </main>
       </div>
     </div>
+    </ToastProvider>
   )
 }

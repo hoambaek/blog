@@ -72,6 +72,7 @@ export const en: Dictionary = {
     social: 'Social',
     brand: 'Brand',
     brandDescription: 'Muse de Marée is a sea-aged champagne brand born from the union of French Champagne tradition and the passage of time in Korean waters.',
+    brandQuote: 'Time remembered by the waves, depth permitted by the abyss\n— The only champagne crafted by Champagne and the Korean sea',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
     aboutJournal: 'About Journal',

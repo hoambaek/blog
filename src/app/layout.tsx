@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Noto_Sans_KR } from "next/font/google";
+import { Playfair_Display, Nanum_Myeongjo, Nanum_Gothic } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 
-// Display font for headings
+// Display font for headings (English)
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
   display: "swap",
 });
 
-// Noto Sans KR for Korean body text (supports 100-900 weights)
-const notoSansKR = Noto_Sans_KR({
-  variable: "--font-noto-sans",
+// Nanum Myeongjo for Korean display/headings - elegant serif
+const nanumMyeongjo = Nanum_Myeongjo({
+  variable: "--font-nanum-myeongjo",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700"],
+  weight: ["400", "700", "800"],
+  display: "swap",
+});
+
+// Nanum Gothic for Korean body text
+const nanumGothic = Nanum_Gothic({
+  variable: "--font-nanum-gothic",
+  subsets: ["latin"],
+  weight: ["400", "700", "800"],
   display: "swap",
 });
 
@@ -55,7 +63,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="ko" suppressHydrationWarning>
         <body
-          className={`${playfair.variable} ${notoSansKR.variable} font-sans antialiased`}
+          className={`${playfair.variable} ${nanumMyeongjo.variable} ${nanumGothic.variable} font-sans antialiased`}
         >
           <WebsiteJsonLd />
           <OrganizationJsonLd />

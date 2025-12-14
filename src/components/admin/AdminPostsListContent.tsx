@@ -5,6 +5,7 @@ import { Plus, Search, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useLocale } from '@/lib/i18n'
+import { useToast } from '@/components/ui/toast'
 import type { PostWithCategory, Category } from '@/lib/supabase/types'
 
 interface AdminPostsListContentProps {
@@ -42,6 +43,7 @@ export function AdminPostsListContent({
   onDelete
 }: AdminPostsListContentProps) {
   const { locale } = useLocale()
+  const { showToast } = useToast()
 
   const text = {
     ko: {
@@ -65,6 +67,9 @@ export function AdminPostsListContent({
       totalPosts: (count: number) => `총 ${count}개의 포스트`,
       prev: '이전',
       next: '다음',
+      deleteSuccess: '포스트가 삭제되었습니다.',
+      deleteError: '삭제 중 오류가 발생했습니다.',
+      confirmDelete: '정말 삭제하시겠습니까?',
     },
     en: {
       posts: 'Posts',
@@ -87,6 +92,9 @@ export function AdminPostsListContent({
       totalPosts: (count: number) => `${count} posts total`,
       prev: 'Previous',
       next: 'Next',
+      deleteSuccess: 'Post deleted successfully.',
+      deleteError: 'An error occurred while deleting.',
+      confirmDelete: 'Are you sure you want to delete?',
     },
   }
 
@@ -96,6 +104,17 @@ export function AdminPostsListContent({
     published: { label: t.published, className: 'bg-green-100 text-green-800' },
     draft: { label: t.draft, className: 'bg-yellow-100 text-yellow-800' },
     scheduled: { label: t.scheduled, className: 'bg-blue-100 text-blue-800' },
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(t.confirmDelete)) return
+
+    try {
+      await onDelete(id)
+      showToast(t.deleteSuccess, 'success')
+    } catch {
+      showToast(t.deleteError, 'error')
+    }
   }
 
   const buildUrl = (newParams: Record<string, string | undefined>) => {
@@ -225,11 +244,14 @@ export function AdminPostsListContent({
                             {t.edit}
                           </Button>
                         </Link>
-                        <form action={() => onDelete(post.id)}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </form>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive"
+                          onClick={() => handleDelete(post.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </td>
                   </tr>

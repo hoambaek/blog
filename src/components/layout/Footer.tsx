@@ -56,7 +56,7 @@ export function Footer() {
             <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-4 sm:mb-6 leading-tight">
               {t.newsletter.title}
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-white/50 mb-8 sm:mb-10 max-w-lg mx-auto font-light leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-white/50 mb-8 sm:mb-10 max-w-none mx-auto font-light leading-relaxed md:whitespace-nowrap">
               {t.newsletter.description}
             </p>
 
@@ -160,8 +160,8 @@ export function Footer() {
                   <h4 className="text-[9px] sm:text-[10px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-rose-gold/80 mb-4 sm:mb-5">
                     {t.footer.brand}
                   </h4>
-                  <blockquote className="text-xs sm:text-sm text-white/40 italic leading-relaxed">
-                    "심연의 시간이 조각한<br />바다의 수공예품"
+                  <blockquote className="text-xs sm:text-sm text-white/40 italic leading-relaxed whitespace-pre-line">
+                    "{t.footer.brandQuote}"
                   </blockquote>
                 </div>
               </div>

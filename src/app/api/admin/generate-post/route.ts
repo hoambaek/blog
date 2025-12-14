@@ -232,6 +232,47 @@ export async function POST(request: NextRequest) {
     // 카테고리별 가이드 추가
     const categoryGuide = CATEGORY_GUIDES[category] || ''
 
+    // 분량에 따른 구조 가이드
+    const getStructureGuide = (wc: number) => {
+      if (wc <= 500) {
+        return `
+## 글 구조 (짧은 글 - 1단락)
+- 소제목(h2, h3) 없이 하나의 단락으로 구성
+- <p> 태그로만 본문 작성
+- 도입-전개-마무리를 한 단락 안에서 자연스럽게 연결
+- 여백을 위해 문장 사이에 적절히 줄바꿈(<br>) 사용 가능`
+      } else if (wc <= 900) {
+        return `
+## 글 구조 (중간 글 - 2~3 섹션)
+- 반드시 2~3개의 섹션으로 나눠서 구성
+- 각 섹션은 소제목(h2 또는 h3)과 본문 1~2개 문단으로 구성
+- 구조 예시:
+  <h2>첫 번째 소제목</h2>
+  <p>첫 번째 섹션 본문...</p>
+  <h2>두 번째 소제목</h2>
+  <p>두 번째 섹션 본문...</p>
+  <h2>세 번째 소제목</h2>
+  <p>세 번째 섹션 본문...</p>
+- 소제목은 시적이고 은유적으로 작성`
+      } else {
+        return `
+## 글 구조 (긴 글 - 4~6 섹션)
+- 반드시 4~6개의 섹션으로 나눠서 구성
+- 각 섹션은 소제목(h2 또는 h3)과 본문 2~3개 문단으로 구성
+- 구조 예시:
+  <h2>첫 번째 소제목</h2>
+  <p>첫 번째 섹션 본문...</p>
+  <p>추가 문단...</p>
+  <h2>두 번째 소제목</h2>
+  <p>두 번째 섹션 본문...</p>
+  ... (4~6개 섹션 반복)
+- 중간에 인용구(blockquote)나 목록(ul, li)을 적절히 활용
+- 소제목은 시적이고 은유적으로 작성`
+      }
+    }
+
+    const structureGuide = getStructureGuide(wordCount)
+
     // 사용자 프롬프트 구성
     const userPrompt = `
 다음 조건에 맞는 블로그 글을 작성해주세요.
@@ -242,6 +283,8 @@ export async function POST(request: NextRequest) {
 ${facts ? `포함할 정보:\n${facts}` : ''}
 분량: 약 ${wordCount}자
 ${specialInstructions ? `특별 지시: ${specialInstructions}` : ''}
+
+${structureGuide}
 
 위 가이드라인에 맞춰 뮤즈드마레 브랜드 톤으로 작성해주세요.
 
@@ -262,6 +305,7 @@ ${specialInstructions ? `특별 지시: ${specialInstructions}` : ''}
 - content는 반드시 HTML 형식으로 작성
 - 모든 텍스트는 뮤즈드마레 브랜드 톤 유지
 - JSON 외의 다른 텍스트를 포함하지 마세요
+- 글 구조 가이드를 반드시 따라주세요 (섹션 수 준수!)
 `
 
     const message = await anthropic.messages.create({
@@ -296,18 +340,40 @@ ${specialInstructions ? `특별 지시: ${specialInstructions}` : ''}
         .replace(/&nbsp;/g, ' ')
     }
 
-    // JSON 블록 추출 (```json ... ``` 또는 순수 JSON)
+    // JSON 블록 추출 (여러 패턴 지원)
     let jsonStr = text
-    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-    if (jsonMatch) {
-      jsonStr = jsonMatch[1].trim()
-    } else if (text.startsWith('{')) {
-      jsonStr = text
+
+    // 1. ```json ... ``` 블록 추출
+    const jsonCodeBlockMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+    if (jsonCodeBlockMatch) {
+      jsonStr = jsonCodeBlockMatch[1].trim()
+    } else {
+      // 2. 텍스트에서 첫 번째 { 부터 마지막 } 까지 추출
+      const firstBrace = text.indexOf('{')
+      const lastBrace = text.lastIndexOf('}')
+      if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        jsonStr = text.substring(firstBrace, lastBrace + 1)
+      }
     }
+
+    // JSON 문자열 정리: 줄바꿈, 제어문자 등 처리
+    jsonStr = jsonStr
+      .replace(/[\x00-\x1F\x7F]/g, (char) => {
+        // 탭, 줄바꿈, 캐리지리턴은 허용
+        if (char === '\n' || char === '\r' || char === '\t') return char
+        return ''
+      })
+      .trim()
 
     let parsed
     try {
       parsed = JSON.parse(jsonStr)
+      console.log('[AI Generate] JSON parsed successfully:', {
+        hasTitle: !!parsed.title,
+        hasSlug: !!parsed.slug,
+        hasContent: !!parsed.content,
+        contentLength: parsed.content?.length || 0,
+      })
       // slug에 한글이 포함된 경우 영어로 변환 (한글 제거)
       if (parsed.slug && /[가-힣]/.test(parsed.slug)) {
         parsed.slug = parsed.slug
@@ -317,23 +383,80 @@ ${specialInstructions ? `특별 지시: ${specialInstructions}` : ''}
           .replace(/^-|-$/g, '')  // 앞뒤 하이픈 제거
           .toLowerCase()
       }
-    } catch {
-      // JSON 파싱 실패 시 기존 방식으로 폴백
-      const titleMatch = text.match(/제목:\s*(.+?)(?:\n|$)/)
-      // slug는 영어만 사용 - 한글은 제거하고 영어/숫자만 유지
-      const rawSlug = topic.toLowerCase()
-        .replace(/[가-힣]+/g, '')  // 한글 제거
-        .replace(/[^a-z0-9\s-]/g, '')  // 영문/숫자/공백/하이픈 외 제거
-        .replace(/\s+/g, '-')  // 공백을 하이픈으로
-        .replace(/-+/g, '-')  // 연속 하이픈 정리
-        .replace(/^-|-$/g, '')  // 앞뒤 하이픈 제거
-      parsed = {
-        title: titleMatch ? titleMatch[1].trim() : topic,
-        slug: rawSlug || `post-${Date.now()}`,  // 빈 경우 타임스탬프 사용
-        excerpt: '',
-        metaTitle: '',
-        metaDescription: '',
-        content: text.replace(/제목:\s*.+?\n/, '').trim(),
+    } catch (parseError) {
+      // 첫 번째 파싱 실패 - 일반적인 JSON 문제 수정 시도
+      console.log('[AI Generate] First JSON parse failed, attempting fixes...')
+
+      try {
+        // JSON 문자열 내의 실제 줄바꿈을 \\n으로 변환
+        // (content 필드 내 HTML에 줄바꿈이 있는 경우)
+        const fixedJsonStr = jsonStr
+          // 문자열 값 내의 줄바꿈을 이스케이프
+          .replace(/"([^"]*)\n([^"]*)"/g, (match, p1, p2) => {
+            return `"${p1}\\n${p2}"`
+          })
+          // 연속 적용 (여러 줄바꿈이 있는 경우)
+          .replace(/"([^"]*)\n([^"]*)"/g, (match, p1, p2) => {
+            return `"${p1}\\n${p2}"`
+          })
+
+        parsed = JSON.parse(fixedJsonStr)
+        console.log('[AI Generate] JSON parsed after fix')
+      } catch {
+        // 두 번째 파싱도 실패 - 폴백으로 필드 추출 시도
+        console.error('[AI Generate] JSON parsing failed completely:', parseError)
+        console.error('[AI Generate] Raw text (first 500 chars):', text.substring(0, 500))
+
+        // 개별 필드 추출 시도 (정규식으로)
+        const titleMatch = jsonStr.match(/"title"\s*:\s*"([^"]+)"/)
+        const slugMatch = jsonStr.match(/"slug"\s*:\s*"([^"]+)"/)
+        const excerptMatch = jsonStr.match(/"excerpt"\s*:\s*"([^"]+)"/)
+        const metaTitleMatch = jsonStr.match(/"metaTitle"\s*:\s*"([^"]+)"/)
+        const metaDescMatch = jsonStr.match(/"metaDescription"\s*:\s*"([^"]+)"/)
+
+        // content 추출 (여러 줄 가능)
+        const contentMatch = jsonStr.match(/"content"\s*:\s*"([\s\S]*?)"\s*(?:,\s*"[a-zA-Z]|\s*})/)
+
+        if (titleMatch && contentMatch) {
+          // 필드 추출 성공
+          const rawSlug = (slugMatch?.[1] || topic)
+            .toLowerCase()
+            .replace(/[가-힣]+/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+
+          parsed = {
+            title: titleMatch[1],
+            slug: rawSlug || `post-${Date.now()}`,
+            excerpt: excerptMatch?.[1] || '',
+            metaTitle: metaTitleMatch?.[1] || '',
+            metaDescription: metaDescMatch?.[1] || '',
+            content: contentMatch[1]
+              .replace(/\\n/g, '\n')
+              .replace(/\\"/g, '"'),
+          }
+          console.log('[AI Generate] Extracted fields via regex')
+        } else {
+          // 최종 폴백 - 텍스트 기반 추출
+          const titleMatch2 = text.match(/제목:\s*(.+?)(?:\n|$)/)
+          const rawSlug = topic.toLowerCase()
+            .replace(/[가-힣]+/g, '')
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '')
+          parsed = {
+            title: titleMatch2 ? titleMatch2[1].trim() : topic,
+            slug: rawSlug || `post-${Date.now()}`,
+            excerpt: '',
+            metaTitle: '',
+            metaDescription: '',
+            content: text.replace(/제목:\s*.+?\n/, '').trim(),
+          }
+          console.log('[AI Generate] Using final fallback extraction')
+        }
       }
     }
 

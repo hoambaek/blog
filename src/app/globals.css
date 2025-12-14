@@ -9,7 +9,7 @@
 
 @theme inline {
   /* Typography */
-  --font-sans: var(--font-noto-sans), -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: var(--font-nanum-gothic), "Nanum Gothic", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
 
   /* Colors */
@@ -145,9 +145,23 @@
 }
 
 @layer components {
-  /* Display Typography (Playfair) */
+  /* Display Typography (Playfair for English) */
   .font-display {
     font-family: var(--font-display);
+  }
+
+  /* Korean Display Typography (Nanum Myeongjo) - Elegant Serif */
+  .font-display-ko {
+    font-family: var(--font-nanum-myeongjo), "Nanum Myeongjo", serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+
+  /* Serif text for mixed English/Korean content */
+  .font-serif-mixed {
+    font-family: var(--font-playfair), var(--font-nanum-myeongjo), "Playfair Display", "Nanum Myeongjo", Georgia, serif;
+    font-weight: 400;
+    font-style: italic;
   }
 
   /* Blockquote - Brand style */
@@ -331,4 +345,62 @@
 
 .animate-fade-in {
   animation: fade-in 0.3s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════════════════
+   Post Content Image Styles
+   ═══════════════════════════════════════════════════ */
+
+/* Post content image styling */
+.post-content img {
+  position: relative;
+  border-radius: 8px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1),
+    0 20px 40px -10px rgba(0, 0, 0, 0.2);
+}
+
+/* Preserve line breaks in post content */
+.post-content p:empty {
+  display: block !important;
+  min-height: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.post-content br,
+.post-content .hard-break {
+  display: block;
+  content: "";
+  margin-top: 1rem;
+}
+
+/* Preserve whitespace in paragraphs */
+.post-content p {
+  white-space: pre-wrap;
+}
+
+/* Add proper spacing after images */
+.post-content p:has(img) {
+  margin-bottom: 2rem;
+}
+
+.post-content p:has(img) + p {
+  margin-top: 2rem;
+}
+
+/* Image figure styling if wrapped */
+.post-content figure {
+  margin: 3rem 0;
+}
+
+.post-content figure img {
+  margin-bottom: 0.75rem;
+}
+
+.post-content figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  font-style: italic;
 }

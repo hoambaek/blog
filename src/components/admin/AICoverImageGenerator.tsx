@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Sparkles, X, Loader2, Wand2, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/toast'
 
 // 카테고리별 커버 이미지 예시 프롬프트
 const COVER_EXAMPLES: Record<string, string[]> = {
@@ -48,6 +49,7 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
   const [isLoading, setIsLoading] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   // Check if there's enough content to analyze
   const hasContent = Boolean(title?.trim() || content?.trim())
@@ -77,12 +79,15 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
 
       if (data.success && data.prompt) {
         setPrompt(data.prompt)
+        showToast('프롬프트가 생성되었습니다.', 'success')
       } else {
         setError(data.error || '프롬프트 생성에 실패했습니다.')
+        showToast(data.error || '프롬프트 생성에 실패했습니다.', 'error')
       }
     } catch (err) {
       console.error('Error analyzing content:', err)
       setError('콘텐츠 분석 중 오류가 발생했습니다.')
+      showToast('콘텐츠 분석 중 오류가 발생했습니다.', 'error')
     } finally {
       setIsAnalyzing(false)
     }
@@ -135,13 +140,16 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
         setIsOpen(false)
         setPrompt('')
         setError(null)
+        showToast('커버 이미지가 생성되었습니다.', 'success')
         console.log(`Cover image optimized: ${uploadData.optimization?.savings}% size reduction`)
       } else {
         setError(uploadData.error || '이미지 업로드에 실패했습니다.')
+        showToast(uploadData.error || '이미지 업로드에 실패했습니다.', 'error')
       }
     } catch (err) {
       console.error('Error generating cover image:', err)
       setError('이미지 생성 중 오류가 발생했습니다.')
+      showToast('이미지 생성 중 오류가 발생했습니다.', 'error')
     } finally {
       setIsLoading(false)
     }

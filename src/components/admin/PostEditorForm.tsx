@@ -13,6 +13,7 @@ import { AIWritingAssistant } from '@/components/admin/AIWritingAssistant'
 import { AICoverImageGenerator } from '@/components/admin/AICoverImageGenerator'
 import { createPost, updatePost } from '@/lib/actions/posts'
 import { useLocale } from '@/lib/i18n'
+import { useToast } from '@/components/ui/toast'
 import type { Category, PostWithCategory } from '@/lib/supabase/types'
 
 interface PostEditorFormProps {
@@ -23,6 +24,7 @@ interface PostEditorFormProps {
 export function PostEditorForm({ categories, post }: PostEditorFormProps) {
   const router = useRouter()
   const { locale } = useLocale()
+  const { showToast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -60,6 +62,8 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       saveError: '저장 중 오류가 발생했습니다.',
       aiWriting: 'AI 글쓰기',
       content: '본문',
+      savedSuccess: '포스트가 저장되었습니다.',
+      publishedSuccess: '포스트가 발행되었습니다.',
     },
     en: {
       editPost: 'Edit Post',
@@ -94,6 +98,8 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       saveError: 'An error occurred while saving.',
       aiWriting: 'AI Writing',
       content: 'Content',
+      savedSuccess: 'Post saved successfully.',
+      publishedSuccess: 'Post published successfully.',
     },
   }
 
@@ -198,13 +204,16 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       }
 
       if (result.success) {
+        showToast(status === 'published' ? t.publishedSuccess : t.savedSuccess, 'success')
         router.push('/admin/posts')
       } else {
         setError(result.error || t.saveError)
+        showToast(result.error || t.saveError, 'error')
       }
     } catch (err) {
       console.error('Error saving post:', err)
       setError(t.saveError)
+      showToast(t.saveError, 'error')
     } finally {
       setIsSaving(false)
     }

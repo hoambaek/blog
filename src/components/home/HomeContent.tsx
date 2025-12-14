@@ -90,8 +90,8 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-8 leading-[1.2] font-normal animate-fade-in-up"
             style={{ animationDelay: '0.6s' }}
           >
-            <span className="block text-white/95">{t.hero.title1}</span>
-            <span className="block mt-4 text-rose-gold italic">
+            <span className="block text-white/95 whitespace-nowrap">{t.hero.title1}</span>
+            <span className="block mt-4 text-rose-gold italic whitespace-nowrap">
               {t.hero.title2}
             </span>
           </h1>

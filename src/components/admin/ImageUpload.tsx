@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Upload, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useLocale } from '@/lib/i18n'
+import { useToast } from '@/components/ui/toast'
 
 interface ImageUploadProps {
   value?: string
@@ -14,6 +15,7 @@ interface ImageUploadProps {
 
 export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadProps) {
   const { locale } = useLocale()
+  const { showToast } = useToast()
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [dragActive, setDragActive] = useState(false)
@@ -42,13 +44,17 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
-      setError(locale === 'ko' ? '지원하지 않는 파일 형식입니다.' : 'Unsupported file type.')
+      const errorMsg = locale === 'ko' ? '지원하지 않는 파일 형식입니다.' : 'Unsupported file type.'
+      setError(errorMsg)
+      showToast(errorMsg, 'error')
       return
     }
 
     // Validate file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError(locale === 'ko' ? '파일 크기가 10MB를 초과합니다.' : 'File size exceeds 10MB.')
+      const errorMsg = locale === 'ko' ? '파일 크기가 10MB를 초과합니다.' : 'File size exceeds 10MB.'
+      setError(errorMsg)
+      showToast(errorMsg, 'error')
       return
     }
 
@@ -72,9 +78,12 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
       }
 
       onChange(data.url)
+      showToast(locale === 'ko' ? '이미지가 업로드되었습니다.' : 'Image uploaded successfully.', 'success')
     } catch (err) {
       console.error('Upload error:', err)
-      setError(locale === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.')
+      const errorMsg = locale === 'ko' ? '업로드에 실패했습니다.' : 'Upload failed.'
+      setError(errorMsg)
+      showToast(errorMsg, 'error')
     } finally {
       setIsUploading(false)
     }

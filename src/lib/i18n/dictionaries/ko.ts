@@ -59,6 +59,7 @@ export interface Dictionary {
     social: string
     brand: string
     brandDescription: string
+    brandQuote: string
     privacy: string
     terms: string
     aboutJournal: string
@@ -193,6 +194,7 @@ export const ko: Dictionary = {
     social: '소셜',
     brand: '브랜드',
     brandDescription: '뮤즈드마레는 프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인 브랜드입니다.',
+    brandQuote: '파도가 기억하는 시간, 심해가 허락한 깊이\n— 샹파뉴와 한국 바다가 빚은 유일한 샴페인',
     privacy: '개인정보처리방침',
     terms: '이용약관',
     aboutJournal: '저널 소개',

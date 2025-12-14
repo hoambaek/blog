@@ -1,11 +1,16 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useLocale, locales, localeFlags, type Locale } from '@/lib/i18n'
+import { useLocale, locales, type Locale } from '@/lib/i18n'
 
 const localeNames: Record<Locale, string> = {
   ko: '한국어',
   en: 'English',
+}
+
+const localeLabels: Record<Locale, string> = {
+  ko: 'KR',
+  en: 'EN',
 }
 
 export function LanguageSelector() {
@@ -33,10 +38,10 @@ export function LanguageSelector() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-center w-9 h-9 text-xl hover:bg-muted transition-colors"
+        className="inline-flex items-center justify-center w-9 h-9 text-[11px] font-medium tracking-wide hover:bg-muted transition-colors leading-none"
         aria-label="Select language"
       >
-        {localeFlags[locale]}
+        {localeLabels[locale]}
       </button>
 
       {isOpen && (
@@ -51,7 +56,7 @@ export function LanguageSelector() {
                   : 'hover:bg-white/10'
               }`}
             >
-              <span className="text-lg">{localeFlags[loc]}</span>
+              <span className="text-[11px] font-medium tracking-wide w-6">{localeLabels[loc]}</span>
               <span className="text-foreground drop-shadow-sm">{localeNames[loc]}</span>
             </button>
           ))}

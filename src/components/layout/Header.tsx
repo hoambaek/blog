@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { Search, Menu, X, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,7 +19,12 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const router = useRouter()
+  const pathname = usePathname()
   const t = useTranslation()
+
+  // Force scrolled style on post detail pages
+  const isPostPage = pathname?.startsWith('/post/')
+  const showScrolledStyle = isScrolled || isPostPage
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,7 +74,7 @@ export function Header() {
     <>
       <header
         className={`fixed top-0 z-50 w-full transition-all duration-500 ${
-          isScrolled
+          showScrolledStyle
             ? 'bg-background/98 backdrop-blur-md shadow-[0_1px_0_0_var(--border),0_1px_3px_0_rgba(0,0,0,0.05)]'
             : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent shadow-none'
         }`}
@@ -83,7 +88,7 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`h-8 px-2 ${!isScrolled ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`h-8 px-2 ${!showScrolledStyle ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">MENU</span>
@@ -193,14 +198,14 @@ export function Header() {
             {/* Center: Logo (always visible on mobile) */}
             <Link href="/" className="absolute left-1/2 -translate-x-1/2">
               <h1 className={`font-display text-base tracking-tight whitespace-nowrap transition-all duration-300 ${
-                isScrolled ? 'text-foreground' : 'text-white'
+                showScrolledStyle ? 'text-foreground' : 'text-white'
               }`}>
                 LE JOURNAL DE MARÉE
               </h1>
             </Link>
 
             {/* Right: Language only on mobile */}
-            <div className={`${!isScrolled ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
+            <div className={`${!showScrolledStyle ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
               <LanguageSelector />
             </div>
           </div>
@@ -209,13 +214,13 @@ export function Header() {
           <div className="hidden lg:block">
             {/* Top Bar - Actions */}
             <div className={`flex h-10 items-center justify-between text-xs border-b transition-all duration-500 ${
-              isScrolled ? 'border-border/50' : 'border-white/10'
+              showScrolledStyle ? 'border-border/50' : 'border-white/10'
             }`}>
               {/* Left: Subscribe */}
               <Link
                 href="/subscribe"
                 className={`inline-flex items-center gap-1.5 tracking-wider transition-colors ${
-                  isScrolled
+                  showScrolledStyle
                     ? 'text-muted-foreground hover:text-foreground'
                     : 'text-white/70 hover:text-white'
                 }`}
@@ -230,13 +235,13 @@ export function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsSearchOpen(true)}
-                  className={`h-8 px-2 ${!isScrolled ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
+                  className={`h-8 px-2 ${!showScrolledStyle ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
                 >
                   <Search className="h-3.5 w-3.5 mr-1" />
                   <span className="text-xs tracking-wide">{t.admin.search}</span>
                 </Button>
 
-                <div className={`${!isScrolled ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
+                <div className={`${!showScrolledStyle ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
                   <LanguageSelector />
                 </div>
               </div>
@@ -246,33 +251,33 @@ export function Header() {
             <div className="flex h-14 items-center justify-center">
               <Link href="/" className="group">
                 <h1 className={`font-display text-2xl tracking-tight whitespace-nowrap transition-all duration-300 ${
-                  isScrolled ? 'text-foreground' : 'text-white'
+                  showScrolledStyle ? 'text-foreground' : 'text-white'
                 }`}>
                   LE JOURNAL DE MARÉE
                 </h1>
                 <div className={`h-px w-0 group-hover:w-full transition-all duration-500 mx-auto ${
-                  isScrolled ? 'bg-rose-gold' : 'bg-white/50'
+                  showScrolledStyle ? 'bg-rose-gold' : 'bg-white/50'
                 }`} />
               </Link>
             </div>
 
             {/* Desktop Navigation - Below Logo */}
             <nav className={`flex items-center justify-center gap-12 pb-4 transition-all duration-300 ${
-              isScrolled ? 'pb-3' : ''
+              showScrolledStyle ? 'pb-3' : ''
             }`}>
               {categories.map((category) => (
                 <Link
                   key={category.slug}
                   href={`/category/${category.slug}`}
                   className={`text-[11px] font-medium tracking-[0.2em] uppercase transition-all duration-300 relative group ${
-                    isScrolled
+                    showScrolledStyle
                       ? 'text-muted-foreground hover:text-foreground'
                       : 'text-white/70 hover:text-white'
                   }`}
                 >
                   {category.name}
                   <span className={`absolute -bottom-1 left-0 w-0 h-px group-hover:w-full transition-all duration-300 ${
-                    isScrolled ? 'bg-rose-gold' : 'bg-white/50'
+                    showScrolledStyle ? 'bg-rose-gold' : 'bg-white/50'
                   }`} />
                 </Link>
               ))}

@@ -7,6 +7,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
+import HardBreak from '@tiptap/extension-hard-break'
 import {
   Bold,
   Italic,
@@ -83,6 +84,13 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
       StarterKit.configure({
         heading: {
           levels: [2, 3],
+        },
+        hardBreak: false, // We'll use our own configuration
+      }),
+      HardBreak.configure({
+        keepMarks: true,
+        HTMLAttributes: {
+          class: 'hard-break',
         },
       }),
       Placeholder.configure({

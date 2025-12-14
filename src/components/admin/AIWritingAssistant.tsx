@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sparkles, X, Loader2 } from 'lucide-react'
+import { useToast } from '@/components/ui/toast'
 
 const CATEGORIES = [
   { value: 'sea-log', label: '바다의 일지' },
@@ -30,6 +31,7 @@ export function AIWritingAssistant({ onGenerated, currentCategory }: AIWritingAs
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { showToast } = useToast()
   const [formData, setFormData] = useState({
     category: currentCategory || 'sea-log',
     topic: '',
@@ -77,6 +79,7 @@ export function AIWritingAssistant({ onGenerated, currentCategory }: AIWritingAs
           content: data.content,
         })
         setIsOpen(false)
+        showToast('AI 글이 생성되었습니다.', 'success')
         // Reset form
         setFormData({
           category: currentCategory || 'sea-log',
@@ -88,10 +91,12 @@ export function AIWritingAssistant({ onGenerated, currentCategory }: AIWritingAs
         })
       } else {
         setError(data.error || '글 생성에 실패했습니다.')
+        showToast(data.error || '글 생성에 실패했습니다.', 'error')
       }
     } catch (err) {
       console.error(err)
       setError('오류가 발생했습니다. 다시 시도해주세요.')
+      showToast('오류가 발생했습니다. 다시 시도해주세요.', 'error')
     } finally {
       setIsLoading(false)
     }
