@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createAdminClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { resend, FROM_EMAIL, isResendConfigured } from '@/lib/resend/client'
 import { render } from '@react-email/render'
 import { WelcomeEmail, getWelcomeEmailSubject } from '@/lib/resend/templates/WelcomeEmail'
@@ -12,9 +12,9 @@ export async function subscribe(
   source?: string,
   locale: 'ko' | 'en' = 'ko'
 ) {
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
 
-  // Check if already subscribed
+  // Check if already subscribed (use admin client to bypass RLS)
   const { data: existing } = await supabase
     .from('subscribers')
     .select('id, status')
