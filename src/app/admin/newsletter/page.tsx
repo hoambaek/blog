@@ -17,7 +17,9 @@ import {
   CheckCircle,
   Clock,
   FileText,
+  Upload,
 } from 'lucide-react'
+import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast'
 
@@ -67,6 +69,150 @@ export default function NewsletterPage() {
     html_content: '',
   })
   const [testEmail, setTestEmail] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // MD 파일 파싱 함수
+  const parseMdFile = (content: string) => {
+    // 제목 추출 (# 뉴스레터 X호: 제목 또는 메타 테이블에서)
+    let subject = ''
+    const titleMatch = content.match(/^#\s+뉴스레터\s+\d+호:\s*(.+)$/m)
+    if (titleMatch) {
+      subject = titleMatch[1].trim()
+    } else {
+      // 메타 테이블에서 제목 추출
+      const metaTitleMatch = content.match(/\|\s*\*\*제목\*\*\s*\|\s*(.+?)\s*\|/m)
+      if (metaTitleMatch) {
+        subject = metaTitleMatch[1].trim()
+      }
+    }
+
+    // 미리보기 텍스트 추출
+    let previewText = ''
+    const previewMatch = content.match(/##\s*미리보기 텍스트.*?\n```\n([\s\S]*?)\n```/m)
+    if (previewMatch) {
+      previewText = previewMatch[1].trim()
+    }
+
+    // 본문 추출 (## 본문 섹션)
+    let body = ''
+    const bodyMatch = content.match(/##\s*본문\s*\n([\s\S]*?)(?=\n##\s*이메일 푸터|$)/m)
+    if (bodyMatch) {
+      body = bodyMatch[1].trim()
+    }
+
+    // 마크다운을 HTML로 변환
+    const htmlContent = convertMdToEmailHtml(body, subject)
+
+    return {
+      subject,
+      preview_text: previewText,
+      html_content: htmlContent,
+    }
+  }
+
+  // 마크다운을 이메일 HTML로 변환
+  const convertMdToEmailHtml = (markdown: string, title: string) => {
+    // 기본 마크다운 변환
+    let html = markdown
+      // 이미지 프롬프트 블록 제거
+      .replace(/```\n\[IMAGE:[\s\S]*?```/gm, '')
+      // 인용문 변환
+      .replace(/^>\s*(.+)$/gm, '<blockquote style="border-left: 3px solid #c9a962; padding-left: 20px; margin: 25px 0; font-style: italic; color: #555;">$1</blockquote>')
+      // H3 변환
+      .replace(/^###\s+(.+)$/gm, '<h3 style="font-family: Georgia, serif; font-size: 20px; font-weight: 500; color: #333; margin: 30px 0 15px; letter-spacing: 0.5px;">$1</h3>')
+      // 볼드 변환
+      .replace(/\*\*(.+?)\*\*/g, '<strong style="color: #333;">$1</strong>')
+      // 수평선 변환
+      .replace(/^---$/gm, '<hr style="border: none; border-top: 1px solid rgba(201, 169, 98, 0.3); margin: 30px 0;">')
+      // <br> 태그 유지
+      .replace(/<br>/g, '<br>')
+      // 빈 줄을 단락으로 분리
+      .split(/\n\n+/)
+      .map(para => {
+        para = para.trim()
+        if (!para) return ''
+        // 이미 HTML 태그로 시작하는 경우 그대로
+        if (para.startsWith('<')) return para
+        // 일반 텍스트는 <p> 태그로 감싸기
+        return `<p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.8; color: #555; margin: 0 0 20px;">${para}</p>`
+      })
+      .join('\n')
+
+    // 이메일 템플릿으로 감싸기
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 40px 20px; font-family: Georgia, 'Times New Roman', serif; background-color: #faf9f7;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto;">
+    <tr>
+      <td style="background-color: #1a1a1a; padding: 50px 40px; text-align: center;">
+        <div style="font-family: Georgia, serif; color: #ffffff; font-size: 28px; font-weight: 300; letter-spacing: 6px; text-transform: uppercase; margin: 0; line-height: 1.2;">Le Journal</div>
+        <div style="font-family: Georgia, serif; color: #c9a962; font-size: 24px; font-weight: 300; letter-spacing: 8px; text-transform: uppercase; margin: 5px 0 0; line-height: 1.4;">de Marée</div>
+        <hr style="width: 60px; height: 1px; background-color: #c9a962; border: none; margin: 25px auto 20px;">
+        <div style="color: rgba(255, 255, 255, 0.6); font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Newsletter</div>
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #ffffff; padding: 50px 45px;">
+        <h1 style="font-family: Georgia, serif; font-size: 28px; font-weight: 400; color: #333; text-align: center; margin: 0 0 10px; letter-spacing: 1px;">${title}</h1>
+        <div style="width: 40px; height: 2px; background-color: #c9a962; margin: 0 auto 35px;"></div>
+        ${html}
+      </td>
+    </tr>
+    <tr>
+      <td style="background-color: #f8f6f3; padding: 25px 40px; text-align: center;">
+        <hr style="width: 100%; height: 1px; background-color: rgba(201, 169, 98, 0.2); border: none; margin: 0 0 20px;">
+        <p style="font-family: Georgia, serif; font-size: 12px; color: #999; margin: 0;">
+          더 이상 이메일을 받고 싶지 않으시면 <a href="{{unsubscribe_url}}" style="color: #c9a962;">여기를 클릭하세요</a>
+        </p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+  }
+
+  // MD 파일 업로드 핸들러
+  const handleMdUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    if (!file.name.endsWith('.md')) {
+      showToast('MD 파일만 업로드 가능합니다.', 'error')
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const content = e.target?.result as string
+      const parsed = parseMdFile(content)
+
+      if (!parsed.subject) {
+        showToast('제목을 찾을 수 없습니다. MD 파일 형식을 확인해주세요.', 'error')
+        return
+      }
+
+      setGeneratedContent({
+        subject: parsed.subject,
+        preview_text: parsed.preview_text,
+        html_content: parsed.html_content,
+      })
+
+      showToast('MD 파일이 적용되었습니다.', 'success')
+    }
+
+    reader.onerror = () => {
+      showToast('파일을 읽는 중 오류가 발생했습니다.', 'error')
+    }
+
+    reader.readAsText(file)
+
+    // 파일 입력 초기화 (같은 파일 다시 업로드 가능하게)
+    event.target.value = ''
+  }
 
   const fetchNewsletters = async () => {
     setLoading(true)
@@ -521,14 +667,31 @@ export default function NewsletterPage() {
                   />
                 </div>
 
-                <Button onClick={handleGenerate} disabled={generating}>
-                  {generating ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-4 w-4 mr-2" />
-                  )}
-                  {generating ? '생성 중...' : 'AI로 생성하기'}
-                </Button>
+                <div className="flex gap-2">
+                  <Button onClick={handleGenerate} disabled={generating}>
+                    {generating ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-4 w-4 mr-2" />
+                    )}
+                    {generating ? '생성 중...' : 'AI로 생성하기'}
+                  </Button>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".md"
+                    onChange={handleMdUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    MD 파일 업로드
+                  </Button>
+                </div>
               </div>
 
               {/* 생성된 콘텐츠 */}
