@@ -117,13 +117,13 @@ export default function NewsletterPage() {
       // 이미지 프롬프트 블록 제거
       .replace(/```\n\[IMAGE:[\s\S]*?```/gm, '')
       // 인용문 변환
-      .replace(/^>\s*(.+)$/gm, '<blockquote style="border-left: 3px solid #c9a962; padding-left: 20px; margin: 25px 0; font-style: italic; color: #555;">$1</blockquote>')
+      .replace(/^>\s*(.+)$/gm, '<blockquote style="border-left: 2px solid #B7916E; padding-left: 20px; margin: 24px 0; font-style: italic; color: #78716C;">$1</blockquote>')
       // H3 변환
-      .replace(/^###\s+(.+)$/gm, '<h3 style="font-family: Georgia, serif; font-size: 20px; font-weight: 500; color: #333; margin: 30px 0 15px; letter-spacing: 0.5px;">$1</h3>')
+      .replace(/^###\s+(.+)$/gm, '<h3 style="font-family: \'Playfair Display\', Georgia, serif; font-size: 18px; font-weight: 500; color: #1C1917; margin: 32px 0 16px; letter-spacing: -0.01em;">$1</h3>')
       // 볼드 변환
-      .replace(/\*\*(.+?)\*\*/g, '<strong style="color: #333;">$1</strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1C1917;">$1</strong>')
       // 수평선 변환
-      .replace(/^---$/gm, '<hr style="border: none; border-top: 1px solid rgba(201, 169, 98, 0.3); margin: 30px 0;">')
+      .replace(/^---$/gm, '<hr style="border: none; border-top: 1px solid #E7E5E4; margin: 32px 0;">')
       // <br> 태그 유지
       .replace(/<br>/g, '<br>')
       // 빈 줄을 단락으로 분리
@@ -134,7 +134,7 @@ export default function NewsletterPage() {
         // 이미 HTML 태그로 시작하는 경우 그대로
         if (para.startsWith('<')) return para
         // 일반 텍스트는 <p> 태그로 감싸기
-        return `<p style="font-family: Georgia, serif; font-size: 16px; line-height: 1.8; color: #555; margin: 0 0 20px;">${para}</p>`
+        return `<p style="font-size: 15px; line-height: 1.8; color: #78716C; margin: 0 0 20px;">${para}</p>`
       })
       .join('\n')
 
@@ -144,30 +144,25 @@ export default function NewsletterPage() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body style="margin: 0; padding: 40px 20px; font-family: Georgia, 'Times New Roman', serif; background-color: #faf9f7;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto;">
+<body style="margin: 0; padding: 0; background-color: #FAFAF9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 520px; margin: 0 auto; background-color: #ffffff;">
     <tr>
-      <td style="background-color: #1a1a1a; padding: 50px 40px; text-align: center;">
-        <div style="font-family: Georgia, serif; color: #ffffff; font-size: 28px; font-weight: 300; letter-spacing: 6px; text-transform: uppercase; margin: 0; line-height: 1.2;">Le Journal</div>
-        <div style="font-family: Georgia, serif; color: #c9a962; font-size: 24px; font-weight: 300; letter-spacing: 8px; text-transform: uppercase; margin: 5px 0 0; line-height: 1.4;">de Marée</div>
-        <hr style="width: 60px; height: 1px; background-color: #c9a962; border: none; margin: 25px auto 20px;">
-        <div style="color: rgba(255, 255, 255, 0.6); font-size: 11px; letter-spacing: 3px; text-transform: uppercase;">Newsletter</div>
+      <td style="background-color: #0a0a0a; padding: 32px 40px; text-align: center;">
+        <div style="font-family: 'Playfair Display', Georgia, serif; color: #ffffff; font-size: 18px; font-weight: 400; letter-spacing: 0.12em; margin: 0;">LE JOURNAL DE MARÉE</div>
       </td>
     </tr>
     <tr>
-      <td style="background-color: #ffffff; padding: 50px 45px;">
-        <h1 style="font-family: Georgia, serif; font-size: 28px; font-weight: 400; color: #333; text-align: center; margin: 0 0 10px; letter-spacing: 1px;">${title}</h1>
-        <div style="width: 40px; height: 2px; background-color: #c9a962; margin: 0 auto 35px;"></div>
+      <td style="background-color: #ffffff; padding: 48px 40px 40px;">
+        <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; font-weight: 400; color: #1C1917; text-align: left; margin: 0 0 12px; letter-spacing: -0.02em;">${title}</h1>
+        <div style="width: 32px; height: 2px; background-color: #B7916E; margin: 0 0 32px;"></div>
         ${html}
       </td>
     </tr>
     <tr>
-      <td style="background-color: #f8f6f3; padding: 25px 40px; text-align: center;">
-        <hr style="width: 100%; height: 1px; background-color: rgba(201, 169, 98, 0.2); border: none; margin: 0 0 20px;">
-        <p style="font-family: Georgia, serif; font-size: 12px; color: #999; margin: 0;">
-          더 이상 이메일을 받고 싶지 않으시면 <a href="{{unsubscribe_url}}" style="color: #c9a962;">여기를 클릭하세요</a>
-        </p>
+      <td style="background-color: #FAFAF9; padding: 24px 40px; text-align: center; border-top: 1px solid #E7E5E4;">
+        <a href="{{unsubscribe_url}}" style="font-size: 11px; color: #78716C; text-decoration: none; letter-spacing: 0.05em;">수신거부</a>
       </td>
     </tr>
   </table>
