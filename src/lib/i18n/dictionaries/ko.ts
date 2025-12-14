@@ -178,7 +178,7 @@ export const ko: Dictionary = {
     subscribe: '구독하기',
     loading: '처리 중...',
     processing: '처리 중...',
-    success: '구독해 주셔서 감사합니다!',
+    success: '구독해 주셔서 감사합니다! 이메일을 확인해 주세요.',
     error: '오류가 발생했습니다.',
     errorRetry: '오류가 발생했습니다. 다시 시도해 주세요.',
     alreadySubscribed: '이미 구독 중인 이메일입니다.',

@@ -151,11 +151,8 @@ export async function POST(request: NextRequest) {
     let mimeType: string = 'image/png'
 
     for (const part of parts) {
-      // @ts-expect-error - inlineData type might not be fully typed
       if (part.inlineData) {
-        // @ts-expect-error - inlineData type might not be fully typed
         base64Data = part.inlineData.data
-        // @ts-expect-error - inlineData type might not be fully typed
         mimeType = part.inlineData.mimeType || 'image/png'
         break
       }

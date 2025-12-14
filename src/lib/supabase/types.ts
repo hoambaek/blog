@@ -87,6 +87,69 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletters: {
+        Row: {
+          id: string
+          subject: string
+          preview_text: string | null
+          html_content: string
+          plain_text_content: string | null
+          status: 'draft' | 'scheduled' | 'sent' | 'failed'
+          scheduled_at: string | null
+          sent_at: string | null
+          total_recipients: number
+          delivered_count: number
+          opened_count: number
+          clicked_count: number
+          bounced_count: number
+          unsubscribed_count: number
+          resend_batch_id: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          subject: string
+          preview_text?: string | null
+          html_content: string
+          plain_text_content?: string | null
+          status?: 'draft' | 'scheduled' | 'sent' | 'failed'
+          scheduled_at?: string | null
+          sent_at?: string | null
+          total_recipients?: number
+          delivered_count?: number
+          opened_count?: number
+          clicked_count?: number
+          bounced_count?: number
+          unsubscribed_count?: number
+          resend_batch_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          subject?: string
+          preview_text?: string | null
+          html_content?: string
+          plain_text_content?: string | null
+          status?: 'draft' | 'scheduled' | 'sent' | 'failed'
+          scheduled_at?: string | null
+          sent_at?: string | null
+          total_recipients?: number
+          delivered_count?: number
+          opened_count?: number
+          clicked_count?: number
+          bounced_count?: number
+          unsubscribed_count?: number
+          resend_batch_id?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_tags: {
         Row: {
           post_id: string
@@ -284,6 +347,7 @@ export type Category = Tables<'categories'>
 export type Tag = Tables<'tags'>
 export type Media = Tables<'media'>
 export type Subscriber = Tables<'subscribers'>
+export type Newsletter = Tables<'newsletters'>
 
 // Extended types with relations
 export type PostWithCategory = Post & {

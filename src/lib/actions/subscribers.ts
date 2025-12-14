@@ -24,13 +24,13 @@ export async function subscribe(
     ko: {
       alreadySubscribed: '이미 구독 중인 이메일입니다.',
       resubscribed: '다시 구독되었습니다!',
-      subscribed: '구독해 주셔서 감사합니다!',
+      subscribed: '구독해 주셔서 감사합니다! 이메일을 확인해 주세요.',
       error: '구독 처리 중 오류가 발생했습니다.',
     },
     en: {
       alreadySubscribed: 'This email is already subscribed.',
       resubscribed: 'You have been resubscribed!',
-      subscribed: 'Thank you for subscribing!',
+      subscribed: 'Thank you for subscribing! Please check your email.',
       error: 'An error occurred while processing your subscription.',
     },
   }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Users, Mail, UserMinus, Download, Search, RefreshCw } from 'lucide-react'
+import { Users, Mail, UserPlus, Download, Search, RefreshCw, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast'
 
@@ -27,6 +27,7 @@ export default function SubscribersPage() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'active' | 'unsubscribed'>('all')
   const [searchTerm, setSearchTerm] = useState('')
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const { showToast } = useToast()
 
   const fetchSubscribers = async () => {
@@ -51,6 +52,31 @@ export default function SubscribersPage() {
   useEffect(() => {
     fetchSubscribers()
   }, [filter])
+
+  const handleDelete = async (id: string, email: string) => {
+    if (!confirm(`정말 "${email}" 구독자를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) {
+      return
+    }
+
+    setDeletingId(id)
+    try {
+      const res = await fetch(`/api/admin/subscribers/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        throw new Error('Delete failed')
+      }
+
+      showToast('구독자가 삭제되었습니다.', 'success')
+      fetchSubscribers()
+    } catch (error) {
+      console.error('Error deleting subscriber:', error)
+      showToast('구독자 삭제에 실패했습니다.', 'error')
+    } finally {
+      setDeletingId(null)
+    }
+  }
 
   const handleExportCSV = () => {
     const csvContent = [
@@ -134,7 +160,7 @@ export default function SubscribersPage() {
         <div className="bg-card border border-border p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-muted rounded">
-              <UserMinus className="h-5 w-5 text-rose-500" />
+              <UserPlus className="h-5 w-5 text-blue-500" />
             </div>
             <div>
               <p className="text-2xl font-semibold">{stats.thisMonth}</p>
@@ -194,18 +220,21 @@ export default function SubscribersPage() {
                 <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider px-4 py-3">
                   출처
                 </th>
+                <th className="text-right text-xs font-medium text-muted-foreground uppercase tracking-wider px-4 py-3">
+                  관리
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                     불러오는 중...
                   </td>
                 </tr>
               ) : filteredSubscribers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                     구독자가 없습니다
                   </td>
                 </tr>
@@ -232,6 +261,16 @@ export default function SubscribersPage() {
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground">
                       {subscriber.source || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => handleDelete(subscriber.id, subscriber.email)}
+                        disabled={deletingId === subscriber.id}
+                        className="p-1.5 text-muted-foreground hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-50"
+                        title="구독자 삭제"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))
