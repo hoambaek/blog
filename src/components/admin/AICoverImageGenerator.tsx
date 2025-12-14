@@ -103,7 +103,7 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
     setError(null)
 
     try {
-      // Step 1: Generate image with AI
+      // Generate image with AI - 이미 R2에 업로드됨
       const generateResponse = await fetch('/api/admin/generate-image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -116,36 +116,18 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
 
       const generateData = await generateResponse.json()
 
-      if (!generateData.success || !generateData.image?.base64) {
+      if (!generateData.success || !generateData.imageUrl) {
         setError(generateData.error || '이미지 생성에 실패했습니다.')
+        showToast(generateData.error || '이미지 생성에 실패했습니다.', 'error')
         return
       }
 
-      // Step 2: Upload to R2 with optimization
-      const uploadResponse = await fetch('/api/upload-base64', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          base64: generateData.image.base64,
-          folder: 'covers',
-          type: 'cover',
-          filename: `ai-cover-${Date.now()}`,
-        }),
-      })
-
-      const uploadData = await uploadResponse.json()
-
-      if (uploadData.success && uploadData.url) {
-        onImageGenerated(uploadData.url)
-        setIsOpen(false)
-        setPrompt('')
-        setError(null)
-        showToast('커버 이미지가 생성되었습니다.', 'success')
-        console.log(`Cover image optimized: ${uploadData.optimization?.savings}% size reduction`)
-      } else {
-        setError(uploadData.error || '이미지 업로드에 실패했습니다.')
-        showToast(uploadData.error || '이미지 업로드에 실패했습니다.', 'error')
-      }
+      // 이미 R2에 업로드된 URL 사용
+      onImageGenerated(generateData.imageUrl)
+      setIsOpen(false)
+      setPrompt('')
+      setError(null)
+      showToast('커버 이미지가 생성되었습니다.', 'success')
     } catch (err) {
       console.error('Error generating cover image:', err)
       setError('이미지 생성 중 오류가 발생했습니다.')

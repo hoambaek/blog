@@ -178,10 +178,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       imageUrl,
-      image: {
-        base64: base64Data,
-        mimeType,
-      },
       prompt: enhancedPrompt,
     })
   } catch (error) {
