@@ -6,7 +6,7 @@ export const resend = process.env.RESEND_API_KEY
   : null
 
 // Default sender email - update this to your verified domain
-export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Le Journal <newsletter@musedemaree.com>'
+export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Le Journal <info@musedemaree.com>'
 
 // Check if Resend is configured
 export function isResendConfigured(): boolean {
