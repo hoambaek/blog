@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai'
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
+import { uploadToR2, generateUniqueFilename } from '@/lib/r2/client'
 
 // 공통 스타일 프리픽스
 const COMMON_STYLE_PREFIX = `Editorial photography style, soft natural lighting,
@@ -135,11 +136,27 @@ export async function POST(request: NextRequest) {
 
     const image = response.generatedImages[0]
 
-    // Base64 이미지 데이터 반환
+    // Base64 이미지 데이터를 Buffer로 변환
+    const base64Data = image.image?.imageBytes
+    if (!base64Data) {
+      return NextResponse.json(
+        { error: 'No image data in response' },
+        { status: 500 }
+      )
+    }
+
+    // Buffer로 변환하여 R2에 업로드
+    const buffer = Buffer.from(base64Data, 'base64')
+    const filename = generateUniqueFilename('ai-generated.png')
+    const key = `posts/${filename}`
+
+    const imageUrl = await uploadToR2(buffer, key, 'image/png')
+
     return NextResponse.json({
       success: true,
+      imageUrl,
       image: {
-        base64: image.image?.imageBytes,
+        base64: base64Data,
         mimeType: 'image/png',
       },
       prompt: enhancedPrompt,

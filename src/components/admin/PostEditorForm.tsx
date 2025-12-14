@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { TiptapEditor } from '@/components/admin/TiptapEditor'
 import { ImageUpload } from '@/components/admin/ImageUpload'
-import { AIWritingAssistant } from '@/components/admin/AIWritingAssistant'
+import { DocumentUpload } from '@/components/admin/DocumentUpload'
 import { AICoverImageGenerator } from '@/components/admin/AICoverImageGenerator'
 import { createPost, updatePost } from '@/lib/actions/posts'
 import { useLocale } from '@/lib/i18n'
@@ -60,7 +60,7 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       titleRequired: '제목을 입력해주세요.',
       slugRequired: '슬러그를 입력해주세요.',
       saveError: '저장 중 오류가 발생했습니다.',
-      aiWriting: 'AI 글쓰기',
+      documentUpload: '문서 업로드',
       content: '본문',
       savedSuccess: '포스트가 저장되었습니다.',
       publishedSuccess: '포스트가 발행되었습니다.',
@@ -96,7 +96,7 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       titleRequired: 'Please enter a title.',
       slugRequired: 'Please enter a slug.',
       saveError: 'An error occurred while saving.',
-      aiWriting: 'AI Writing',
+      documentUpload: 'Upload Document',
       content: 'Content',
       savedSuccess: 'Post saved successfully.',
       publishedSuccess: 'Post published successfully.',
@@ -140,14 +140,18 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     }))
   }
 
-  const handleAIGenerated = (post: {
+  const handleDocumentParsed = (post: {
     title: string
     slug: string
     excerpt: string
     metaTitle: string
     metaDescription: string
+    category: string
     content: string
   }) => {
+    // Find category ID from slug
+    const matchedCategory = categories.find(c => c.slug === post.category)
+
     setFormData((prev) => ({
       ...prev,
       title: post.title || prev.title,
@@ -159,6 +163,7 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       excerpt: post.excerpt || prev.excerpt,
       metaTitle: post.metaTitle || prev.metaTitle,
       metaDescription: post.metaDescription || prev.metaDescription,
+      categoryId: matchedCategory?.id || prev.categoryId,
       content: post.content,
     }))
   }
@@ -281,11 +286,11 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
             />
           </div>
 
-          {/* AI Writing Assistant */}
+          {/* Document Upload */}
           <div className="flex items-center justify-between">
             <Label className="text-sm font-medium">{t.content}</Label>
-            <AIWritingAssistant
-              onGenerated={handleAIGenerated}
+            <DocumentUpload
+              onParsed={handleDocumentParsed}
               currentCategory={getCurrentCategorySlug()}
             />
           </div>
