@@ -111,6 +111,7 @@ export function AICoverImageGenerator({ onImageGenerated, currentCategory = 'sea
           prompt,
           category,
           aspectRatio,
+          imageType: 'cover',  // 4K 해상도
         }),
       })
 

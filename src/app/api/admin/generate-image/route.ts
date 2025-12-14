@@ -79,6 +79,7 @@ interface GenerateImageRequest {
   category?: string
   aspectRatio?: '1:1' | '3:4' | '4:3' | '9:16' | '16:9'
   additionalDetails?: string
+  imageType?: 'cover' | 'content'  // cover: 4K, content: 1K
 }
 
 export async function POST(request: NextRequest) {
@@ -98,7 +99,10 @@ export async function POST(request: NextRequest) {
 
   try {
     const requestBody: GenerateImageRequest = await request.json()
-    const { prompt, category = 'sea-log', aspectRatio = '16:9', additionalDetails } = requestBody
+    const { prompt, category = 'sea-log', aspectRatio = '16:9', additionalDetails, imageType = 'content' } = requestBody
+
+    // 이미지 타입에 따른 해상도 설정: cover(4K), content(1K)
+    const imageSize = imageType === 'cover' ? '4K' : '1K'
 
     if (!prompt) {
       return NextResponse.json(
@@ -122,7 +126,7 @@ export async function POST(request: NextRequest) {
       config: {
         imageConfig: {
           aspectRatio: aspectRatio,
-          imageSize: '4K',
+          imageSize: imageSize,
         },
       },
     })

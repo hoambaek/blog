@@ -336,6 +336,7 @@ export function DocumentUpload({ onParsed, currentCategory, categories = [] }: D
             body: JSON.stringify({
               prompt: prompt,
               category: parsedContent.category,
+              imageType: 'content',  // 1K 해상도 (본문용)
             }),
           })
 
