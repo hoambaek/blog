@@ -138,8 +138,8 @@ export const ko: Dictionary = {
   // Hero Section
   hero: {
     subtitle: 'Le Journal de Marée',
-    title1: '심연의 시간이 조각한',
-    title2: '바다의 수공예품',
+    title1: '바다의 시간',
+    title2: 'Le temps de la mer',
     description: '프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인, 뮤즈드마레의 이야기',
     cta: '최신 포스트 읽기',
     imageAlt: '바다',

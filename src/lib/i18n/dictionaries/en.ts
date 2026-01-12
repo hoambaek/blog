@@ -16,8 +16,8 @@ export const en: Dictionary = {
   // Hero Section
   hero: {
     subtitle: 'Le Journal de Marée',
-    title1: 'Crafted by the Depths',
-    title2: 'of Time and Sea',
+    title1: 'Time of the Sea',
+    title2: 'Le temps de la mer',
     description: 'The story of Muse de Marée, where French Champagne tradition meets the passage of time in Korean waters.',
     cta: 'Read Latest Post',
     imageAlt: 'Sea',
