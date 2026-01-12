@@ -37,6 +37,15 @@ export const metadata: Metadata = {
   description: "심연의 시간이 조각한 바다의 수공예품. 해저숙성 샴페인 뮤즈드마레의 이야기를 담은 저널입니다.",
   keywords: ["뮤즈드마레", "해저숙성", "샴페인", "럭셔리", "와인", "Muse de Marée"],
   authors: [{ name: "Muse de Marée" }],
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+    ],
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon-32x32.png',
+  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
