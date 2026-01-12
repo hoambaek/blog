@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Nanum_Myeongjo, Nanum_Gothic } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
 import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
@@ -70,6 +71,7 @@ export default function RootLayout({
           <I18nProvider>
             {children}
           </I18nProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>

@@ -77,14 +77,6 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             <div className="w-20 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/60" />
           </div>
 
-          {/* Tagline */}
-          <p
-            className="uppercase text-[11px] md:text-xs tracking-[0.5em] text-white/50 mb-10 font-light animate-fade-in-up"
-            style={{ animationDelay: '0.4s' }}
-          >
-            Le Journal de Marée
-          </p>
-
           {/* Main Title */}
           <h1
             className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-8 leading-[1.2] font-normal animate-fade-in-up"
