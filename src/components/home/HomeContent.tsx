@@ -90,7 +90,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
 
           {/* Description */}
           <p
-            className="text-base md:text-lg text-white/50 max-w-xl mx-auto mb-14 font-light leading-relaxed animate-fade-in-up"
+            className="text-base md:text-lg text-white/50 max-w-xl mx-auto mt-6 mb-14 font-extralight leading-relaxed animate-fade-in-up"
             style={{ animationDelay: '0.8s' }}
           >
             {locale === 'ko' ? (
