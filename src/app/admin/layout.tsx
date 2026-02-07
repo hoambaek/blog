@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { UserButton } from '@clerk/nextjs'
+import { ClerkProvider, UserButton } from '@clerk/nextjs'
 import {
   LayoutDashboard,
   FileText,
@@ -121,6 +121,7 @@ export default function AdminLayout({
   const t = locale === 'ko' ? text.ko : text.en
 
   return (
+    <ClerkProvider>
     <ToastProvider>
     <div className="min-h-screen bg-background">
       {/* Mobile header */}
@@ -165,5 +166,6 @@ export default function AdminLayout({
       </div>
     </div>
     </ToastProvider>
+    </ClerkProvider>
   )
 }

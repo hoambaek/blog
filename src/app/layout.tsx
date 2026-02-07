@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Nanum_Myeongjo, Nanum_Gothic } from "next/font/google";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Analytics } from "@vercel/analytics/next";
 import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
@@ -19,6 +18,7 @@ const nanumMyeongjo = Nanum_Myeongjo({
   subsets: ["latin"],
   weight: ["400", "700", "800"],
   display: "swap",
+  preload: false,
 });
 
 // Nanum Gothic for Korean body text
@@ -27,6 +27,7 @@ const nanumGothic = Nanum_Gothic({
   subsets: ["latin"],
   weight: ["400", "700", "800"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -70,19 +71,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="ko" suppressHydrationWarning>
-        <body
-          className={`${playfair.variable} ${nanumMyeongjo.variable} ${nanumGothic.variable} font-sans antialiased`}
-        >
-          <WebsiteJsonLd />
-          <OrganizationJsonLd />
-          <I18nProvider>
-            {children}
-          </I18nProvider>
-          <Analytics />
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev" />
+        <link rel="dns-prefetch" href="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev" />
+      </head>
+      <body
+        className={`${playfair.variable} ${nanumMyeongjo.variable} ${nanumGothic.variable} font-sans antialiased`}
+      >
+        <WebsiteJsonLd />
+        <OrganizationJsonLd />
+        <I18nProvider>
+          {children}
+        </I18nProvider>
+        <Analytics />
+      </body>
+    </html>
   );
 }

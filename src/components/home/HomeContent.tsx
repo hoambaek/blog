@@ -50,6 +50,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             src="/bg.png"
             alt={t.hero.imageAlt}
             fill
+            sizes="100vw"
             className="object-cover scale-105"
             priority
             quality={90}

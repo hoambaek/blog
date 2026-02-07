@@ -1,6 +1,8 @@
 import { getFeaturedPosts, getLatestPosts } from '@/lib/actions/posts'
 import { HomeContent } from '@/components/home/HomeContent'
 
+export const revalidate = 60
+
 export default async function HomePage() {
   const featuredPosts = await getFeaturedPosts(3)
   const latestPosts = await getLatestPosts(4)

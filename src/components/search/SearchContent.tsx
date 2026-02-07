@@ -98,6 +98,7 @@ export function SearchContent({
             src="/bg.png"
             alt="Muse de Marée"
             fill
+            sizes="100vw"
             className="object-cover scale-105"
             priority
           />

@@ -3,6 +3,8 @@ import { getCategoryBySlug } from '@/lib/actions/categories'
 import { getPostsByCategory, getAllPublishedPosts } from '@/lib/actions/posts'
 import { CategoryContent } from '@/components/category/CategoryContent'
 
+export const revalidate = 60
+
 interface PageProps {
   params: Promise<{ slug: string }>
   searchParams: Promise<{ page?: string }>
