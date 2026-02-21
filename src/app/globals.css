@@ -9,7 +9,7 @@
 
 @theme inline {
   /* Typography */
-  --font-sans: var(--font-nanum-gothic), "Nanum Gothic", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
 
   /* Colors */

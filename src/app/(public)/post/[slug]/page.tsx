@@ -3,7 +3,7 @@ import { getPostBySlug, getRelatedPosts, getAdjacentPosts, incrementViewCount } 
 import { PostContent } from '@/components/post/PostContent'
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd'
 
-export const revalidate = 60
+export const revalidate = 3600
 
 export default async function PostPage({
   params,

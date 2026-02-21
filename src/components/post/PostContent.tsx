@@ -125,7 +125,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
             prose-headings:font-display prose-headings:font-normal prose-headings:tracking-tight
             prose-h2:text-xl prose-h2:sm:text-2xl prose-h2:md:text-3xl prose-h2:mt-10 prose-h2:sm:mt-14 prose-h2:md:mt-16 prose-h2:mb-5 prose-h2:sm:mb-6 prose-h2:md:mb-8 prose-h2:text-center
             prose-h3:text-lg prose-h3:sm:text-xl prose-h3:md:text-2xl prose-h3:mt-8 prose-h3:sm:mt-10 prose-h3:md:mt-12 prose-h3:mb-4 prose-h3:sm:mb-5 prose-h3:md:mb-6
-            prose-p:text-[15px] prose-p:sm:text-base prose-p:md:text-lg prose-p:leading-[1.85] prose-p:sm:leading-[1.9] prose-p:mb-5 prose-p:sm:mb-6 prose-p:md:mb-8 prose-p:text-muted-foreground prose-p:text-justify prose-p:md:text-left
+            prose-p:text-[15px] prose-p:sm:text-base prose-p:md:text-lg prose-p:leading-[1.85] prose-p:sm:leading-[1.9] prose-p:mb-5 prose-p:sm:mb-6 prose-p:md:mb-8 prose-p:text-muted-foreground prose-p:text-justify
             prose-p:empty:mb-3 prose-p:empty:h-3 prose-p:empty:sm:mb-4 prose-p:empty:sm:h-4
             prose-blockquote:border-l-0 prose-blockquote:border-y prose-blockquote:border-rose-gold/30
             prose-blockquote:px-4 prose-blockquote:sm:px-6 prose-blockquote:md:px-8 prose-blockquote:py-5 prose-blockquote:sm:py-6 prose-blockquote:md:py-8 prose-blockquote:my-8 prose-blockquote:sm:my-10 prose-blockquote:md:my-12

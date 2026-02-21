@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Nanum_Myeongjo, Nanum_Gothic } from "next/font/google";
+import { Playfair_Display, Nanum_Myeongjo } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
@@ -15,15 +15,6 @@ const playfair = Playfair_Display({
 // Nanum Myeongjo for Korean display/headings - elegant serif
 const nanumMyeongjo = Nanum_Myeongjo({
   variable: "--font-nanum-myeongjo",
-  subsets: ["latin"],
-  weight: ["400", "700", "800"],
-  display: "swap",
-  preload: false,
-});
-
-// Nanum Gothic for Korean body text
-const nanumGothic = Nanum_Gothic({
-  variable: "--font-nanum-gothic",
   subsets: ["latin"],
   weight: ["400", "700", "800"],
   display: "swap",
@@ -75,9 +66,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev" />
         <link rel="dns-prefetch" href="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
       </head>
       <body
-        className={`${playfair.variable} ${nanumMyeongjo.variable} ${nanumGothic.variable} font-sans antialiased`}
+        className={`${playfair.variable} ${nanumMyeongjo.variable} font-sans antialiased`}
       >
         <WebsiteJsonLd />
         <OrganizationJsonLd />

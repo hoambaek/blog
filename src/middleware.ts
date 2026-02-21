@@ -1,36 +1,24 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { clerkMiddleware } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-// Public routes that don't require authentication
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/post/(.*)',
-  '/category/(.*)',
-  '/about',
-  '/subscribe',
-  '/search',
-  '/privacy',
-  '/terms',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/subscribe',
-  '/api/posts(.*)',
-  '/api/categories(.*)',
-  '/api/search(.*)',
-])
+function isAdminPath(pathname: string) {
+  return pathname.startsWith('/admin') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')
+}
 
-// Admin routes that require authentication
-const isAdminRoute = createRouteMatcher(['/admin(.*)'])
-
-export default clerkMiddleware(async (auth, request) => {
-  // Protect admin routes
-  if (isAdminRoute(request)) {
+export default clerkMiddleware(async (auth, request: NextRequest) => {
+  // Clerk only processes admin-related routes
+  if (isAdminPath(request.nextUrl.pathname)) {
     await auth.protect()
   }
+  return NextResponse.next()
 })
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
+    // Only run middleware on admin and auth routes
+    '/admin(.*)',
+    '/sign-in(.*)',
+    '/sign-up(.*)',
   ],
 }
