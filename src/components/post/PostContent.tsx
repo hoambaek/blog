@@ -9,8 +9,11 @@ interface Post {
   id: string
   slug: string
   title: string
+  title_en: string | null
   excerpt: string | null
+  excerpt_en: string | null
   content: unknown
+  content_en: unknown
   cover_image_url: string | null
   published_at: string | null
   reading_time_minutes: number | null
@@ -23,6 +26,7 @@ interface Post {
 interface AdjacentPost {
   slug: string
   title: string
+  title_en: string | null
 }
 
 interface PostContentProps {
@@ -46,8 +50,13 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
   const t = useTranslation()
   const { locale } = useLocale()
 
-  const htmlContent = typeof post.content === 'object' && post.content !== null
-    ? (post.content as { html?: string }).html || ''
+  const isEn = locale === 'en'
+  const displayTitle = isEn ? (post.title_en || post.title) : post.title
+  const displayExcerpt = isEn ? (post.excerpt_en || post.excerpt) : post.excerpt
+
+  const rawContent = isEn && post.content_en ? post.content_en : post.content
+  const htmlContent = typeof rawContent === 'object' && rawContent !== null
+    ? (rawContent as { html?: string }).html || ''
     : ''
 
   // Get translated category name based on slug
@@ -108,7 +117,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
           </div>
 
           <h1 className="font-display-ko text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-6 sm:mb-8 text-balance leading-[1.3] sm:leading-tight px-2">
-            {post.title}
+            {displayTitle}
           </h1>
 
           {/* Bottom divider */}
@@ -179,7 +188,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
                         {getCategoryName(relatedPost.category?.slug)}
                       </p>
                       <h3 className="font-display text-sm sm:text-base md:text-lg leading-snug group-hover:text-muted-foreground transition-colors line-clamp-2">
-                        {relatedPost.title}
+                        {isEn ? (relatedPost.title_en || relatedPost.title) : relatedPost.title}
                       </h3>
                     </div>
                   </article>
@@ -209,7 +218,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
                       {t.post.prevPost}
                     </p>
                     <p className="font-display text-sm sm:text-base md:text-lg truncate group-hover:text-muted-foreground transition-colors">
-                      {prev.title}
+                      {isEn ? (prev.title_en || prev.title) : prev.title}
                     </p>
                   </div>
                 </Link>
@@ -226,7 +235,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
                       {t.post.nextPost}
                     </p>
                     <p className="font-display text-sm sm:text-base md:text-lg truncate group-hover:text-muted-foreground transition-colors">
-                      {next.title}
+                      {isEn ? (next.title_en || next.title) : next.title}
                     </p>
                   </div>
                   <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-border flex items-center justify-center group-hover:border-foreground/30 transition-colors">

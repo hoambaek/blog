@@ -9,7 +9,9 @@ interface Post {
   id: string
   slug: string
   title: string
+  title_en: string | null
   excerpt: string | null
+  excerpt_en: string | null
   cover_image_url: string | null
   published_at: string | null
   category: {
@@ -36,6 +38,10 @@ function formatDate(dateString: string | null, locale: string) {
 export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
   const t = useTranslation()
   const { locale } = useLocale()
+
+  const isEn = locale === 'en'
+  const postTitle = (p: Post) => isEn ? (p.title_en || p.title) : p.title
+  const postExcerpt = (p: Post) => isEn ? (p.excerpt_en || p.excerpt) : p.excerpt
 
   const mainFeatured = featuredPosts[0]
   const secondaryFeatured = featuredPosts.slice(1, 3)
@@ -191,11 +197,11 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                         </span>
                       </div>
                       <h3 className="font-display text-2xl md:text-3xl lg:text-4xl text-white mb-3 transition-colors">
-                        {mainFeatured.title}
+                        {postTitle(mainFeatured)}
                       </h3>
-                      {mainFeatured.excerpt && (
+                      {postExcerpt(mainFeatured) && (
                         <p className="text-sm text-white/60 line-clamp-2 max-w-lg">
-                          {mainFeatured.excerpt}
+                          {postExcerpt(mainFeatured)}
                         </p>
                       )}
                     </div>
@@ -227,7 +233,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                           </span>
                         </div>
                         <h3 className="font-display text-xl md:text-2xl mb-3 group-hover:text-muted-foreground transition-colors line-clamp-2">
-                          {post.title}
+                          {postTitle(post)}
                         </h3>
                         <p className="text-xs text-muted-foreground">
                           {formatDate(post.published_at, locale)}
@@ -286,11 +292,11 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                         </span>
                       </div>
                       <h3 className="font-display text-lg md:text-xl leading-snug group-hover:text-muted-foreground transition-colors line-clamp-2">
-                        {post.title}
+                        {postTitle(post)}
                       </h3>
-                      {post.excerpt && (
+                      {postExcerpt(post) && (
                         <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                          {post.excerpt}
+                          {postExcerpt(post)}
                         </p>
                       )}
                     </div>

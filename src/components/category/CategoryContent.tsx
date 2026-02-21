@@ -8,7 +8,9 @@ interface Post {
   id: string
   slug: string
   title: string
+  title_en: string | null
   excerpt: string | null
+  excerpt_en: string | null
   cover_image_url: string | null
   published_at: string | null
   category: {
@@ -58,6 +60,10 @@ export function CategoryContent({
   const displayName = slug === 'all'
     ? t.post.allPosts
     : category.name
+
+  const isEn = locale === 'en'
+  const postTitle = (p: Post) => isEn ? (p.title_en || p.title) : p.title
+  const postExcerpt = (p: Post) => isEn ? (p.excerpt_en || p.excerpt) : p.excerpt
 
   const displayDescription = slug === 'all'
     ? (locale === 'ko' ? '뮤즈드마레의 모든 이야기를 만나보세요.' : 'Discover all stories from Muse de Marée.')
@@ -152,11 +158,11 @@ export function CategoryContent({
                   </div>
                   <p className="label-text mb-2">{post.category?.name}</p>
                   <h2 className="font-display text-xl mb-2 group-hover:text-muted-foreground transition-colors">
-                    {post.title}
+                    {postTitle(post)}
                   </h2>
-                  {post.excerpt && (
+                  {postExcerpt(post) && (
                     <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                      {post.excerpt}
+                      {postExcerpt(post)}
                     </p>
                   )}
                   <p className="text-sm text-muted-foreground">{formatDate(post.published_at, locale)}</p>
