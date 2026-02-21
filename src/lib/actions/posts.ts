@@ -9,66 +9,81 @@ import Anthropic from '@anthropic-ai/sdk'
 // Translation Helper for Meta Fields
 // ═══════════════════════════════════════════════════
 
-interface TranslatedMeta {
+interface TranslatedContent {
+  title_en: string | null
+  excerpt_en: string | null
+  content_en: string | null
   meta_title_en: string | null
   meta_description_en: string | null
 }
 
-async function translateMetaFields(
-  metaTitle?: string,
+async function translatePost(input: {
+  title?: string
+  excerpt?: string
+  content?: string
+  metaTitle?: string
   metaDescription?: string
-): Promise<TranslatedMeta> {
-  // If no meta fields to translate, return nulls
-  if (!metaTitle && !metaDescription) {
-    return { meta_title_en: null, meta_description_en: null }
+}): Promise<TranslatedContent> {
+  const empty: TranslatedContent = {
+    title_en: null,
+    excerpt_en: null,
+    content_en: null,
+    meta_title_en: null,
+    meta_description_en: null,
   }
 
-  // Check for API key
+  const hasAnything = input.title || input.excerpt || input.content || input.metaTitle || input.metaDescription
+  if (!hasAnything) return empty
+
   if (!process.env.ANTHROPIC_API_KEY) {
-    console.warn('ANTHROPIC_API_KEY not found, skipping meta translation')
-    return { meta_title_en: null, meta_description_en: null }
+    console.warn('ANTHROPIC_API_KEY not found, skipping translation')
+    return empty
   }
 
   try {
-    const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    })
+    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-    const prompt = `Translate the following Korean SEO meta fields to natural English.
-Keep the translations concise and SEO-friendly.
-Maintain the elegant, sophisticated tone of a luxury champagne brand.
+    const prompt = `You are translating content for a luxury Korean sea-aged champagne brand (Muse de Marée).
+Translate the following Korean fields to elegant, natural English, maintaining a sophisticated luxury tone.
 
-${metaTitle ? `Meta Title (Korean): ${metaTitle}` : ''}
-${metaDescription ? `Meta Description (Korean): ${metaDescription}` : ''}
+${input.title ? `TITLE: ${input.title}` : ''}
+${input.excerpt ? `EXCERPT: ${input.excerpt}` : ''}
+${input.metaTitle ? `META_TITLE: ${input.metaTitle}` : ''}
+${input.metaDescription ? `META_DESC: ${input.metaDescription}` : ''}
+${input.content ? `CONTENT_HTML: ${input.content}` : ''}
 
-Respond ONLY with JSON (no other text):
+Respond ONLY with valid JSON:
 {
-  "meta_title_en": "English translation of meta title or null if not provided",
-  "meta_description_en": "English translation of meta description or null if not provided"
+  "title_en": "translated title or null",
+  "excerpt_en": "translated excerpt or null",
+  "content_en": "translated HTML content or null",
+  "meta_title_en": "translated meta title or null",
+  "meta_description_en": "translated meta description or null"
 }`
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 300,
+      max_tokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     })
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
-
-    // Parse JSON response
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0])
       return {
+        title_en: parsed.title_en || null,
+        excerpt_en: parsed.excerpt_en || null,
+        content_en: parsed.content_en || null,
         meta_title_en: parsed.meta_title_en || null,
         meta_description_en: parsed.meta_description_en || null,
       }
     }
 
-    return { meta_title_en: null, meta_description_en: null }
+    return empty
   } catch (error) {
-    console.error('Error translating meta fields:', error)
-    return { meta_title_en: null, meta_description_en: null }
+    console.error('Error translating post:', error)
+    return empty
   }
 }
 
@@ -424,19 +439,25 @@ export async function createPost(input: CreatePostInput) {
   const wordCount = input.content.replace(/<[^>]*>/g, '').split(/\s+/).length
   const readingTime = Math.max(1, Math.ceil(wordCount / 200))
 
-  // Translate meta fields to English
-  const translatedMeta = await translateMetaFields(
-    input.meta_title,
-    input.meta_description
-  )
+  // Translate all fields to English in one API call
+  const translated = await translatePost({
+    title: input.title,
+    excerpt: input.excerpt,
+    content: input.content,
+    metaTitle: input.meta_title,
+    metaDescription: input.meta_description,
+  })
 
   const postData = {
     ...input,
     content: { html: input.content },
     reading_time_minutes: readingTime,
     published_at: input.status === 'published' ? new Date().toISOString() : null,
-    meta_title_en: translatedMeta.meta_title_en,
-    meta_description_en: translatedMeta.meta_description_en,
+    title_en: translated.title_en,
+    excerpt_en: translated.excerpt_en,
+    content_en: translated.content_en ? { html: translated.content_en } : null,
+    meta_title_en: translated.meta_title_en,
+    meta_description_en: translated.meta_description_en,
   }
 
   const { data, error } = await supabase
@@ -468,18 +489,21 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>) {
     updateData.reading_time_minutes = Math.max(1, Math.ceil(wordCount / 200))
   }
 
-  // If meta fields are provided, translate them to English
-  if (input.meta_title || input.meta_description) {
-    const translatedMeta = await translateMetaFields(
-      input.meta_title,
-      input.meta_description
-    )
-    if (translatedMeta.meta_title_en) {
-      updateData.meta_title_en = translatedMeta.meta_title_en
-    }
-    if (translatedMeta.meta_description_en) {
-      updateData.meta_description_en = translatedMeta.meta_description_en
-    }
+  // Translate any changed fields to English
+  const needsTranslation = input.title || input.excerpt || input.content || input.meta_title || input.meta_description
+  if (needsTranslation) {
+    const translated = await translatePost({
+      title: input.title,
+      excerpt: input.excerpt,
+      content: input.content,
+      metaTitle: input.meta_title,
+      metaDescription: input.meta_description,
+    })
+    if (translated.title_en) updateData.title_en = translated.title_en
+    if (translated.excerpt_en) updateData.excerpt_en = translated.excerpt_en
+    if (translated.content_en) updateData.content_en = { html: translated.content_en }
+    if (translated.meta_title_en) updateData.meta_title_en = translated.meta_title_en
+    if (translated.meta_description_en) updateData.meta_description_en = translated.meta_description_en
   }
 
   // If status changed to published, set published_at

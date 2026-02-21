@@ -197,6 +197,9 @@ export type Database = {
           meta_description: string | null
           meta_title_en: string | null
           meta_description_en: string | null
+          title_en: string | null
+          excerpt_en: string | null
+          content_en: Json | null
           og_image_url: string | null
           reading_time_minutes: number | null
           view_count: number
@@ -221,6 +224,9 @@ export type Database = {
           meta_description?: string | null
           meta_title_en?: string | null
           meta_description_en?: string | null
+          title_en?: string | null
+          excerpt_en?: string | null
+          content_en?: Json | null
           og_image_url?: string | null
           reading_time_minutes?: number | null
           view_count?: number
@@ -245,6 +251,9 @@ export type Database = {
           meta_description?: string | null
           meta_title_en?: string | null
           meta_description_en?: string | null
+          title_en?: string | null
+          excerpt_en?: string | null
+          content_en?: Json | null
           og_image_url?: string | null
           reading_time_minutes?: number | null
           view_count?: number
