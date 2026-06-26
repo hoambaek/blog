@@ -17,9 +17,14 @@ export default clerkMiddleware(async (auth, request: NextRequest) => {
 
 export const config = {
   matcher: [
-    // Only run middleware on admin and auth routes
+    // Run middleware on admin pages, auth pages, and the admin/upload API
+    // routes. The API routes call auth() internally, which requires
+    // clerkMiddleware to run on them — otherwise auth() throws and the
+    // request fails with a 500.
     '/admin(.*)',
     '/sign-in(.*)',
     '/sign-up(.*)',
+    '/api/admin/(.*)',
+    '/api/upload(.*)',
   ],
 }
