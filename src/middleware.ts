@@ -3,11 +3,12 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 function isAdminPath(pathname: string) {
-  return pathname.startsWith('/admin') || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')
+  return pathname.startsWith('/admin')
 }
 
 export default clerkMiddleware(async (auth, request: NextRequest) => {
-  // Clerk only processes admin-related routes
+  // Only protect admin routes. /sign-in and /sign-up must stay reachable
+  // for unauthenticated users, otherwise auth.protect() redirects them in a loop.
   if (isAdminPath(request.nextUrl.pathname)) {
     await auth.protect()
   }
