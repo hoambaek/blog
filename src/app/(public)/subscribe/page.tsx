@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Check, ArrowLeft, Sparkles } from 'lucide-react'
@@ -13,6 +13,9 @@ export default function SubscribePage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
   const [isVisible, setIsVisible] = useState(false)
+  // Honeypot field + form mount time for bot detection
+  const [honeypot, setHoneypot] = useState('')
+  const mountedAt = useRef(Date.now())
   const t = useTranslation()
   const { locale } = useLocale()
 
@@ -28,7 +31,14 @@ export default function SubscribePage() {
     setStatus('loading')
 
     try {
-      const result = await subscribe(email, name || undefined, 'subscribe-page', locale as 'ko' | 'en')
+      const result = await subscribe({
+        email,
+        name: name || undefined,
+        source: 'subscribe-page',
+        locale: locale as 'ko' | 'en',
+        honeypot,
+        elapsedMs: Date.now() - mountedAt.current,
+      })
 
       if (result.success) {
         setStatus('success')
@@ -319,6 +329,17 @@ export default function SubscribePage() {
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4">
+                    {/* Honeypot — hidden from humans, bots tend to fill it */}
+                    <input
+                      type="text"
+                      name="company"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                      className="absolute left-[-9999px] h-0 w-0 opacity-0"
+                    />
                     {/* Name Field */}
                     <div className="space-y-1">
                       <label className="text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-white/40 block">

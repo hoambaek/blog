@@ -6,19 +6,85 @@ import { render } from '@react-email/render'
 import { WelcomeEmail, getWelcomeEmailSubject } from '@/lib/resend/templates/WelcomeEmail'
 import type { Subscriber } from '@/lib/supabase/types'
 
-export async function subscribe(
-  email: string,
-  name?: string,
-  source?: string,
-  locale: 'ko' | 'en' = 'ko'
-) {
+export interface SubscribeInput {
+  email: string
+  name?: string
+  source?: string
+  locale?: 'ko' | 'en'
+  /** Honeypot field — must be empty. Bots tend to fill every input. */
+  honeypot?: string
+  /** Milliseconds between form mount and submit. Bots submit near-instantly. */
+  elapsedMs?: number
+}
+
+export type SubscribeResult =
+  | { success: true; message: string }
+  | { success: false; error: string }
+
+// Minimum time a human plausibly needs to fill and submit the form.
+const MIN_SUBMIT_MS = 2500
+
+/**
+ * Normalize an email so address-aliasing tricks can't be used to register the
+ * same mailbox many times. Strips +tags everywhere, and for Gmail also removes
+ * dots (Gmail ignores them). This is what bots abused: i.w.ex...@gmail.com.
+ */
+function normalizeEmail(email: string): string {
+  const lower = email.toLowerCase().trim()
+  const atIndex = lower.lastIndexOf('@')
+  if (atIndex === -1) return lower
+
+  let local = lower.slice(0, atIndex)
+  let domain = lower.slice(atIndex + 1)
+
+  // Drop everything after the first + (plus addressing)
+  local = local.split('+')[0]
+
+  if (domain === 'googlemail.com') domain = 'gmail.com'
+  if (domain === 'gmail.com') {
+    local = local.replace(/\./g, '')
+  }
+
+  return `${local}@${domain}`
+}
+
+export async function subscribe(input: SubscribeInput): Promise<SubscribeResult> {
+  const {
+    email,
+    name,
+    source,
+    locale = 'ko',
+    honeypot,
+    elapsedMs,
+  } = input
+
+  // --- Bot guards (silently accept so bots can't tell they were blocked) ---
+  const silentMessages = {
+    ko: '구독해 주셔서 감사합니다! 이메일을 확인해 주세요.',
+    en: 'Thank you for subscribing! Please check your email.',
+  }
+  const silentOk: SubscribeResult = { success: true, message: silentMessages[locale] }
+
+  // 1) Honeypot filled → bot
+  if (honeypot && honeypot.trim() !== '') {
+    return silentOk
+  }
+
+  // 2) Submitted too fast → bot
+  if (typeof elapsedMs === 'number' && elapsedMs >= 0 && elapsedMs < MIN_SUBMIT_MS) {
+    return silentOk
+  }
+
   const supabase = await createAdminClient()
 
-  // Check if already subscribed (use admin client to bypass RLS)
+  const normalizedEmail = normalizeEmail(email)
+
+  // Check if already subscribed (compare against normalized email to catch
+  // dot/plus aliasing of the same mailbox).
   const { data: existing } = await supabase
     .from('subscribers')
     .select('id, status')
-    .eq('email', email.toLowerCase())
+    .eq('email', normalizedEmail)
     .single()
 
   const messages = {
@@ -58,14 +124,14 @@ export async function subscribe(
     }
 
     // Send welcome back email
-    await sendWelcomeEmail(email, locale)
+    await sendWelcomeEmail(normalizedEmail, locale)
 
     return { success: true, message: t.resubscribed }
   }
 
   // New subscription
   const { error } = await supabase.from('subscribers').insert({
-    email: email.toLowerCase(),
+    email: normalizedEmail,
     name: name || null,
     source: source || 'website',
   })
@@ -76,7 +142,7 @@ export async function subscribe(
   }
 
   // Send welcome email
-  await sendWelcomeEmail(email, locale)
+  await sendWelcomeEmail(normalizedEmail, locale)
 
   return { success: true, message: t.subscribed }
 }

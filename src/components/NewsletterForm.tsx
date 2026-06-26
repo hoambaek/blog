@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { ArrowRight, Check } from 'lucide-react'
 import { subscribe } from '@/lib/actions/subscribers'
 import { useTranslation } from '@/lib/i18n'
@@ -14,6 +14,9 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  // Honeypot field + form mount time for bot detection
+  const [honeypot, setHoneypot] = useState('')
+  const mountedAt = useRef(Date.now())
   const t = useTranslation()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +27,12 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
     setStatus('loading')
 
     try {
-      const result = await subscribe(email, undefined, source)
+      const result = await subscribe({
+        email,
+        source,
+        honeypot,
+        elapsedMs: Date.now() - mountedAt.current,
+      })
 
       if (result.success) {
         setStatus('success')
@@ -61,6 +69,16 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
     // Dark variant - subtle and refined
     return (
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
+        <input
+          type="text"
+          name="company"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+        />
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <input
@@ -96,6 +114,16 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
   // Light variant (default)
   return (
     <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <input
+        type="text"
+        name="company"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute left-[-9999px] h-0 w-0 opacity-0"
+      />
       <input
         type="email"
         value={email}
