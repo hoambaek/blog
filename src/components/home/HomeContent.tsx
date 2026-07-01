@@ -92,7 +92,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image
-            src="/bg.png"
+            src="/bg2.webp"
             alt={t.hero.imageAlt}
             fill
             sizes="100vw"
@@ -102,9 +102,8 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
           />
         </div>
 
-        {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
+        {/* Gradient Overlay — darkest at top, fading toward the bottom */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/35 to-black/5" />
 
         {/* Noise Texture */}
         <div
@@ -118,7 +117,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
         <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
           {/* Eyebrow — brand motto */}
           <p
-            className="text-[11px] uppercase tracking-[0.4em] text-white/60 mb-8 animate-fade-in-up"
+            className="font-motto text-2xl md:text-3xl text-white/85 mb-6 animate-fade-in-up"
             style={{ animationDelay: '0.2s' }}
           >
             {t.hero.subtitle}
@@ -134,7 +133,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
 
           {/* Description */}
           <p
-            className="text-sm md:text-base text-white/60 max-w-xl mx-auto mt-6 mb-14 font-light leading-relaxed break-keep animate-fade-in-up"
+            className="text-sm md:text-base text-white/80 max-w-xl mx-auto mt-6 mb-14 font-light leading-relaxed break-keep animate-fade-in-up [text-shadow:0_1px_16px_rgba(0,0,0,0.65)]"
             style={{ animationDelay: '0.8s' }}
           >
             {t.hero.description}

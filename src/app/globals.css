@@ -161,7 +161,8 @@
 
   /* Brand motto — handwritten signature (Mrs Saint Delafield) */
   .font-motto {
-    font-family: var(--font-motto);
+    font-family: var(--font-motto), "Mrs Saint Delafield", cursive;
+    font-weight: 400;
   }
 
   /* Blockquote - Brand style */

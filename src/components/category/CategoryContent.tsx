@@ -75,7 +75,7 @@ export function CategoryContent({
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-28 overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="/bg.png"
+            src="/bg2.webp"
             alt="Muse de Marée"
             fill
             sizes="100vw"

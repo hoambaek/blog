@@ -4,6 +4,7 @@ import {
   Lora,
   Inter,
   Noto_Serif_KR,
+  Mrs_Saint_Delafield,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { I18nProvider } from "@/lib/i18n";
@@ -41,6 +42,14 @@ const notoSerifKR = Noto_Serif_KR({
   weight: ["400", "500", "600"],
   display: "swap",
   preload: false,
+});
+
+// Handwritten signature script for brand motto (matches landing footer)
+const mrsSaintDelafield = Mrs_Saint_Delafield({
+  variable: "--font-motto",
+  subsets: ["latin"],
+  weight: ["400"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -91,7 +100,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
       </head>
       <body
-        className={`${playfair.variable} ${lora.variable} ${inter.variable} ${notoSerifKR.variable} font-sans antialiased`}
+        className={`${playfair.variable} ${lora.variable} ${inter.variable} ${notoSerifKR.variable} ${mrsSaintDelafield.variable} font-sans antialiased`}
       >
         <WebsiteJsonLd />
         <OrganizationJsonLd />

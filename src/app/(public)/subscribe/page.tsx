@@ -100,7 +100,7 @@ export default function SubscribePage() {
         {/* Background */}
         <div className="fixed inset-0">
           <Image
-            src="/bg.png"
+            src="/bg2.webp"
             alt=""
             fill
             className="object-cover opacity-40"
@@ -179,7 +179,7 @@ export default function SubscribePage() {
         <div className="absolute inset-0">
           {/* Base Image */}
           <Image
-            src="/bg.png"
+            src="/bg2.webp"
             alt=""
             fill
             className="object-cover opacity-50 scale-110"
