@@ -8,17 +8,17 @@ export const en: Dictionary = {
     maison: 'Maison Stories',
     culture: 'Culture & Art',
     table: 'At the Table',
-    news: 'News & Events',
+    news: 'Retrievals & News',
     about: 'About',
     subscribe: 'Subscribe',
   },
 
   // Hero Section
   hero: {
-    subtitle: 'Le Journal de Marée',
-    title1: 'Time of the Sea',
+    subtitle: 'Written by the Sea',
+    title1: "Recording the Sea's Time",
     title2: 'Le temps de la mer',
-    description: 'The story of Muse de Marée, where French Champagne tradition meets the passage of time in Korean waters.',
+    description: 'A place that records the time the sea makes. Champagne crafted in Champagne, and every day it spends at 30m below the South Sea of Korea, recorded by Muse de Marée.',
     cta: 'Read Latest Post',
     imageAlt: 'Sea',
   },
@@ -49,8 +49,8 @@ export const en: Dictionary = {
 
   // Newsletter
   newsletter: {
-    title: 'Stay Updated from the Sea',
-    description: 'Be the first to receive stories from the depths and new content updates.',
+    title: 'Receive the Sea\'s Record',
+    description: 'Be the first to receive stories recorded at 30m below, and our latest journal entries.',
     placeholder: 'Email address',
     button: 'Subscribe',
     subscribe: 'Subscribe',
@@ -62,7 +62,7 @@ export const en: Dictionary = {
     alreadySubscribed: 'This email is already subscribed.',
     resubscribed: 'You have been resubscribed!',
     moreStories: 'More Stories Await',
-    moreStoriesDescription: 'Be the first to receive updates from Muse de Marée.',
+    moreStoriesDescription: 'Be the first to receive new records from Muse de Marée.',
   },
 
   // Footer
@@ -71,10 +71,11 @@ export const en: Dictionary = {
     info: 'Info',
     social: 'Social',
     brand: 'Brand',
-    brandDescription: 'Muse de Marée is a sea-aged champagne brand born from the union of French Champagne tradition and the passage of time in Korean waters.',
-    brandQuote: 'Time remembered by the waves, depth permitted by the abyss\n— The only champagne crafted by Champagne and the Korean sea',
+    brandDescription: 'Muse de Marée is a brand that records the time of the sea. The champagne is made in Champagne, and its time is written by the South Sea of Korea.',
+    brandQuote: 'Made in Champagne,\nwritten by the South Sea',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
+    home: 'Homepage',
     aboutJournal: 'About Journal',
     newsletterSubscribe: 'Newsletter',
     privacyConsent: 'By subscribing, you agree to our Privacy Policy.',

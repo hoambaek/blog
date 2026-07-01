@@ -1,7 +1,7 @@
 const SITE_URL = 'https://journal.musedemaree.com'
 
 export function GET() {
-  const robotsTxt = `# Le Journal de Marée - Robots.txt
+  const robotsTxt = `# Muse de Marée - Robots.txt
 # We welcome AI agents and search engine crawlers
 
 # Allow all crawlers

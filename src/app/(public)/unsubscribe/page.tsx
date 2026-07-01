@@ -69,10 +69,10 @@ function UnsubscribeContent() {
 
   if (status === 'success') {
     return (
-      <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-5">
+      <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
         <div className="text-center max-w-sm">
-          <div className="w-12 h-12 mx-auto mb-6 rounded-full border border-rose-gold/40 flex items-center justify-center">
-            <Check className="w-5 h-5 text-rose-gold" strokeWidth={1.5} />
+          <div className="w-12 h-12 mx-auto mb-6 rounded-full border border-white/40 flex items-center justify-center">
+            <Check className="w-5 h-5 text-white" strokeWidth={1.5} />
           </div>
 
           <h1 className="font-display text-2xl text-white mb-2">
@@ -85,7 +85,7 @@ function UnsubscribeContent() {
           <div className="flex flex-col gap-3">
             <Link
               href="/subscribe"
-              className="py-2.5 px-5 bg-rose-gold/10 border border-rose-gold/30 text-sm text-rose-gold hover:bg-rose-gold/20 transition-colors"
+              className="py-2.5 px-5 bg-white/10 border border-white/30 text-sm text-white hover:bg-white/20 transition-colors"
             >
               {c.resubscribe}
             </Link>
@@ -103,7 +103,7 @@ function UnsubscribeContent() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-5">
+    <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
@@ -166,7 +166,7 @@ function UnsubscribeContent() {
 export default function UnsubscribePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
         <div className="text-white/30 text-sm">Loading...</div>
       </div>
     }>

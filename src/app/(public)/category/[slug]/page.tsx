@@ -54,11 +54,22 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
+  const brandPrefix = '뮤즈드마레(Muse de Marée)'
+  const siteUrl = 'https://journal.musedemaree.com'
 
   if (slug === 'all') {
+    const description = `해저숙성 샴페인 ${brandPrefix}의 모든 이야기 — 바다의 일지, 메종, 문화와 예술, 테이블 위에서.`
     return {
-      title: 'All Posts',
-      description: 'Discover all stories from Muse de Marée.',
+      title: `모든 포스트 | ${brandPrefix}`,
+      description,
+      openGraph: {
+        title: `모든 포스트 | ${brandPrefix}`,
+        description,
+        type: 'website',
+        siteName: 'Muse de Marée',
+        url: `${siteUrl}/category/all`,
+      },
+      alternates: { canonical: `${siteUrl}/category/all` },
     }
   }
 
@@ -70,8 +81,20 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
+  const description = category.description
+    ? `${brandPrefix} — ${category.description}`
+    : `해저숙성 샴페인 ${brandPrefix}의 ${category.name} — 바다와 샴페인이 만나 빚어낸 이야기.`
+
   return {
-    title: category.name,
-    description: category.description,
+    title: `${category.name} | ${brandPrefix}`,
+    description: description.slice(0, 160),
+    openGraph: {
+      title: `${category.name} | ${brandPrefix}`,
+      description: description.slice(0, 160),
+      type: 'website',
+      siteName: 'Muse de Marée',
+      url: `${siteUrl}/category/${slug}`,
+    },
+    alternates: { canonical: `${siteUrl}/category/${slug}` },
   }
 }

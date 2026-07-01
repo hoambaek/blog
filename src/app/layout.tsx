@@ -1,39 +1,61 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Nanum_Myeongjo } from "next/font/google";
+import {
+  Playfair_Display,
+  Lora,
+  Inter,
+  Noto_Serif_KR,
+} from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 
-// Display font for headings (English)
+// Display serif for headlines (Wired: WiredDisplay → Playfair Display)
 const playfair = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
 });
 
-// Nanum Myeongjo for Korean display/headings - elegant serif
-const nanumMyeongjo = Nanum_Myeongjo({
-  variable: "--font-nanum-myeongjo",
+// Humanist serif for long-form body (Wired: BreveText → Lora)
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
-  weight: ["400", "700", "800"],
+  weight: ["400", "500", "600"],
+  display: "swap",
+});
+
+// Humanist sans for UI / nav / metadata / buttons (Wired: Apercu → Inter)
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Korean serif companion for display/body serif
+const notoSerifKR = Noto_Serif_KR({
+  variable: "--font-noto-serif-kr",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
   display: "swap",
   preload: false,
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Le Journal de Marée | 뮤즈드마레",
-    template: "%s | Le Journal de Marée",
+    default: "Muse de Marée | 바다가 쓴 시간",
+    template: "%s | Muse de Marée",
   },
-  description: "심연의 시간이 조각한 바다의 수공예품. 해저숙성 샴페인 뮤즈드마레의 이야기를 담은 저널입니다.",
-  keywords: ["뮤즈드마레", "해저숙성", "샴페인", "럭셔리", "와인", "Muse de Marée"],
+  description: "샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.",
+  keywords: ["뮤즈드마레", "Muse de Marée", "해저 숙성", "샴페인", "남해", "해양 숙성 와인", "기록"],
   authors: [{ name: "Muse de Marée" }],
   icons: {
     icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
       { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
       { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
     ],
     apple: '/apple-touch-icon.png',
     shortcut: '/favicon-32x32.png',
@@ -42,9 +64,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: "https://journal.musedemaree.com",
-    siteName: "Le Journal de Marée",
-    title: "Le Journal de Marée | 뮤즈드마레",
-    description: "심연의 시간이 조각한 바다의 수공예품",
+    siteName: "Muse de Marée",
+    title: "Muse de Marée | 바다가 쓴 시간",
+    description: "샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.",
   },
   alternates: {
     types: {
@@ -69,7 +91,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
       </head>
       <body
-        className={`${playfair.variable} ${nanumMyeongjo.variable} font-sans antialiased`}
+        className={`${playfair.variable} ${lora.variable} ${inter.variable} ${notoSerifKR.variable} font-sans antialiased`}
       >
         <WebsiteJsonLd />
         <OrganizationJsonLd />

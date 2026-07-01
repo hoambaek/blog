@@ -4,13 +4,16 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ═══════════════════════════════════════════════════
-   Le Journal de Marée - Design System
+   Muse de Marée — Editorial Design System (Wired-inspired)
+   Strict black & white duet · serif display + serif body + sans UI
    ═══════════════════════════════════════════════════ */
 
 @theme inline {
-  /* Typography */
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-display: var(--font-playfair), "Playfair Display", Georgia, serif;
+  /* Typography — Wired three-face system */
+  --font-sans: var(--font-inter), "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-display: var(--font-playfair), var(--font-noto-serif-kr), "Playfair Display", "Noto Serif KR", Georgia, serif;
+  --font-serif: var(--font-lora), var(--font-noto-serif-kr), "Lora", "Noto Serif KR", Georgia, serif;
+  --font-display-ko: var(--font-noto-serif-kr), "Noto Serif KR", serif;
 
   /* Colors */
   --color-background: var(--background);
@@ -35,6 +38,12 @@
   /* Brand Colors */
   --color-navy: var(--navy);
   --color-rose-gold: var(--rose-gold);
+  --color-brass: var(--brass);
+  --color-brass-muted: var(--brass-muted);
+  --color-void: var(--void);
+  --color-void-text: var(--void-text);
+  --color-link: var(--link);
+  --color-hairline: var(--border);
 
   /* Radius - Angular design (per PRD) */
   --radius-sm: 0;
@@ -50,55 +59,36 @@
   /* Base radius - 0 for angular design */
   --radius: 0;
 
-  /* Light Mode - Canvas & Paper aesthetic */
-  --background: #FAFAF9;        /* Canvas */
-  --foreground: #1C1917;        /* Ink */
-  --card: #FFFFFF;              /* Paper */
-  --card-foreground: #1C1917;   /* Ink */
+  /* Wired — strict black & white editorial duet */
+  --background: #FFFFFF;        /* Canvas */
+  --foreground: #000000;        /* Ink */
+  --card: #FFFFFF;
+  --card-foreground: #000000;
   --popover: #FFFFFF;
-  --popover-foreground: #1C1917;
-  --primary: #1C1917;           /* Ink */
-  --primary-foreground: #FAFAF9;
-  --secondary: #F5F5F4;
-  --secondary-foreground: #1C1917;
-  --muted: #F5F5F4;
-  --muted-foreground: #78716C;  /* Muted text */
-  --accent: #F5F5F4;
-  --accent-foreground: #1C1917;
-  --destructive: #DC2626;
-  --border: #E7E5E4;            /* Line */
-  --input: #E7E5E4;
-  --ring: #1C1917;
+  --popover-foreground: #000000;
+  --primary: #000000;           /* Ink — solid CTA fill */
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5F5F5;        /* Canvas soft */
+  --secondary-foreground: #000000;
+  --muted: #F5F5F5;
+  --muted-foreground: #757575;  /* Body grey */
+  --accent: #F5F5F5;
+  --accent-foreground: #000000;
+  --destructive: #B3261E;
+  --border: #E0E0E0;           /* Hairline */
+  --input: #E0E0E0;
+  --ring: #000000;
 
-  /* Brand Colors */
-  --navy: #1A365D;              /* Deep Navy */
-  --rose-gold: #B7916E;         /* Rose Gold */
-}
+  /* Editorial surfaces & the one inline color */
+  --void: #000000;             /* Dark band (footer) */
+  --void-text: #FFFFFF;
+  --link: #057DBC;             /* Inline article link blue — the only color */
 
-.dark {
-  /* Dark Mode */
-  --background: #171717;        /* Canvas Dark */
-  --foreground: #FAFAF9;        /* Ink Light */
-  --card: #262626;              /* Paper Dark */
-  --card-foreground: #FAFAF9;
-  --popover: #262626;
-  --popover-foreground: #FAFAF9;
-  --primary: #FAFAF9;
-  --primary-foreground: #171717;
-  --secondary: #404040;
-  --secondary-foreground: #FAFAF9;
-  --muted: #404040;
-  --muted-foreground: #A8A29E;
-  --accent: #404040;
-  --accent-foreground: #FAFAF9;
-  --destructive: #EF4444;
-  --border: #404040;
-  --input: #404040;
-  --ring: #FAFAF9;
-
-  /* Brand Colors Dark */
-  --navy: #3B82F6;
-  --rose-gold: #D4A574;
+  /* Legacy accents retired → ink (Wired has no chromatic accent) */
+  --brass: #000000;
+  --brass-muted: #757575;
+  --navy: #000000;
+  --rose-gold: #000000;
 }
 
 @layer base {
@@ -120,11 +110,11 @@
   }
 
   h2 {
-    @apply font-sans text-2xl md:text-3xl font-semibold leading-snug;
+    @apply font-display text-3xl md:text-4xl font-normal leading-tight tracking-tight;
   }
 
   h3 {
-    @apply font-sans text-lg md:text-xl font-semibold leading-normal;
+    @apply font-display text-xl md:text-2xl font-normal leading-snug;
   }
 
   p {
@@ -134,8 +124,8 @@
 
   /* Selection color */
   ::selection {
-    background-color: var(--rose-gold);
-    color: white;
+    background-color: var(--foreground);
+    color: var(--background);
   }
 
   /* Focus styles */
@@ -150,18 +140,28 @@
     font-family: var(--font-display);
   }
 
-  /* Korean Display Typography (Nanum Myeongjo) - Elegant Serif */
+  /* Korean Display Typography (Noto Serif KR) - Elegant Serif */
   .font-display-ko {
-    font-family: var(--font-nanum-myeongjo), "Nanum Myeongjo", serif;
+    font-family: var(--font-noto-serif-kr), "Noto Serif KR", serif;
     font-weight: 400;
     letter-spacing: -0.02em;
   }
 
   /* Serif text for mixed English/Korean content */
   .font-serif-mixed {
-    font-family: var(--font-playfair), var(--font-nanum-myeongjo), "Playfair Display", "Nanum Myeongjo", Georgia, serif;
+    font-family: var(--font-cormorant), var(--font-noto-serif-kr), "Cormorant Garamond", "Noto Serif KR", Georgia, serif;
     font-weight: 400;
     font-style: italic;
+  }
+
+  /* Monospace labels / data (DM Mono) */
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Brand motto — handwritten signature (Mrs Saint Delafield) */
+  .font-motto {
+    font-family: var(--font-motto);
   }
 
   /* Blockquote - Brand style */
@@ -198,7 +198,6 @@
 
   .card-hover:hover {
     @apply -translate-y-1;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
   }
 
   /* Link underline reveal */
@@ -269,6 +268,27 @@
 
   .border-rose-gold {
     border-color: var(--rose-gold);
+  }
+
+  /* New brand brass / void utilities */
+  .text-brass {
+    color: var(--brass);
+  }
+
+  .bg-brass {
+    background-color: var(--brass);
+  }
+
+  .border-brass {
+    border-color: var(--brass);
+  }
+
+  .bg-void {
+    background-color: var(--void);
+  }
+
+  .text-void-text {
+    color: var(--void-text);
   }
 
   /* via-rose-gold for gradients */
@@ -354,11 +374,8 @@
 /* Post content image styling */
 .post-content img {
   position: relative;
-  border-radius: 8px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -2px rgba(0, 0, 0, 0.1),
-    0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* Preserve line breaks in post content */

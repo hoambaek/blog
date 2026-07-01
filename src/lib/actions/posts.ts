@@ -43,9 +43,17 @@ async function translatePost(input: {
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-    const prompt = `You are translating content for a luxury Korean sea-aged champagne brand (Muse de Marée).
-Translate the following Korean fields to elegant, natural English, maintaining a sophisticated luxury tone.
+    const prompt = `You are translating content for Muse de Marée (뮤즈드마레), Korea's only sea-aged champagne brand.
 
+## Translation Guidelines
+- Maintain a sophisticated luxury tone with elegant, natural English.
+- ALWAYS use the full brand name "Muse de Marée" consistently — never use pronouns like "we", "our", or "they" to refer to the brand.
+- Preserve all specific data, numbers, and measurements exactly (e.g., depths, temperatures, aging periods).
+- For META_DESC: Include the brand name "Muse de Marée" and key data points. Keep it factual and specific, not abstract.
+  Example: "Muse de Marée ages champagne at 20m depth for 12 months at 10-14°C" instead of "A beautiful champagne from the sea."
+- For TITLE: If the original title is poetic/abstract, translate faithfully but ensure it contains the core topic keyword.
+
+## Content to Translate
 ${input.title ? `TITLE: ${input.title}` : ''}
 ${input.excerpt ? `EXCERPT: ${input.excerpt}` : ''}
 ${input.metaTitle ? `META_TITLE: ${input.metaTitle}` : ''}

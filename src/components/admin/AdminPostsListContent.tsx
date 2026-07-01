@@ -58,6 +58,7 @@ export function AdminPostsListContent({
     category: '카테고리',
     status: '상태',
     date: '날짜',
+    views: '조회수',
     action: '액션',
     noPosts: '포스트가 없습니다.',
     edit: '편집',
@@ -70,9 +71,9 @@ export function AdminPostsListContent({
   }
 
   const statusLabels: Record<string, { label: string; className: string }> = {
-    published: { label: t.published, className: 'bg-green-100 text-green-800' },
-    draft: { label: t.draft, className: 'bg-yellow-100 text-yellow-800' },
-    scheduled: { label: t.scheduled, className: 'bg-blue-100 text-blue-800' },
+    published: { label: t.published, className: 'bg-foreground text-background' },
+    draft: { label: t.draft, className: 'border border-border text-muted-foreground' },
+    scheduled: { label: t.scheduled, className: 'bg-muted text-foreground' },
   }
 
   const handleDelete = async (id: string) => {
@@ -168,6 +169,9 @@ export function AdminPostsListContent({
               <th className="text-left px-4 py-3 text-sm font-medium text-muted-foreground hidden sm:table-cell">
                 {t.date}
               </th>
+              <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground hidden lg:table-cell">
+                {t.views}
+              </th>
               <th className="text-right px-4 py-3 text-sm font-medium text-muted-foreground">
                 {t.action}
               </th>
@@ -176,7 +180,7 @@ export function AdminPostsListContent({
           <tbody className="divide-y divide-border">
             {posts.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
                   {t.noPosts}
                 </td>
               </tr>
@@ -205,6 +209,9 @@ export function AdminPostsListContent({
                     </td>
                     <td className="px-4 py-4 text-sm text-muted-foreground hidden sm:table-cell">
                       {formatDate(post.published_at)}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-muted-foreground text-right hidden lg:table-cell tabular-nums">
+                      {(post.view_count ?? 0).toLocaleString()}
                     </td>
                     <td className="px-4 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">

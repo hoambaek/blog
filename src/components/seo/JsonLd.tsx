@@ -1,8 +1,9 @@
 import type { PostWithCategory } from '@/lib/supabase/types'
 
 const SITE_URL = 'https://journal.musedemaree.com'
-const SITE_NAME = 'Le Journal de Marée'
+const SITE_NAME = 'Muse de Marée'
 const ORGANIZATION_NAME = 'Muse de Marée'
+const BRAND_DESCRIPTION = '샴페인은 샹파뉴가 만들고, 그 변화는 한국 남해의 바다가 만듭니다. 바다의 시간을 기록하는 브랜드, 뮤즈드마레.'
 
 interface ArticleJsonLdProps {
   post: PostWithCategory
@@ -48,6 +49,22 @@ export function ArticleJsonLd({ post }: ArticleJsonLdProps) {
     wordCount: wordCount,
     inLanguage: 'ko-KR',
     isAccessibleForFree: true,
+    // AEO: speakable for AI voice assistants
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['.post-content h2', '.post-content p:first-of-type', '.aeo-summary'],
+    },
+    // AEO: about and mentions for entity recognition
+    about: {
+      '@type': 'Thing',
+      name: '해저숙성 샴페인',
+      description: BRAND_DESCRIPTION,
+    },
+    mentions: {
+      '@type': 'Brand',
+      name: ORGANIZATION_NAME,
+      url: 'https://musedemaree.com',
+    },
     ...(post.category && {
       articleSection: post.category.name,
     }),
@@ -95,7 +112,7 @@ export function WebsiteJsonLd() {
     '@id': `${SITE_URL}#website`,
     name: SITE_NAME,
     url: SITE_URL,
-    description: '심연의 시간이 조각한 바다의 수공예품. 해저숙성 샴페인 뮤즈드마레의 이야기를 담은 저널입니다.',
+    description: '샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.',
     inLanguage: 'ko-KR',
     publisher: {
       '@type': 'Organization',
@@ -128,7 +145,7 @@ export function OrganizationJsonLd() {
     name: ORGANIZATION_NAME,
     url: 'https://musedemaree.com',
     logo: `${SITE_URL}/logo.png`,
-    description: '프랑스의 대지가 낳고, 한국의 파도가 기른 시간의 결정체. 세계 유일의 해저숙성 샴페인 브랜드.',
+    description: '샴페인은 샹파뉴가 만들고, 그 변화는 한국 남해의 바다가 만듭니다. 바다의 시간을 기록하는 브랜드, 뮤즈드마레.',
     sameAs: [
       'https://instagram.com/musedemaree',
     ],
@@ -140,4 +157,69 @@ export function OrganizationJsonLd() {
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
   )
+}
+
+// ═══════════════════════════════════════════════════
+// AEO: FAQ Schema - AI가 Q&A 형식으로 콘텐츠를 인용
+// ═══════════════════════════════════════════════════
+
+interface FAQItem {
+  question: string
+  answer: string
+}
+
+interface FAQPageJsonLdProps {
+  faqs: FAQItem[]
+}
+
+export function FAQPageJsonLd({ faqs }: FAQPageJsonLdProps) {
+  if (faqs.length === 0) return null
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
+  )
+}
+
+/**
+ * HTML 콘텐츠에서 FAQ 항목을 자동 추출
+ * h2/h3 태그를 질문으로, 뒤따르는 p 태그를 답변으로 변환
+ */
+export function extractFAQFromContent(htmlContent: string): FAQItem[] {
+  const faqs: FAQItem[] = []
+  // h2 또는 h3 뒤에 오는 텍스트를 Q&A 쌍으로 추출
+  const headingRegex = /<h[23][^>]*>(.*?)<\/h[23]>/gi
+  const matches = [...htmlContent.matchAll(headingRegex)]
+
+  for (const match of matches) {
+    const question = match[1].replace(/<[^>]*>/g, '').trim()
+    if (!question) continue
+
+    // 해당 heading 이후의 첫 번째 paragraph 텍스트 추출
+    const afterHeading = htmlContent.slice((match.index || 0) + match[0].length)
+    const paragraphMatch = afterHeading.match(/<p[^>]*>([\s\S]*?)<\/p>/i)
+    if (paragraphMatch) {
+      const answer = paragraphMatch[1].replace(/<[^>]*>/g, '').trim()
+      if (answer && answer.length > 20) {
+        faqs.push({ question, answer })
+      }
+    }
+  }
+
+  return faqs.slice(0, 10) // 최대 10개
 }

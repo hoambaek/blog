@@ -11,55 +11,55 @@ export default function AboutPage() {
 
   const content = {
     ko: {
-      heroTitle: '바다가 빚어낸 시간의 예술',
-      heroSubtitle: 'Le Journal de Marée는 해저숙성 샴페인 뮤즈드마레의 이야기를 전하는 디지털 저널입니다.',
+      heroTitle: '바다가 쓴 시간',
+      heroSubtitle: '뮤즈드마레의 저널, 수심 30m에서 보낸 날들의 기록을 전합니다.',
       storyTitle: '우리의 이야기',
-      storyP1: '프랑스 샹파뉴 지방의 전통과 한국 바다의 신비로운 시간이 만나, 세상에 없던 새로운 샴페인이 탄생했습니다. 뮤즈드마레는 해저 깊은 곳에서 숙성되며, 바다의 압력과 온도, 그리고 시간이 만들어낸 독특한 풍미를 담고 있습니다.',
-      storyP2: 'Le Journal de Marée는 이 특별한 여정의 기록입니다. 바다 아래에서 일어나는 숙성의 과학, 샴페인과 어울리는 미식의 세계, 그리고 뮤즈드마레가 함께하는 문화와 예술의 순간들을 담아냅니다.',
-      valuesTitle: '우리가 믿는 가치',
+      storyP1: '뮤즈드마레는 바다의 시간을 기록하는 브랜드입니다. 프랑스 샹파뉴가 빚은 샴페인이 한국 남해 수심 30m에 잠겨 보내는 모든 날을, 입수일부터 인양까지 지켜보고 기록합니다.',
+      storyP2: '뮤즈드마레의 저널은 그 기록을 함께 나누는 자리입니다. 입수일과 좌표, 수온과 해류 같은 바다의 데이터부터, 샴페인과 어울리는 미식, 뮤즈드마레가 함께하는 문화와 예술의 순간까지 담아냅니다.',
+      valuesTitle: '우리가 믿는 것',
       values: [
-        { title: '시간의 예술', desc: '서두르지 않습니다. 최고의 결과는 충분한 시간과 인내에서 비롯됩니다.', icon: '01' },
-        { title: '자연과의 조화', desc: '바다의 힘을 빌려 자연이 선사하는 최상의 맛을 담아냅니다.', icon: '02' },
-        { title: '장인 정신', desc: '모든 병에는 수공예품과 같은 정성과 세심함이 담겨 있습니다.', icon: '03' },
-        { title: '특별한 순간', desc: '일상을 특별하게 만드는 순간들을 함께 나눕니다.', icon: '04' },
+        { title: '기록이 헤리티지다', desc: '모든 병에는 입수일부터 인양까지, 그 병이 보낸 모든 날의 기록이 동봉됩니다.', icon: '01' },
+        { title: '바다가 결정한다', desc: '수량도, 출시도, 가격도 사람이 아니라 바다가 정합니다. 인양된 만큼만 세상에 나옵니다.', icon: '02' },
+        { title: '인양은 의식이다', desc: '입수에서 인양까지, 한 사이클은 달력에 새겨진 연례 의식입니다.', icon: '03' },
+        { title: '소유는 맡아둠이다', desc: '마시는 것이 아니라, 바다가 만든 시간을 맡아두는 일입니다.', icon: '04' },
       ],
       journalTitle: '저널 카테고리',
       journalDesc: '뮤즈드마레의 세계를 다섯 가지 시선으로 탐험합니다.',
       categories: [
-        { name: '바다의 일지', desc: '해저숙성의 과학과 뮤즈드마레의 제작 과정', slug: 'sea-log' },
+        { name: '바다의 일지', desc: '해저 숙성의 기록과 바다의 관측 일지', slug: 'sea-log' },
         { name: '메종 이야기', desc: '브랜드의 철학과 비하인드 스토리', slug: 'maison' },
         { name: '문화와 예술', desc: '뮤즈드마레가 함께하는 문화적 순간들', slug: 'culture' },
         { name: '테이블 위에서', desc: '페어링, 레시피, 미식의 세계', slug: 'table' },
         { name: '뉴스 & 이벤트', desc: '새로운 소식과 특별한 이벤트', slug: 'news' },
       ],
       ctaTitle: '함께하세요',
-      ctaDesc: '뮤즈드마레의 이야기를 가장 먼저 만나보세요.',
+      ctaDesc: '뮤즈드마레의 새로운 기록을 가장 먼저 만나보세요.',
       ctaButton: '뉴스레터 구독하기',
     },
     en: {
-      heroTitle: 'The Art of Time, Crafted by the Sea',
-      heroSubtitle: 'Le Journal de Marée is the digital journal sharing the story of Muse de Marée, the sea-aged champagne.',
+      heroTitle: 'Time Written by the Sea',
+      heroSubtitle: 'The journal of Muse de Marée, sharing the record of days spent at 30m below.',
       storyTitle: 'Our Story',
-      storyP1: 'Where the traditions of France\'s Champagne region meet the mysterious depths of Korean waters, a new kind of champagne was born. Muse de Marée matures in the deep sea, capturing unique flavors created by oceanic pressure, temperature, and time.',
-      storyP2: 'Le Journal de Marée is a record of this extraordinary journey. We document the science of underwater aging, the world of gastronomy that pairs with champagne, and the moments of culture and art that Muse de Marée accompanies.',
-      valuesTitle: 'Our Values',
+      storyP1: 'Muse de Marée is a brand that records the time of the sea. Champagne crafted in Champagne, France rests at 30m below the South Sea of Korea, and we watch and record every day it spends there — from submersion to retrieval.',
+      storyP2: 'This journal is where we share that record — from the sea\'s data of submersion dates, coordinates, temperature and currents, to the gastronomy, culture and art that Muse de Marée accompanies.',
+      valuesTitle: 'What We Believe',
       values: [
-        { title: 'The Art of Time', desc: 'We never rush. The finest results come from patience and time.', icon: '01' },
-        { title: 'Harmony with Nature', desc: 'We harness the power of the sea to capture nature\'s finest flavors.', icon: '02' },
-        { title: 'Craftsmanship', desc: 'Every bottle contains the care and precision of a handcrafted work of art.', icon: '03' },
-        { title: 'Special Moments', desc: 'We share the moments that transform the ordinary into extraordinary.', icon: '04' },
+        { title: 'The Record Is the Heritage', desc: 'Every bottle ships with the record of each day it lived, from submersion to retrieval.', icon: '01' },
+        { title: 'The Sea Decides', desc: 'Quantity, release and price are decided by the sea, not by people. Only what is retrieved is released.', icon: '02' },
+        { title: 'Retrieval Is a Ritual', desc: 'From submersion to retrieval, one cycle is an annual ritual marked on the calendar.', icon: '03' },
+        { title: 'Custody, Not Consumption', desc: 'Not to drink, but to keep the time the sea made.', icon: '04' },
       ],
       journalTitle: 'Journal Categories',
       journalDesc: 'Explore the world of Muse de Marée through five distinct perspectives.',
       categories: [
-        { name: 'Sea Log', desc: 'The science of sea-aging and the making of Muse de Marée', slug: 'sea-log' },
+        { name: 'Sea Log', desc: 'The record of sea-aging and the sea\'s observation log', slug: 'sea-log' },
         { name: 'Maison Stories', desc: 'Brand philosophy and behind-the-scenes stories', slug: 'maison' },
         { name: 'Culture & Art', desc: 'Cultural moments accompanied by Muse de Marée', slug: 'culture' },
         { name: 'At the Table', desc: 'Pairings, recipes, and the world of gastronomy', slug: 'table' },
         { name: 'News & Events', desc: 'Latest news and special events', slug: 'news' },
       ],
       ctaTitle: 'Join Us',
-      ctaDesc: 'Be the first to discover the stories of Muse de Marée.',
+      ctaDesc: 'Be the first to discover the new records of Muse de Marée.',
       ctaButton: 'Subscribe to Newsletter',
     },
   }
@@ -82,13 +82,6 @@ export default function AboutPage() {
         </div>
 
         <div className="container-narrow relative z-10 text-center text-white">
-          {/* Decorative Element */}
-          <div className="flex items-center justify-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="w-16 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/60" />
-            <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold/80" />
-            <div className="w-16 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/60" />
-          </div>
-
           {/* Tagline */}
           <p
             className="uppercase text-[10px] md:text-xs tracking-[0.4em] text-white/50 mb-8 font-light animate-fade-in-up"
@@ -105,9 +98,6 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* Corner Accents */}
-        <div className="hidden md:block absolute top-24 left-10 w-16 h-16 border-l border-t border-white/[0.08]" />
-        <div className="hidden md:block absolute top-24 right-10 w-16 h-16 border-r border-t border-white/[0.08]" />
       </section>
 
       {/* Story Section - Editorial Magazine Style */}
@@ -125,34 +115,35 @@ export default function AboutPage() {
             {/* Left Column - Large Typography */}
             <div className="lg:col-span-5">
               <div className="sticky top-32">
-                <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-rose-gold mb-6">{t.footer.aboutJournal}</p>
+                <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-foreground mb-6">{t.footer.aboutJournal}</p>
                 <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] mb-6">
                   {c.storyTitle}
                 </h2>
-                <div className="w-20 h-[2px] bg-gradient-to-r from-rose-gold to-transparent" />
+                <div className="w-20 h-px bg-foreground" />
               </div>
             </div>
 
             {/* Right Column - Story Content */}
             <div className="lg:col-span-7">
               <div className="space-y-8 text-lg md:text-xl text-muted-foreground leading-[1.8] font-light">
-                <p className="first-letter:text-5xl first-letter:font-display first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:text-foreground">
-                  {c.storyP1}
-                </p>
-                <p>{c.storyP2}</p>
+                <p className="font-serif">{c.storyP1}</p>
+                <p className="font-serif">{c.storyP2}</p>
               </div>
 
-              {/* Decorative Quote */}
+              {/* Quote */}
               <div className="mt-16 pt-12 border-t border-border">
-                <blockquote className="relative">
-                  <div className="absolute -top-6 left-0 text-6xl text-rose-gold/20 font-display">"</div>
-                  <p className="font-display text-2xl md:text-3xl italic text-foreground/80 leading-relaxed pl-8">
-                    심연의 시간이 조각한<br />바다의 수공예품
+                <blockquote>
+                  <p className="font-display text-2xl md:text-3xl italic text-foreground/80 leading-relaxed">
+                    샹파뉴가 만들고,<br />남해가 쓴 시간
                   </p>
-                  <footer className="mt-6 pl-8">
-                    <cite className="text-sm uppercase tracking-[0.2em] text-muted-foreground not-italic">
-                      — Muse de Marée
-                    </cite>
+                  <footer className="mt-6">
+                    <Image
+                      src="/images/logo/logo_text_trans.png"
+                      alt="Muse de Marée"
+                      width={260}
+                      height={40}
+                      className="h-[34px] w-auto opacity-80"
+                    />
                   </footer>
                 </blockquote>
               </div>
@@ -162,19 +153,10 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section - Refined Grid */}
-      <section className="relative py-24 md:py-32 bg-[#0a0a0a] text-white overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#111] to-[#0a0a0a]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-rose-gold/[0.03] blur-[120px] rounded-full" />
-
+      <section className="relative py-24 md:py-32 bg-[#000000] text-white overflow-hidden">
         <div className="container-wide relative">
           {/* Section Header */}
           <div className="text-center mb-20">
-            <div className="flex items-center justify-center gap-6 mb-8">
-              <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-white/20" />
-              <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold" />
-              <div className="w-12 h-[1px] bg-gradient-to-l from-transparent to-white/20" />
-            </div>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl">{c.valuesTitle}</h2>
           </div>
 
@@ -183,15 +165,15 @@ export default function AboutPage() {
             {c.values.map((value, index) => (
               <div
                 key={index}
-                className="group relative bg-[#0a0a0a] p-10 md:p-12 hover:bg-white/[0.02] transition-colors duration-500"
+                className="group relative bg-[#000000] p-10 md:p-12 hover:bg-white/[0.02] transition-colors duration-500"
               >
                 {/* Number */}
-                <span className="block font-display text-5xl md:text-6xl text-rose-gold/20 mb-6 group-hover:text-rose-gold/40 transition-colors duration-500">
+                <span className="block font-display text-5xl md:text-6xl text-white/40 mb-6 group-hover:text-white/70 transition-colors duration-500">
                   {value.icon}
                 </span>
 
                 {/* Content */}
-                <h3 className="font-display text-xl md:text-2xl text-white mb-4">
+                <h3 className="font-display text-xl md:text-2xl text-white mb-4 break-keep">
                   {value.title}
                 </h3>
                 <p className="text-sm md:text-base text-white/50 leading-relaxed font-light">
@@ -199,7 +181,7 @@ export default function AboutPage() {
                 </p>
 
                 {/* Hover Accent */}
-                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-rose-gold group-hover:w-full transition-all duration-700" />
+                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-700" />
               </div>
             ))}
           </div>
@@ -211,7 +193,7 @@ export default function AboutPage() {
         <div className="container-wide">
           {/* Section Header */}
           <div className="max-w-2xl mb-16">
-            <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-rose-gold mb-6">Categories</p>
+            <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-foreground mb-6">Categories</p>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl mb-6">{c.journalTitle}</h2>
             <p className="text-lg text-muted-foreground font-light">{c.journalDesc}</p>
           </div>
@@ -233,7 +215,7 @@ export default function AboutPage() {
 
                     {/* Content */}
                     <div>
-                      <h3 className="font-display text-xl md:text-2xl lg:text-3xl mb-2 group-hover:text-rose-gold transition-colors duration-300">
+                      <h3 className="font-display text-xl md:text-2xl lg:text-3xl mb-2 group-hover:text-muted-foreground transition-colors duration-300">
                         {cat.name}
                       </h3>
                       <p className="text-sm md:text-base text-muted-foreground font-light">

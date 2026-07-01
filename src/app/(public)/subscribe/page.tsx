@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Check, ArrowLeft, Sparkles } from 'lucide-react'
+import { Check, ArrowLeft } from 'lucide-react'
 import { subscribe } from '@/lib/actions/subscribers'
 import { useTranslation, useLocale } from '@/lib/i18n'
 
@@ -55,31 +55,31 @@ export default function SubscribePage() {
 
   const content = {
     ko: {
-      eyebrow: 'Exclusive Newsletter',
+      eyebrow: 'Newsletter',
       title: '바다의 초대장',
-      subtitle: '심연에서 전해지는 이야기',
-      description: '뮤즈드마레의 새로운 컬렉션, 해저숙성의 비밀, 그리고 특별한 순간들을 가장 먼저 만나보세요.',
-      feature1: '새로운 빈티지 출시 소식',
-      feature2: '해저숙성 다이어리',
-      feature3: '프라이빗 이벤트 초대',
+      subtitle: '남해 수심 30m에서 전하는 기록',
+      description: '뮤즈드마레의 새 큐베와 인양 소식, 바다가 기록한 시간을 가장 먼저 받아보세요.',
+      feature1: '새로운 큐베와 인양 소식',
+      feature2: '바다의 관측 일지',
+      feature3: '인양 참관 초대',
       namePlaceholder: '이름',
       emailPlaceholder: '이메일',
       button: '초대받기',
       processing: '처리 중...',
       privacy: '개인정보는 안전하게 보호됩니다',
       successTitle: '환영합니다',
-      successSubtitle: '바다의 이야기가 곧 찾아갑니다',
+      successSubtitle: '바다의 기록이 곧 찾아갑니다',
       successDesc: '첫 번째 뉴스레터를 기대해 주세요.',
       backHome: '저널로 돌아가기',
     },
     en: {
-      eyebrow: 'Exclusive Newsletter',
+      eyebrow: 'Newsletter',
       title: 'An Invitation from the Sea',
-      subtitle: 'Stories from the depths',
-      description: 'Be the first to discover new collections, secrets of sea-aging, and exclusive moments from Muse de Marée.',
-      feature1: 'New vintage releases',
-      feature2: 'Sea-aging diaries',
-      feature3: 'Private event invitations',
+      subtitle: 'Records from 30m below',
+      description: 'Be the first to receive new cuvées, retrieval news, and the time the sea has recorded for Muse de Marée.',
+      feature1: 'New cuvées & retrievals',
+      feature2: "The sea's observation log",
+      feature3: 'Retrieval week invitations',
       namePlaceholder: 'Name',
       emailPlaceholder: 'Email',
       button: 'Accept Invitation',
@@ -115,7 +115,7 @@ export default function SubscribePage() {
           {[...Array(20)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-1 h-1 bg-rose-gold/30 rounded-full animate-float"
+              className="absolute w-1 h-1 bg-white/30 rounded-full animate-float"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -131,15 +131,15 @@ export default function SubscribePage() {
           <div className="text-center max-w-lg animate-fade-in-up">
             {/* Success Icon */}
             <div className="relative w-20 h-20 mx-auto mb-8">
-              <div className="absolute inset-0 border border-rose-gold/30 rotate-45" />
-              <div className="absolute inset-2 border border-rose-gold/50 rotate-45" />
+              <div className="absolute inset-0 border border-white/30 rotate-45" />
+              <div className="absolute inset-2 border border-white/50 rotate-45" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Check className="w-8 h-8 text-rose-gold" strokeWidth={1.5} />
+                <Check className="w-8 h-8 text-white" strokeWidth={1.5} />
               </div>
             </div>
 
             {/* Success Text */}
-            <p className="text-[10px] uppercase tracking-[0.5em] text-rose-gold/80 mb-4">
+            <p className="text-[10px] uppercase tracking-[0.5em] text-white/80 mb-4">
               Subscription Confirmed
             </p>
             <h1 className="font-display text-3xl md:text-4xl mb-3">
@@ -153,10 +153,8 @@ export default function SubscribePage() {
             </p>
 
             {/* Decorative Line */}
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <div className="w-12 h-px bg-gradient-to-r from-transparent to-rose-gold/40" />
-              <Sparkles className="w-4 h-4 text-rose-gold/60" />
-              <div className="w-12 h-px bg-gradient-to-l from-transparent to-rose-gold/40" />
+            <div className="flex items-center justify-center mb-8">
+              <div className="w-24 h-px bg-white/20" />
             </div>
 
             {/* Back Button */}
@@ -193,7 +191,7 @@ export default function SubscribePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-transparent to-[#050505]/80" />
 
           {/* Radial Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-rose-gold/[0.03] rounded-full blur-[150px]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-white/[0.03] rounded-full blur-[150px]" />
 
           {/* Subtle Grain */}
           <div
@@ -223,8 +221,8 @@ export default function SubscribePage() {
             >
               {/* Eyebrow */}
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-px bg-gradient-to-r from-rose-gold to-transparent" />
-                <span className="text-[10px] uppercase tracking-[0.4em] text-rose-gold/80">
+                <div className="w-10 h-px bg-gradient-to-r from-white to-transparent" />
+                <span className="text-[10px] uppercase tracking-[0.4em] text-white/80">
                   {c.eyebrow}
                 </span>
               </div>
@@ -263,9 +261,9 @@ export default function SubscribePage() {
               {/* Brand Quote - XL Only */}
               <div className="hidden xl:block mt-8 pt-6 border-t border-white/[0.06]">
                 <blockquote className="relative">
-                  <span className="absolute -top-3 -left-1 text-3xl text-rose-gold/20 font-display">"</span>
+                  <span className="absolute -top-3 -left-1 text-3xl text-white/20 font-display">"</span>
                   <p className="font-display text-base italic text-white/40 pl-4">
-                    심연의 시간이 조각한 바다의 수공예품
+                    샹파뉴가 만들고, 남해가 쓴 시간
                   </p>
                 </blockquote>
               </div>
@@ -282,11 +280,11 @@ export default function SubscribePage() {
               {/* Mobile Header - Above Form Card */}
               <div className="lg:hidden text-center mb-5">
                 <div className="flex items-center justify-center gap-2 mb-3">
-                  <div className="w-8 h-px bg-gradient-to-r from-transparent to-rose-gold/60" />
-                  <span className="text-[9px] uppercase tracking-[0.3em] text-rose-gold/70">
+                  <div className="w-8 h-px bg-gradient-to-r from-transparent to-white/60" />
+                  <span className="text-[9px] uppercase tracking-[0.3em] text-white/70">
                     {c.eyebrow}
                   </span>
-                  <div className="w-8 h-px bg-gradient-to-l from-transparent to-rose-gold/60" />
+                  <div className="w-8 h-px bg-gradient-to-l from-transparent to-white/60" />
                 </div>
                 <h1 className="font-display text-[1.75rem] leading-tight mb-2">{c.title}</h1>
                 <p className="font-display text-sm text-white/40 italic leading-relaxed">
@@ -303,28 +301,12 @@ export default function SubscribePage() {
                 <div className="relative bg-white/[0.02] backdrop-blur-sm border border-white/[0.06] p-5 lg:p-8">
                   {/* Form Header - Desktop Only */}
                   <div className="hidden lg:block text-center mb-8">
-                    <div className="w-10 h-10 mx-auto mb-4 relative">
-                      <div className="absolute inset-0 border border-rose-gold/40 rotate-45" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Sparkles className="w-4 h-4 text-rose-gold/80" />
-                      </div>
-                    </div>
                     <h2 className="font-display text-2xl mb-1">
                       {locale === 'ko' ? '뉴스레터 구독' : 'Newsletter'}
                     </h2>
                     <p className="text-xs text-white/40">
-                      {locale === 'ko' ? '특별한 이야기를 가장 먼저' : 'Be the first to know'}
+                      {locale === 'ko' ? '바다의 기록을 가장 먼저' : 'Be the first to know'}
                     </p>
-                  </div>
-
-                  {/* Mobile Form Header - Inside Card */}
-                  <div className="lg:hidden flex items-center justify-center gap-2 mb-4">
-                    <div className="w-8 h-8 relative">
-                      <div className="absolute inset-0 border border-rose-gold/40 rotate-45" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Sparkles className="w-3.5 h-3.5 text-rose-gold/80" />
-                      </div>
-                    </div>
                   </div>
 
                   {/* Form */}
@@ -351,7 +333,7 @@ export default function SubscribePage() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder={c.namePlaceholder}
-                        className="w-full bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 lg:px-4 lg:py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-rose-gold/30 focus:bg-white/[0.05] transition-all"
+                        className="w-full bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 lg:px-4 lg:py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/[0.05] transition-all"
                         disabled={status === 'loading'}
                       />
                     </div>
@@ -360,14 +342,14 @@ export default function SubscribePage() {
                     <div className="space-y-1">
                       <label className="text-[9px] lg:text-[10px] uppercase tracking-[0.2em] text-white/40 block">
                         {c.emailPlaceholder}
-                        <span className="text-rose-gold/60 ml-1">*</span>
+                        <span className="text-white/60 ml-1">*</span>
                       </label>
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder={c.emailPlaceholder}
-                        className="w-full bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 lg:px-4 lg:py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-rose-gold/30 focus:bg-white/[0.05] transition-all"
+                        className="w-full bg-white/[0.03] border border-white/[0.08] px-3 py-2.5 lg:px-4 lg:py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 focus:bg-white/[0.05] transition-all"
                         required
                         disabled={status === 'loading'}
                       />
@@ -384,7 +366,7 @@ export default function SubscribePage() {
                       disabled={status === 'loading'}
                       className="group relative w-full overflow-hidden mt-1 lg:mt-2"
                     >
-                      <div className="relative bg-rose-gold/90 py-3 lg:py-3.5 text-center transition-all duration-300 group-hover:bg-rose-gold">
+                      <div className="relative bg-white/90 py-3 lg:py-3.5 text-center transition-all duration-300 group-hover:bg-white">
                         <span className="relative z-10 text-xs lg:text-sm font-medium tracking-[0.2em] uppercase text-black">
                           {status === 'loading' ? c.processing : c.button}
                         </span>
@@ -399,12 +381,6 @@ export default function SubscribePage() {
                     </p>
                   </form>
 
-                  {/* Decorative Bottom - Desktop Only */}
-                  <div className="hidden lg:flex items-center justify-center gap-3 mt-6 pt-6 border-t border-white/[0.04]">
-                    <div className="w-6 h-px bg-gradient-to-r from-transparent to-white/20" />
-                    <span className="text-rose-gold/40 text-[8px]">◆</span>
-                    <div className="w-6 h-px bg-gradient-to-l from-transparent to-white/20" />
-                  </div>
                 </div>
               </div>
 

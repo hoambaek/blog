@@ -55,9 +55,17 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
   const displayExcerpt = isEn ? (post.excerpt_en || post.excerpt) : post.excerpt
 
   const rawContent = isEn && post.content_en ? post.content_en : post.content
-  const htmlContent = typeof rawContent === 'object' && rawContent !== null
+  const rawHtml = typeof rawContent === 'object' && rawContent !== null
     ? (rawContent as { html?: string }).html || ''
     : ''
+  // Strip a trailing brand-signature paragraph baked into the body
+  // (e.g. <p><em>Muse de Marée</em></p>) — replaced by the logo signature below.
+  const emptyParaAtEnd = /(?:\s*<p>(?:\s|&nbsp;|<br\s*\/?>)*<\/p>)+\s*$/i
+  const signatureAtEnd = /\s*<p>\s*(?:<(?:em|strong|b|i)>\s*)?(?:뮤즈드마레|Muse de Marée)\s*[.·]?\s*(?:<\/(?:em|strong|b|i)>\s*)?<\/p>\s*$/i
+  const htmlContent = rawHtml
+    .replace(emptyParaAtEnd, '')
+    .replace(signatureAtEnd, '')
+    .replace(emptyParaAtEnd, '')
 
   // Get translated category name based on slug
   const getCategoryName = (slug: string | undefined) => {
@@ -74,60 +82,48 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
 
   return (
     <article>
-      {/* Hero Image - Full image on mobile, cropped on larger screens */}
-      <div className="relative bg-muted mt-12 md:mt-[100px]">
+      {/* Hero — full-bleed cover with title overlay */}
+      <header className="relative h-[82vh] min-h-[560px] w-full bg-black overflow-hidden">
         {post.cover_image_url && (
           <Image
             src={post.cover_image_url}
             alt={post.title}
-            width={1920}
-            height={1080}
-            className="w-full h-auto md:aspect-[21/9] md:object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
             priority
           />
         )}
-        {/* Gradient overlay - black from bottom to middle */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-      </div>
+        {/* Darkening gradient for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/25" />
 
-      {/* Content */}
-      <div className="container-narrow px-5 sm:px-6 py-8 sm:py-10 md:py-12">
-        {/* Meta - Mobile optimized */}
-        <div className="text-center mb-8 sm:mb-10 md:mb-12">
-          {/* Category & Meta on mobile - stacked elegantly */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-0 mb-5 sm:mb-4">
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-rose-gold font-medium">
+        {/* Title block over image */}
+        <div className="absolute inset-0 flex items-end justify-center pb-[9vh]">
+          <div className="text-center text-white px-6 max-w-3xl">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.22em] text-white/85 mb-4 sm:mb-5">
               {getCategoryName(post.category?.slug)}
-            </span>
-            <span className="hidden sm:inline font-serif-mixed text-sm text-muted-foreground mx-3">•</span>
-            <span className="font-serif-mixed text-[11px] sm:text-sm text-muted-foreground/80 tracking-wide">
-              {formatDate(post.published_at, locale)}
-            </span>
-            <span className="hidden sm:inline font-serif-mixed text-sm text-muted-foreground mx-3">•</span>
-            <span className="font-serif-mixed text-[11px] sm:text-sm text-muted-foreground/80 tracking-wide">
-              {post.reading_time_minutes || 5}{t.post.readingTime}
-            </span>
-          </div>
-
-          {/* Decorative divider */}
-          <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
-            <div className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/40" />
-            <div className="w-1 h-1 rotate-45 bg-rose-gold/60" />
-            <div className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/40" />
-          </div>
-
-          <h1 className="font-display-ko text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-6 sm:mb-8 text-balance leading-[1.3] sm:leading-tight px-2">
-            {displayTitle}
-          </h1>
-
-          {/* Bottom divider */}
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-8 sm:w-12 h-[1px] bg-gradient-to-r from-transparent to-border" />
-            <div className="w-1 h-1 rotate-45 bg-muted-foreground/30" />
-            <div className="w-8 sm:w-12 h-[1px] bg-gradient-to-l from-transparent to-border" />
+            </p>
+            <h1 className="font-display-ko text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.15] break-keep mb-4 sm:mb-5">
+              {displayTitle.split(/,\s*/).map((part, i, arr) => (
+                <span key={i} className="block">
+                  {part}{i < arr.length - 1 ? ',' : ''}
+                </span>
+              ))}
+            </h1>
+            {displayExcerpt && (
+              <p className="font-serif italic text-base sm:text-lg md:text-xl text-white/80 leading-relaxed break-keep max-w-2xl mx-auto mb-5 sm:mb-6">
+                {displayExcerpt}
+              </p>
+            )}
+            <p className="text-[11px] sm:text-xs text-white/70 tracking-wide">
+              {formatDate(post.published_at, locale)} · {post.reading_time_minutes || 5}{t.post.readingTime}
+            </p>
           </div>
         </div>
+      </header>
 
+      {/* Content */}
+      <div className="container-narrow px-5 sm:px-6 py-10 sm:py-12 md:py-16">
         {/* Article Content */}
         <div
           className="prose prose-stone mx-auto post-content
@@ -136,20 +132,30 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
             prose-h3:text-lg prose-h3:sm:text-xl prose-h3:md:text-2xl prose-h3:mt-8 prose-h3:sm:mt-10 prose-h3:md:mt-12 prose-h3:mb-4 prose-h3:sm:mb-5 prose-h3:md:mb-6
             prose-p:text-[15px] prose-p:sm:text-base prose-p:md:text-lg prose-p:leading-[1.85] prose-p:sm:leading-[1.9] prose-p:mb-5 prose-p:sm:mb-6 prose-p:md:mb-8 prose-p:text-muted-foreground prose-p:text-justify
             prose-p:empty:mb-3 prose-p:empty:h-3 prose-p:empty:sm:mb-4 prose-p:empty:sm:h-4
-            prose-blockquote:border-l-0 prose-blockquote:border-y prose-blockquote:border-rose-gold/30
+            prose-blockquote:border-l-0 prose-blockquote:border-y prose-blockquote:border-border
             prose-blockquote:px-4 prose-blockquote:sm:px-6 prose-blockquote:md:px-8 prose-blockquote:py-5 prose-blockquote:sm:py-6 prose-blockquote:md:py-8 prose-blockquote:my-8 prose-blockquote:sm:my-10 prose-blockquote:md:my-12
             prose-blockquote:font-display prose-blockquote:text-lg prose-blockquote:sm:text-xl prose-blockquote:md:text-2xl
             prose-blockquote:text-center prose-blockquote:text-foreground
             prose-blockquote:not-italic prose-blockquote:bg-muted/30
-            prose-a:text-navy prose-a:underline prose-a:underline-offset-4 prose-a:decoration-rose-gold/50
-            prose-img:my-10 prose-img:sm:my-14 prose-img:md:my-20 prose-img:rounded-lg prose-img:shadow-[0_8px_30px_rgba(0,0,0,0.25)]
+            prose-a:text-link prose-a:underline prose-a:underline-offset-4 prose-a:decoration-link/40
+            prose-img:my-10 prose-img:sm:my-14 prose-img:md:my-20
             prose-figure:my-10 prose-figure:sm:my-14 prose-figure:md:my-20
             prose-strong:text-foreground prose-strong:font-medium
             prose-li:text-muted-foreground prose-li:leading-relaxed prose-li:text-[15px] prose-li:sm:text-base
-            first-letter:text-4xl first-letter:sm:text-5xl first-letter:font-display first-letter:float-left first-letter:mr-2 first-letter:sm:mr-3 first-letter:mt-0.5 first-letter:sm:mt-1 first-letter:text-foreground
           "
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
+
+        {/* Brand signature — logo, always shown at the end of the article */}
+        <div className="mt-12 flex justify-start">
+          <Image
+            src="/images/logo/logo_text_trim.png"
+            alt="Muse de Marée"
+            width={161}
+            height={26}
+            className="h-[26px] w-auto opacity-60"
+          />
+        </div>
       </div>
 
       {/* Related Posts - Compact mobile design */}
@@ -158,7 +164,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
           <div className="container-wide px-5 sm:px-6">
             {/* Section header */}
             <div className="flex items-center gap-3 mb-6 sm:mb-8">
-              <div className="w-6 sm:w-8 h-[1px] bg-rose-gold/60" />
+              <div className="w-6 sm:w-8 h-[1px] bg-foreground" />
               <h2 className="text-[10px] sm:text-xs uppercase tracking-[0.25em] text-muted-foreground font-medium">
                 {t.sections.relatedStories}
               </h2>
@@ -172,7 +178,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
                   href={`/post/${relatedPost.slug}`}
                   className="group flex-shrink-0 w-[75vw] sm:w-[60vw] md:w-auto snap-start"
                 >
-                  <article className="bg-background rounded-sm overflow-hidden border border-border/50 hover:border-border transition-colors">
+                  <article className="bg-background overflow-hidden transition-colors">
                     <div className="aspect-[16/10] relative bg-muted overflow-hidden">
                       {relatedPost.cover_image_url && (
                         <Image
@@ -184,7 +190,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
                       )}
                     </div>
                     <div className="p-3 sm:p-4">
-                      <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-rose-gold font-medium mb-1.5 sm:mb-2">
+                      <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-foreground font-medium mb-1.5 sm:mb-2">
                         {getCategoryName(relatedPost.category?.slug)}
                       </p>
                       <h3 className="font-display text-sm sm:text-base md:text-lg leading-snug group-hover:text-muted-foreground transition-colors line-clamp-2">

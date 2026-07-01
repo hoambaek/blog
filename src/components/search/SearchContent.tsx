@@ -106,13 +106,6 @@ export function SearchContent({
         </div>
 
         <div className="container-narrow relative z-10 text-center text-white">
-          {/* Decorative Element */}
-          <div className="flex items-center justify-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="w-16 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/60" />
-            <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold/80" />
-            <div className="w-16 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/60" />
-          </div>
-
           <p
             className="uppercase text-[10px] md:text-xs tracking-[0.4em] text-white/50 mb-6 font-light animate-fade-in-up"
             style={{ animationDelay: '0.3s' }}

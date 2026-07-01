@@ -117,9 +117,9 @@ export default function NewsletterPage() {
       // 이미지 프롬프트 블록 제거
       .replace(/```\n\[IMAGE:[\s\S]*?```/gm, '')
       // 인용문 변환
-      .replace(/^>\s*(.+)$/gm, '<blockquote style="border-left: 2px solid #B7916E; padding-left: 20px; margin: 24px 0; font-style: italic; color: #78716C;">$1</blockquote>')
+      .replace(/^>\s*(.+)$/gm, '<blockquote style="border-left: 2px solid #CCAD7B; padding-left: 20px; margin: 24px 0; font-style: italic; color: #78716C;">$1</blockquote>')
       // H3 변환
-      .replace(/^###\s+(.+)$/gm, '<h3 style="font-family: \'Playfair Display\', Georgia, serif; font-size: 18px; font-weight: 500; color: #1C1917; margin: 32px 0 16px; letter-spacing: -0.01em;">$1</h3>')
+      .replace(/^###\s+(.+)$/gm, '<h3 style="font-family: \'Cormorant Garamond\', Georgia, serif; font-size: 18px; font-weight: 500; color: #1C1917; margin: 32px 0 16px; letter-spacing: -0.01em;">$1</h3>')
       // 볼드 변환
       .replace(/\*\*(.+?)\*\*/g, '<strong style="color: #1C1917;">$1</strong>')
       // 수평선 변환
@@ -144,19 +144,19 @@ export default function NewsletterPage() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body style="margin: 0; padding: 0; background-color: #FAFAF9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 520px; margin: 0 auto; background-color: #ffffff;">
     <tr>
-      <td style="background-color: #0a0a0a; padding: 32px 40px; text-align: center;">
-        <div style="font-family: 'Playfair Display', Georgia, serif; color: #ffffff; font-size: 18px; font-weight: 400; letter-spacing: 0.12em; margin: 0;">LE JOURNAL DE MARÉE</div>
+      <td style="background-color: #0a0908; padding: 32px 40px; text-align: center;">
+        <div style="font-family: 'Cormorant Garamond', Georgia, serif; color: #ffffff; font-size: 18px; font-weight: 400; letter-spacing: 0.12em; margin: 0;">MUSE DE MARÉE</div>
       </td>
     </tr>
     <tr>
       <td style="background-color: #ffffff; padding: 48px 40px 40px;">
-        <h1 style="font-family: 'Playfair Display', Georgia, serif; font-size: 28px; font-weight: 400; color: #1C1917; text-align: left; margin: 0 0 12px; letter-spacing: -0.02em;">${title}</h1>
-        <div style="width: 32px; height: 2px; background-color: #B7916E; margin: 0 0 32px;"></div>
+        <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; font-weight: 400; color: #1C1917; text-align: left; margin: 0 0 12px; letter-spacing: -0.02em;">${title}</h1>
+        <div style="width: 32px; height: 2px; background-color: #CCAD7B; margin: 0 0 32px;"></div>
         ${html}
       </td>
     </tr>
@@ -412,21 +412,21 @@ export default function NewsletterPage() {
         )
       case 'scheduled':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-700">
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-muted text-foreground">
             <Clock className="h-3 w-3" />
             예약됨
           </span>
         )
       case 'sent':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-700">
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-foreground text-background">
             <CheckCircle className="h-3 w-3" />
             발송완료
           </span>
         )
       case 'failed':
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-red-100 text-red-700">
+          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs border border-destructive/40 text-destructive">
             <AlertCircle className="h-3 w-3" />
             실패
           </span>

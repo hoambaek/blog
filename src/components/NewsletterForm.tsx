@@ -54,9 +54,9 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
     return (
       <div className="flex flex-col items-center justify-center py-4">
         <div className={`w-12 h-12 mb-4 border flex items-center justify-center ${
-          isDark ? 'border-rose-gold' : 'border-rose-gold'
+          isDark ? 'border-white' : 'border-foreground'
         }`}>
-          <Check className={`w-6 h-6 ${isDark ? 'text-rose-gold' : 'text-rose-gold'}`} />
+          <Check className={`w-6 h-6 ${isDark ? 'text-white' : 'text-foreground'}`} />
         </div>
         <p className={`font-medium ${isDark ? 'text-white' : 'text-foreground'}`}>
           {message}
@@ -86,7 +86,7 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t.newsletter.placeholder}
-              className="w-full bg-transparent border border-rose-gold/30 px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-white/60 placeholder:text-rose-gold/40 focus:outline-none focus:border-rose-gold/50 transition-colors"
+              className="w-full bg-white/[0.05] border border-white/30 px-3 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/60 focus:bg-white/[0.08] transition-colors"
               required
               disabled={status === 'loading'}
             />
@@ -94,7 +94,7 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
           <button
             type="submit"
             disabled={status === 'loading'}
-            className="group bg-rose-gold/10 border border-rose-gold/40 px-4 py-2.5 sm:px-5 sm:py-3 text-[10px] sm:text-xs uppercase tracking-[0.15em] text-rose-gold/70 hover:bg-rose-gold/20 hover:text-rose-gold hover:border-rose-gold/60 transition-all disabled:opacity-50"
+            className="group bg-white text-black border border-white px-4 py-2.5 sm:px-5 sm:py-3 text-[10px] sm:text-xs uppercase tracking-[0.15em] font-semibold hover:bg-white/85 transition-all disabled:opacity-50"
           >
             <span className="flex items-center justify-center gap-1.5">
               {status === 'loading' ? t.newsletter.processing : t.newsletter.subscribe}

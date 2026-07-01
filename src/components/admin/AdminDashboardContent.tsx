@@ -42,7 +42,7 @@ export function AdminDashboardContent({
 }: AdminDashboardContentProps) {
   const t = {
     dashboard: '대시보드',
-    manage: 'Le Journal de Marée 관리',
+    manage: 'Muse de Marée 관리',
     newPost: '새 포스트',
     totalPosts: '전체 포스트',
     publishedDraft: (published: number, draft: number) => `발행 ${published} / 초안 ${draft}`,
@@ -69,9 +69,9 @@ export function AdminDashboardContent({
   }
 
   const statusLabels: Record<string, { label: string; className: string }> = {
-    published: { label: t.published, className: 'bg-green-100 text-green-800' },
-    draft: { label: t.draft, className: 'bg-yellow-100 text-yellow-800' },
-    scheduled: { label: t.scheduled, className: 'bg-blue-100 text-blue-800' },
+    published: { label: t.published, className: 'bg-foreground text-background' },
+    draft: { label: t.draft, className: 'border border-border text-muted-foreground' },
+    scheduled: { label: t.scheduled, className: 'bg-muted text-foreground' },
   }
 
   const stats = [

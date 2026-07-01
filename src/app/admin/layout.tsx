@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ClerkProvider, UserButton } from '@clerk/nextjs'
 import {
@@ -60,10 +61,16 @@ function SidebarContent() {
     <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-6 border-b border-border">
-        <Link href="/admin" className="font-display text-lg">
-          LE JOURNAL
+        <Link href="/admin" className="block" aria-label="Muse de Marée Admin">
+          <Image
+            src="/images/logo/logo_text_trim.png"
+            alt="Muse de Marée"
+            width={150}
+            height={24}
+            className="h-[19px] w-auto"
+          />
         </Link>
-        <p className="text-xs text-muted-foreground mt-1">Admin</p>
+        <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-2">Admin</p>
       </div>
 
       {/* Navigation */}
@@ -138,8 +145,15 @@ export default function AdminLayout({
           </SheetContent>
         </Sheet>
         <div className="flex-1">
-          <Link href="/admin" className="font-display text-lg">
-            LE JOURNAL ADMIN
+          <Link href="/admin" className="inline-flex items-center gap-2" aria-label="Muse de Marée Admin">
+            <Image
+              src="/images/logo/logo_text_trim.png"
+              alt="Muse de Marée"
+              width={130}
+              height={20}
+              className="h-[17px] w-auto"
+            />
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Admin</span>
           </Link>
         </div>
         <UserButton afterSignOutUrl="/" />

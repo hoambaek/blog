@@ -36,14 +36,14 @@ export default function SettingsPage() {
             <label className="text-sm font-medium block mb-2">사이트 이름</label>
             <input
               type="text"
-              defaultValue="Le Journal de Marée"
+              defaultValue="Muse de Marée"
               className="w-full border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:border-foreground"
             />
           </div>
           <div>
             <label className="text-sm font-medium block mb-2">사이트 설명</label>
             <textarea
-              defaultValue="해저숙성 샴페인 뮤즈드마레의 이야기를 전하는 디지털 저널"
+              defaultValue="바다의 시간을 기록하는 브랜드, 뮤즈드마레의 저널"
               rows={3}
               className="w-full border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:border-foreground resize-none"
             />

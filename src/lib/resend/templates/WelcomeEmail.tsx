@@ -18,34 +18,34 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
   const content = {
     ko: {
       greeting: '환영합니다',
-      intro: '뮤즈드마레의 이야기를 함께할 수 있게 되어 기쁩니다.',
+      intro: '뮤즈드마레의 기록을 함께할 수 있게 되어 기쁩니다.',
       description:
-        'Le Journal de Marée는 해저숙성 샴페인 뮤즈드마레의 이야기를 전하는 디지털 저널입니다. 바다의 시간, 미식, 문화와 예술의 순간들을 담아 전해드립니다.',
+        'Muse de Marée의 저널에서 수심 30m에서 기록되는 바다의 시간을 전해드립니다. 관측 일지와 인양 소식, 미식, 문화와 예술의 순간들을 담아 보내드립니다.',
       whatToExpect: '받아보실 수 있는 소식',
       bullets: [
         '새로운 포스트 알림',
-        '비하인드 스토리',
-        '이벤트 소식',
+        '바다의 관측 일지',
+        '인양 소식',
         '페어링 레시피',
       ],
-      closing: '바다가 빚어낸 시간의 예술을 함께 나누길 기대합니다.',
-      signature: 'Le Journal de Marée',
+      closing: '바다가 쓴 시간을 함께 나누길 기대합니다.',
+      signature: 'Muse de Marée',
       unsubscribe: '수신거부',
     },
     en: {
       greeting: 'Welcome',
-      intro: 'We are delighted to share the stories of Muse de Marée with you.',
+      intro: 'We are delighted to share the records of Muse de Marée with you.',
       description:
-        'Le Journal de Marée is the digital journal of Muse de Marée, the sea-aged champagne. We bring you tales of the sea, gastronomy, culture and art.',
+        'The journal of Muse de Marée brings you the time of the sea, recorded at 30m below — observation logs, retrieval news, gastronomy, culture and art.',
       whatToExpect: 'What to expect',
       bullets: [
         'New post notifications',
-        'Behind-the-scenes stories',
-        'Event updates',
+        "The sea's observation log",
+        'Retrieval news',
         'Pairing recipes',
       ],
-      closing: 'We look forward to sharing the art of time, crafted by the sea.',
-      signature: 'Le Journal de Marée',
+      closing: 'We look forward to sharing the time written by the sea.',
+      signature: 'Muse de Marée',
       unsubscribe: 'Unsubscribe',
     },
   }
@@ -57,7 +57,7 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
     <Html>
       <Head>
         <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&display=swap"
           rel="stylesheet"
         />
       </Head>
@@ -65,7 +65,7 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
         <Container style={styles.container}>
           {/* Header */}
           <Section style={styles.header}>
-            <Text style={styles.logo}>LE JOURNAL DE MARÉE</Text>
+            <Text style={styles.logo}>MUSE DE MARÉE</Text>
           </Section>
 
           {/* Content */}
@@ -108,8 +108,8 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
 
 export function getWelcomeEmailSubject(locale: 'ko' | 'en' = 'ko') {
   return locale === 'ko'
-    ? 'Le Journal de Marée에 오신 것을 환영합니다'
-    : 'Welcome to Le Journal de Marée'
+    ? 'Muse de Marée에 오신 것을 환영합니다'
+    : 'Welcome to Muse de Marée'
 }
 
 // Design tokens matching the blog
@@ -118,8 +118,8 @@ const colors = {
   foreground: '#1C1917',
   muted: '#78716C',
   border: '#E7E5E4',
-  roseGold: '#B7916E',
-  dark: '#0a0a0a',
+  roseGold: '#CCAD7B',
+  dark: '#0a0908',
 }
 
 const styles = {
@@ -145,7 +145,7 @@ const styles = {
   },
 
   logo: {
-    fontFamily: '"Playfair Display", Georgia, serif',
+    fontFamily: '"Cormorant Garamond", Georgia, serif',
     fontSize: '18px',
     fontWeight: '400' as const,
     letterSpacing: '0.12em',
@@ -159,7 +159,7 @@ const styles = {
   },
 
   greeting: {
-    fontFamily: '"Playfair Display", Georgia, serif',
+    fontFamily: '"Cormorant Garamond", Georgia, serif',
     fontSize: '28px',
     fontWeight: '400' as const,
     color: colors.foreground,
@@ -233,7 +233,7 @@ const styles = {
   },
 
   signature: {
-    fontFamily: '"Playfair Display", Georgia, serif',
+    fontFamily: '"Cormorant Garamond", Georgia, serif',
     fontSize: '14px',
     color: colors.foreground,
     margin: '0',

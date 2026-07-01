@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 
 const SITE_URL = 'https://journal.musedemaree.com'
-const SITE_NAME = 'Le Journal de Marée'
-const SITE_DESCRIPTION = '심연의 시간이 조각한 바다의 수공예품. 해저숙성 샴페인 뮤즈드마레의 이야기를 담은 저널입니다.'
+const SITE_NAME = 'Muse de Marée'
+const SITE_DESCRIPTION = '샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.'
 
 function escapeXml(text: string): string {
   return text

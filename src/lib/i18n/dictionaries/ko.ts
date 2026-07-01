@@ -62,6 +62,7 @@ export interface Dictionary {
     brandQuote: string
     privacy: string
     terms: string
+    home: string
     aboutJournal: string
     newsletterSubscribe: string
     privacyConsent: string
@@ -130,17 +131,17 @@ export const ko: Dictionary = {
     maison: '메종 이야기',
     culture: '문화와 예술',
     table: '테이블 위에서',
-    news: '뉴스 & 이벤트',
+    news: '인양과 소식',
     about: '소개',
     subscribe: '구독',
   },
 
   // Hero Section
   hero: {
-    subtitle: 'Le Journal de Marée',
-    title1: '바다의 시간',
+    subtitle: 'Written by the Sea',
+    title1: '바다의 시간을 기록하다',
     title2: 'Le temps de la mer',
-    description: '프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인, 뮤즈드마레의 이야기',
+    description: '바다가 만든 시간을 기록하는 곳. 샹파뉴가 빚은 샴페인이 한국 남해 수심 30m에서 보낸 모든 날을 뮤즈드마레가 기록합니다.',
     cta: '최신 포스트 읽기',
     imageAlt: '바다',
   },
@@ -171,8 +172,8 @@ export const ko: Dictionary = {
 
   // Newsletter
   newsletter: {
-    title: '바다의 소식을 받아보세요',
-    description: '해저에서 전하는 이야기, 새로운 콘텐츠 소식을 가장 먼저 만나보세요.',
+    title: '바다의 기록을 받아보세요',
+    description: '수심 30m에서 기록되는 이야기와 새 저널을 가장 먼저 받아보세요.',
     placeholder: '이메일 주소',
     button: '구독하기',
     subscribe: '구독하기',
@@ -184,7 +185,7 @@ export const ko: Dictionary = {
     alreadySubscribed: '이미 구독 중인 이메일입니다.',
     resubscribed: '다시 구독되었습니다!',
     moreStories: '더 많은 이야기가 기다리고 있습니다',
-    moreStoriesDescription: '뮤즈드마레의 새로운 소식을 가장 먼저 받아보세요.',
+    moreStoriesDescription: '뮤즈드마레의 새로운 기록을 가장 먼저 받아보세요.',
   },
 
   // Footer
@@ -193,10 +194,11 @@ export const ko: Dictionary = {
     info: '정보',
     social: '소셜',
     brand: '브랜드',
-    brandDescription: '뮤즈드마레는 프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인 브랜드입니다.',
-    brandQuote: '파도가 기억하는 시간, 심해가 허락한 깊이\n— 샹파뉴와 한국 바다가 빚은 유일한 샴페인',
+    brandDescription: '뮤즈드마레는 바다의 시간을 기록하는 브랜드입니다. 샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다.',
+    brandQuote: '샹파뉴가 만들고,\n남해가 쓴 시간',
     privacy: '개인정보처리방침',
     terms: '이용약관',
+    home: '홈페이지',
     aboutJournal: '저널 소개',
     newsletterSubscribe: '뉴스레터 구독',
     privacyConsent: '구독 신청 시 개인정보처리방침에 동의하게 됩니다.',

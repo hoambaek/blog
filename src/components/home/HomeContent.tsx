@@ -77,37 +77,28 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
 
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
-          {/* Decorative Element */}
-          <div className="flex items-center justify-center gap-6 mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="w-20 h-[1px] bg-gradient-to-r from-transparent to-rose-gold/60" />
-            <div className="w-1.5 h-1.5 rotate-45 bg-rose-gold/80" />
-            <div className="w-20 h-[1px] bg-gradient-to-l from-transparent to-rose-gold/60" />
-          </div>
+          {/* Eyebrow — brand motto */}
+          <p
+            className="text-[11px] uppercase tracking-[0.4em] text-white/60 mb-8 animate-fade-in-up"
+            style={{ animationDelay: '0.2s' }}
+          >
+            {t.hero.subtitle}
+          </p>
 
           {/* Main Title */}
           <h1
-            className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-8 leading-[1.2] font-normal animate-fade-in-up"
+            className="font-display text-4xl md:text-5xl lg:text-6xl mb-8 leading-[1.05] font-normal tracking-tight text-white break-keep lg:whitespace-nowrap animate-fade-in-up"
             style={{ animationDelay: '0.6s' }}
           >
-            <span className="block text-white/95 whitespace-nowrap">{t.hero.title1}</span>
-            <span className="block mt-4 text-rose-gold italic whitespace-nowrap">
-              {t.hero.title2}
-            </span>
+            {t.hero.title1}
           </h1>
 
           {/* Description */}
           <p
-            className="text-base md:text-lg text-white/50 max-w-xl mx-auto mt-6 mb-14 font-extralight leading-relaxed animate-fade-in-up"
+            className="text-sm md:text-base text-white/60 max-w-xl mx-auto mt-6 mb-14 font-light leading-relaxed break-keep animate-fade-in-up"
             style={{ animationDelay: '0.8s' }}
           >
-            {locale === 'ko' ? (
-              <>
-                <span className="hidden md:inline">프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인,<br />뮤즈드마레의 이야기.</span>
-                <span className="md:hidden">프랑스 샹파뉴의 전통과 한국 바다의 시간이 만나 탄생한 해저숙성 샴페인, 뮤즈드마레의 이야기.</span>
-              </>
-            ) : (
-              'The story of Muse de Marée, where French Champagne tradition meets the passage of time in Korean waters.'
-            )}
+            {t.hero.description}
           </p>
 
           {/* CTA */}
@@ -115,7 +106,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             {mainFeatured ? (
               <Link
                 href={`/post/${mainFeatured.slug}`}
-                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-rose-gold hover:text-white"
+                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-white/80"
               >
                 {t.hero.cta}
                 <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
@@ -123,7 +114,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             ) : (
               <Link
                 href="/category/all"
-                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-rose-gold hover:text-white"
+                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-white/80"
               >
                 {t.sections.viewAll}
                 <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
@@ -132,107 +123,84 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 animate-fade-in-up" style={{ animationDelay: '1.2s' }}>
-          <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 font-light">Scroll</span>
-          <div className="w-[1px] h-10 bg-gradient-to-b from-white/40 to-transparent relative overflow-hidden">
-            <div className="absolute inset-x-0 top-0 h-3 bg-white animate-scroll-line" />
-          </div>
-        </div>
-
-        {/* Corner Accents */}
-        <div className="absolute top-10 left-10 w-20 h-20 border-l border-t border-white/[0.08]" />
-        <div className="absolute top-10 right-10 w-20 h-20 border-r border-t border-white/[0.08]" />
-        <div className="absolute bottom-10 left-10 w-20 h-20 border-l border-b border-white/[0.08]" />
-        <div className="absolute bottom-10 right-10 w-20 h-20 border-r border-b border-white/[0.08]" />
       </section>
 
-      {/* Featured Section - Editorial Grid */}
+      {/* Featured Section — magazine grid (large feature + 2-up rows) */}
       {featuredPosts.length > 0 && (
-        <section className="py-24 md:py-32 bg-background">
+        <section className="py-16 md:py-24 bg-background">
           <div className="container-wide">
-            {/* Section Header */}
-            <div className="flex items-center justify-between mb-16">
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-[1px] bg-rose-gold" />
-                <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-                  {t.sections.featured}
-                </h2>
-              </div>
+            {/* Section Header — category eyebrow */}
+            <div className="flex items-center justify-between mb-10 pb-4 border-b border-foreground">
+              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-foreground">
+                {t.sections.featured}
+              </h2>
               <Link
                 href="/category/all"
-                className="group flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                className="group inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-foreground hover:text-muted-foreground transition-colors"
               >
                 {t.sections.viewAll}
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
 
-            {/* Featured Grid */}
-            <div className="grid lg:grid-cols-12 gap-8">
-              {/* Main Featured - Large Card */}
+            {/* Large feature + secondary 2-up */}
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-14">
+              {/* Large feature — image above, text below */}
               {mainFeatured && (
-                <Link href={`/post/${mainFeatured.slug}`} className="lg:col-span-7 group">
-                  <article className="relative">
-                    <div className="aspect-[4/3] relative overflow-hidden bg-muted">
+                <Link href={`/post/${mainFeatured.slug}`} className="group block">
+                  <article>
+                    <div className="aspect-[16/9] relative overflow-hidden bg-secondary mb-5">
                       {mainFeatured.cover_image_url ? (
                         <Image
                           src={mainFeatured.cover_image_url}
                           alt={mainFeatured.title}
                           fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                         />
                       ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-stone-200 to-stone-300" />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-8 md:p-10">
-                      <div className="flex items-center gap-3 mb-4">
-                        <span className="px-3 py-1 bg-white/10 backdrop-blur-sm text-[10px] font-medium uppercase tracking-wider text-white/80">
-                          {mainFeatured.category?.name}
-                        </span>
-                        <span className="text-[11px] text-white/50">
-                          {formatDate(mainFeatured.published_at, locale)}
-                        </span>
-                      </div>
-                      <h3 className="font-display text-2xl md:text-3xl lg:text-4xl text-white mb-3 transition-colors">
-                        {postTitle(mainFeatured)}
-                      </h3>
-                      {postExcerpt(mainFeatured) && (
-                        <p className="text-sm text-white/60 line-clamp-2 max-w-lg">
-                          {postExcerpt(mainFeatured)}
-                        </p>
+                        <div className="absolute inset-0 bg-secondary" />
                       )}
                     </div>
+                    <p className="text-xs font-bold uppercase tracking-[0.15em] text-foreground mb-3">
+                      {mainFeatured.category?.name}
+                    </p>
+                    <h3 className="font-display text-3xl md:text-4xl leading-tight tracking-tight mb-3 group-hover:underline decoration-1 underline-offset-4">
+                      {postTitle(mainFeatured)}
+                    </h3>
+                    {postExcerpt(mainFeatured) && (
+                      <p className="font-serif text-base text-muted-foreground leading-relaxed line-clamp-3 mb-3">
+                        {postExcerpt(mainFeatured)}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {formatDate(mainFeatured.published_at, locale)}
+                    </p>
                   </article>
                 </Link>
               )}
 
-              {/* Secondary Featured - Stacked Cards */}
-              <div className="lg:col-span-5 flex flex-col gap-8">
-                {secondaryFeatured.map((post, index) => (
-                  <Link key={post.id} href={`/post/${post.slug}`} className="group flex-1">
-                    <article className="h-full grid md:grid-cols-5 gap-6 p-6 bg-card border border-border hover:border-muted-foreground/20 transition-all duration-300">
-                      <div className="md:col-span-2 aspect-square md:aspect-auto relative overflow-hidden bg-muted">
+              {/* Secondary — two story rows with hairline dividers */}
+              <div className="flex flex-col divide-y divide-border">
+                {secondaryFeatured.map((post) => (
+                  <Link key={post.id} href={`/post/${post.slug}`} className="group block py-6 first:pt-0 last:pb-0">
+                    <article className="grid grid-cols-3 gap-5">
+                      <div className="col-span-1 aspect-[4/3] relative overflow-hidden bg-secondary">
                         {post.cover_image_url ? (
                           <Image
                             src={post.cover_image_url}
                             alt={post.title}
                             fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                           />
                         ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-stone-200 to-stone-300" />
+                          <div className="absolute inset-0 bg-secondary" />
                         )}
                       </div>
-                      <div className="md:col-span-3 flex flex-col justify-center">
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider text-rose-gold">
-                            {post.category?.name}
-                          </span>
-                        </div>
-                        <h3 className="font-display text-xl md:text-2xl mb-3 group-hover:text-muted-foreground transition-colors line-clamp-2">
+                      <div className="col-span-2">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground mb-2">
+                          {post.category?.name}
+                        </p>
+                        <h3 className="font-display text-xl md:text-2xl leading-snug mb-2 group-hover:underline decoration-1 underline-offset-4 line-clamp-2">
                           {postTitle(post)}
                         </h3>
                         <p className="text-xs text-muted-foreground">
@@ -248,54 +216,48 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
         </section>
       )}
 
-      {/* Latest Section - Magazine Grid */}
+      {/* Latest Section — vertical story-row stack */}
       {latestPosts.length > 0 && (
-        <section className="py-24 md:py-32 bg-muted/30">
+        <section className="py-16 md:py-24 bg-background border-t border-border">
           <div className="container-wide">
             {/* Section Header */}
-            <div className="flex items-center justify-between mb-16">
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-[1px] bg-foreground" />
-                <h2 className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground">
-                  {t.sections.latest}
-                </h2>
-              </div>
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-foreground">
+              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-foreground">
+                {t.sections.latest}
+              </h2>
             </div>
 
-            {/* Latest Grid - 4 columns on desktop */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-              {latestPosts.map((post, index) => (
-                <Link key={post.id} href={`/post/${post.slug}`} className="group">
-                  <article>
-                    <div className="aspect-[4/5] relative overflow-hidden bg-muted mb-5">
+            {/* Story rows */}
+            <div className="divide-y divide-border">
+              {latestPosts.map((post) => (
+                <Link key={post.id} href={`/post/${post.slug}`} className="group block py-6">
+                  <article className="grid md:grid-cols-12 gap-5 items-center">
+                    <div className="md:col-span-3 aspect-[16/10] relative overflow-hidden bg-secondary">
                       {post.cover_image_url ? (
                         <Image
                           src={post.cover_image_url}
                           alt={post.title}
                           fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         />
                       ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-stone-200 to-stone-300" />
+                        <div className="absolute inset-0 bg-secondary" />
                       )}
-                      {/* Hover Overlay */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                     </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-rose-gold">
+                    <div className="md:col-span-9">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
                           {post.category?.name}
                         </span>
-                        <span className="w-1 h-1 rounded-full bg-border" />
                         <span className="text-[11px] text-muted-foreground">
                           {formatDate(post.published_at, locale)}
                         </span>
                       </div>
-                      <h3 className="font-display text-lg md:text-xl leading-snug group-hover:text-muted-foreground transition-colors line-clamp-2">
+                      <h3 className="font-display text-2xl md:text-3xl leading-snug tracking-tight mb-2 group-hover:underline decoration-1 underline-offset-4 line-clamp-2">
                         {postTitle(post)}
                       </h3>
                       {postExcerpt(post) && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                        <p className="font-serif text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed">
                           {postExcerpt(post)}
                         </p>
                       )}
@@ -305,11 +267,11 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
               ))}
             </div>
 
-            {/* View All Button */}
-            <div className="mt-16 text-center">
+            {/* View All Button — square primary */}
+            <div className="mt-10 text-center">
               <Link
                 href="/category/all"
-                className="group inline-flex items-center gap-3 px-8 py-4 border border-foreground text-foreground text-xs font-semibold uppercase tracking-[0.15em] hover:bg-foreground hover:text-background transition-all duration-300"
+                className="group inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-sm font-bold uppercase tracking-[0.1em] hover:bg-foreground/85 transition-colors"
               >
                 {t.sections.viewAll}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
