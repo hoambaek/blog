@@ -1,5 +1,6 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, ArrowUpRight, ChevronRight } from 'lucide-react'
@@ -35,6 +36,37 @@ function formatDate(dateString: string | null, locale: string) {
   })
 }
 
+// Compact numeric dateline for editorial meta rows — 2026.01.13
+function formatDateline(dateString: string | null) {
+  if (!dateString) return ''
+  const d = new Date(dateString)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}.${m}.${day}`
+}
+
+// Ruled kicker — a short hairline lead-in before a category label (Wired editorial)
+function Kicker({ children }: { children: ReactNode }) {
+  if (!children) return null
+  return (
+    <span className="inline-flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground">
+      <span className="h-px w-5 bg-foreground" aria-hidden />
+      {children}
+    </span>
+  )
+}
+
+// Section eyebrow with a solid ink tick
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <h2 className="inline-flex items-center gap-3.5 text-[11px] font-bold uppercase tracking-[0.28em] text-foreground">
+      <span className="h-2 w-2 bg-foreground" aria-hidden />
+      {children}
+    </h2>
+  )
+}
+
 export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
   const t = useTranslation()
   const { locale } = useLocale()
@@ -44,7 +76,14 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
   const postExcerpt = (p: Post) => isEn ? (p.excerpt_en || p.excerpt) : p.excerpt
 
   const mainFeatured = featuredPosts[0]
-  const secondaryFeatured = featuredPosts.slice(1, 3)
+  const featured = featuredPosts.slice(0, 3)
+  // Column count adapts to how many featured entries exist so the row always fills
+  const featuredCols =
+    featured.length >= 3
+      ? 'sm:grid-cols-2 lg:grid-cols-3'
+      : featured.length === 2
+        ? 'sm:grid-cols-2'
+        : 'sm:grid-cols-1 sm:max-w-xl'
 
   return (
     <div className="min-h-screen">
@@ -125,142 +164,103 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
 
       </section>
 
-      {/* Featured Section — magazine grid (large feature + 2-up rows) */}
+      {/* Featured Section — editorial lead story + ruled secondary column */}
       {featuredPosts.length > 0 && (
-        <section className="py-16 md:py-24 bg-background">
+        <section className="py-20 md:py-28 bg-background">
           <div className="container-wide">
-            {/* Section Header — category eyebrow */}
-            <div className="flex items-center justify-between mb-10 pb-4 border-b border-foreground">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-foreground">
-                {t.sections.featured}
-              </h2>
+            {/* Section Header */}
+            <div className="flex items-baseline justify-between mb-12 md:mb-16">
+              <SectionLabel>{t.sections.featured}</SectionLabel>
               <Link
                 href="/category/all"
-                className="group inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide text-foreground hover:text-muted-foreground transition-colors"
+                className="group inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t.sections.viewAll}
-                <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
 
-            {/* Large feature + secondary 2-up */}
-            <div className="grid lg:grid-cols-2 gap-10 lg:gap-14">
-              {/* Large feature — image above, text below */}
-              {mainFeatured && (
-                <Link href={`/post/${mainFeatured.slug}`} className="group block">
+            {/* Balanced editorial grid — columns adapt to entry count, no dominant tile */}
+            <div className={`grid gap-x-8 gap-y-12 lg:gap-x-10 ${featuredCols}`}>
+              {featured.map((post, i) => (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.slug}`}
+                  className="group block"
+                >
                   <article>
-                    <div className="aspect-[16/9] relative overflow-hidden bg-secondary mb-5">
-                      {mainFeatured.cover_image_url ? (
-                        <Image
-                          src={mainFeatured.cover_image_url}
-                          alt={mainFeatured.title}
-                          fill
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-secondary" />
-                      )}
-                    </div>
-                    <p className="text-xs font-bold uppercase tracking-[0.15em] text-foreground mb-3">
-                      {mainFeatured.category?.name}
-                    </p>
-                    <h3 className="font-display text-3xl md:text-4xl leading-tight tracking-tight mb-3 group-hover:underline decoration-1 underline-offset-4">
-                      {postTitle(mainFeatured)}
-                    </h3>
-                    {postExcerpt(mainFeatured) && (
-                      <p className="font-serif text-base text-muted-foreground leading-relaxed line-clamp-3 mb-3">
-                        {postExcerpt(mainFeatured)}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(mainFeatured.published_at, locale)}
-                    </p>
-                  </article>
-                </Link>
-              )}
-
-              {/* Secondary — two story rows with hairline dividers */}
-              <div className="flex flex-col divide-y divide-border">
-                {secondaryFeatured.map((post) => (
-                  <Link key={post.id} href={`/post/${post.slug}`} className="group block py-6 first:pt-0 last:pb-0">
-                    <article className="grid grid-cols-3 gap-5">
-                      <div className="col-span-1 aspect-[4/3] relative overflow-hidden bg-secondary">
-                        {post.cover_image_url ? (
-                          <Image
-                            src={post.cover_image_url}
-                            alt={post.title}
-                            fill
-                            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-secondary" />
-                        )}
-                      </div>
-                      <div className="col-span-2">
-                        <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground mb-2">
-                          {post.category?.name}
-                        </p>
-                        <h3 className="font-display text-xl md:text-2xl leading-snug mb-2 group-hover:underline decoration-1 underline-offset-4 line-clamp-2">
-                          {postTitle(post)}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(post.published_at, locale)}
-                        </p>
-                      </div>
-                    </article>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Latest Section — vertical story-row stack */}
-      {latestPosts.length > 0 && (
-        <section className="py-16 md:py-24 bg-background border-t border-border">
-          <div className="container-wide">
-            {/* Section Header */}
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-foreground">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-foreground">
-                {t.sections.latest}
-              </h2>
-            </div>
-
-            {/* Story rows */}
-            <div className="divide-y divide-border">
-              {latestPosts.map((post) => (
-                <Link key={post.id} href={`/post/${post.slug}`} className="group block py-6">
-                  <article className="grid md:grid-cols-12 gap-5 items-center">
-                    <div className="md:col-span-3 aspect-[16/10] relative overflow-hidden bg-secondary">
+                    <div className="aspect-[4/3] relative overflow-hidden bg-secondary mb-5">
                       {post.cover_image_url ? (
                         <Image
                           src={post.cover_image_url}
                           alt={post.title}
                           fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                          priority={i === 0}
                         />
                       ) : (
                         <div className="absolute inset-0 bg-secondary" />
                       )}
                     </div>
-                    <div className="md:col-span-9">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-foreground">
-                          {post.category?.name}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground">
-                          {formatDate(post.published_at, locale)}
-                        </span>
-                      </div>
-                      <h3 className="font-display text-2xl md:text-3xl leading-snug tracking-tight mb-2 group-hover:underline decoration-1 underline-offset-4 line-clamp-2">
+                    <div className="flex items-center gap-4 mb-3">
+                      <Kicker>{post.category?.name}</Kicker>
+                      <span className="text-[11px] tracking-[0.1em] text-muted-foreground tabular-nums">
+                        {formatDateline(post.published_at)}
+                      </span>
+                    </div>
+                    <h3 className="font-display text-2xl lg:text-[1.7rem] leading-snug tracking-tight mb-2 line-clamp-2 transition-colors group-hover:text-muted-foreground">
+                      {postTitle(post)}
+                    </h3>
+                    {postExcerpt(post) && (
+                      <p className="font-serif text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                        {postExcerpt(post)}
+                      </p>
+                    )}
+                  </article>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Latest Section — numbered journal index (running entries) */}
+      {latestPosts.length > 0 && (
+        <section className="py-20 md:py-28 bg-background border-t border-border">
+          <div className="container-wide">
+            {/* Section Header */}
+            <div className="flex items-baseline justify-between mb-12 md:mb-14">
+              <SectionLabel>{t.sections.latest}</SectionLabel>
+            </div>
+
+            {/* Typographic index — department · headline · dateline */}
+            <div className="border-t border-border">
+              {latestPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.slug}`}
+                  className="group block border-b border-border"
+                >
+                  <article className="grid grid-cols-12 gap-x-6 gap-y-1.5 md:gap-8 items-baseline py-6 md:py-7 px-4 -mx-4 transition-colors duration-300 group-hover:bg-secondary/60">
+                    {/* Department */}
+                    <div className="col-span-12 md:col-span-3">
+                      <Kicker>{post.category?.name}</Kicker>
+                    </div>
+
+                    {/* Headline */}
+                    <div className="col-span-12 md:col-span-7">
+                      <h3 className="font-display text-2xl md:text-[1.9rem] leading-[1.15] tracking-tight transition-colors group-hover:text-muted-foreground">
                         {postTitle(post)}
                       </h3>
-                      {postExcerpt(post) && (
-                        <p className="font-serif text-sm md:text-base text-muted-foreground line-clamp-2 leading-relaxed">
-                          {postExcerpt(post)}
-                        </p>
-                      )}
+                    </div>
+
+                    {/* Dateline + hover arrow */}
+                    <div className="col-span-12 md:col-span-2 flex items-center justify-start md:justify-end gap-3 mt-1 md:mt-0">
+                      <span className="text-[11px] tracking-[0.1em] text-muted-foreground tabular-nums">
+                        {formatDateline(post.published_at)}
+                      </span>
+                      <ArrowUpRight className="hidden md:block h-4 w-4 shrink-0 text-foreground opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0" />
                     </div>
                   </article>
                 </Link>
@@ -268,10 +268,10 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             </div>
 
             {/* View All Button — square primary */}
-            <div className="mt-10 text-center">
+            <div className="mt-14 text-center">
               <Link
                 href="/category/all"
-                className="group inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-sm font-bold uppercase tracking-[0.1em] hover:bg-foreground/85 transition-colors"
+                className="group inline-flex items-center gap-2 px-7 py-3.5 bg-foreground text-background text-xs font-bold uppercase tracking-[0.15em] hover:bg-foreground/85 transition-colors"
               >
                 {t.sections.viewAll}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
