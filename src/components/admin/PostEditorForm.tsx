@@ -190,6 +190,10 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
 
       if (result.success) {
         showToast(status === 'published' ? t.publishedSuccess : t.savedSuccess, 'success')
+        // Post saved but the English auto-translation failed — surface it instead of silently keeping stale English.
+        if (result.warning) {
+          showToast(result.warning, 'warning')
+        }
         router.push('/admin/posts')
       } else {
         setError(result.error || t.saveError)

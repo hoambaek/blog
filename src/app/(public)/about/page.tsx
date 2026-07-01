@@ -133,8 +133,8 @@ export default function AboutPage() {
               {/* Quote */}
               <div className="mt-16 pt-12 border-t border-border">
                 <blockquote>
-                  <p className="font-display text-2xl md:text-3xl italic text-foreground/80 leading-relaxed">
-                    샹파뉴가 만들고,<br />남해가 쓴 시간
+                  <p className="font-display text-2xl md:text-3xl italic text-foreground/80 leading-relaxed whitespace-pre-line">
+                    {t.footer.brandQuote}
                   </p>
                   <footer className="mt-6">
                     <Image

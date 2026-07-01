@@ -17,27 +17,44 @@ interface TranslatedContent {
   meta_description_en: string | null
 }
 
+interface TranslationResult {
+  content: TranslatedContent
+  // true when there was Korean content to translate and translation was attempted
+  attempted: boolean
+  // true when translation produced usable output; false means English was NOT updated
+  ok: boolean
+  // human-readable reason (Korean) shown to the admin when ok === false
+  error?: string
+}
+
+const EMPTY_TRANSLATION: TranslatedContent = {
+  title_en: null,
+  excerpt_en: null,
+  content_en: null,
+  meta_title_en: null,
+  meta_description_en: null,
+}
+
 async function translatePost(input: {
   title?: string
   excerpt?: string
   content?: string
   metaTitle?: string
   metaDescription?: string
-}): Promise<TranslatedContent> {
-  const empty: TranslatedContent = {
-    title_en: null,
-    excerpt_en: null,
-    content_en: null,
-    meta_title_en: null,
-    meta_description_en: null,
-  }
-
+}): Promise<TranslationResult> {
   const hasAnything = input.title || input.excerpt || input.content || input.metaTitle || input.metaDescription
-  if (!hasAnything) return empty
+  if (!hasAnything) {
+    return { content: EMPTY_TRANSLATION, attempted: false, ok: true }
+  }
 
   if (!process.env.ANTHROPIC_API_KEY) {
     console.warn('ANTHROPIC_API_KEY not found, skipping translation')
-    return empty
+    return {
+      content: EMPTY_TRANSLATION,
+      attempted: true,
+      ok: false,
+      error: 'ANTHROPIC_API_KEY가 설정되지 않아 영문 번역을 건너뛰었습니다. 영문 필드는 갱신되지 않았습니다.',
+    }
   }
 
   try {
@@ -71,27 +88,54 @@ Respond ONLY with valid JSON:
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
+      max_tokens: 16384,
       messages: [{ role: 'user', content: prompt }],
     })
+
+    // Truncated response → JSON is incomplete and would silently drop content.
+    if (response.stop_reason === 'max_tokens') {
+      console.error('Translation truncated: hit max_tokens')
+      return {
+        content: EMPTY_TRANSLATION,
+        attempted: true,
+        ok: false,
+        error: '번역 응답이 최대 길이에 도달해 잘렸습니다. 본문이 너무 깁니다. 영문 필드는 갱신되지 않았습니다.',
+      }
+    }
 
     const text = response.content[0].type === 'text' ? response.content[0].text : ''
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0])
       return {
-        title_en: parsed.title_en || null,
-        excerpt_en: parsed.excerpt_en || null,
-        content_en: parsed.content_en || null,
-        meta_title_en: parsed.meta_title_en || null,
-        meta_description_en: parsed.meta_description_en || null,
+        content: {
+          title_en: parsed.title_en || null,
+          excerpt_en: parsed.excerpt_en || null,
+          content_en: parsed.content_en || null,
+          meta_title_en: parsed.meta_title_en || null,
+          meta_description_en: parsed.meta_description_en || null,
+        },
+        attempted: true,
+        ok: true,
       }
     }
 
-    return empty
+    console.error('Translation response contained no JSON')
+    return {
+      content: EMPTY_TRANSLATION,
+      attempted: true,
+      ok: false,
+      error: '번역 응답을 해석하지 못했습니다. 영문 필드는 갱신되지 않았습니다.',
+    }
   } catch (error) {
     console.error('Error translating post:', error)
-    return empty
+    const message = error instanceof Error ? error.message : String(error)
+    return {
+      content: EMPTY_TRANSLATION,
+      attempted: true,
+      ok: false,
+      error: `영문 번역 중 오류가 발생했습니다(${message}). 영문 필드는 갱신되지 않았습니다.`,
+    }
   }
 }
 
@@ -448,13 +492,14 @@ export async function createPost(input: CreatePostInput) {
   const readingTime = Math.max(1, Math.ceil(wordCount / 200))
 
   // Translate all fields to English in one API call
-  const translated = await translatePost({
+  const translation = await translatePost({
     title: input.title,
     excerpt: input.excerpt,
     content: input.content,
     metaTitle: input.meta_title,
     metaDescription: input.meta_description,
   })
+  const translated = translation.content
 
   const postData = {
     ...input,
@@ -482,7 +527,9 @@ export async function createPost(input: CreatePostInput) {
   revalidatePath('/')
   revalidatePath('/admin/posts')
 
-  return { success: true, data }
+  // Post saved, but flag when the English translation did not go through.
+  const warning = translation.attempted && !translation.ok ? translation.error : undefined
+  return { success: true, data, warning }
 }
 
 export async function updatePost(id: string, input: Partial<CreatePostInput>) {
@@ -499,19 +546,25 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>) {
 
   // Translate any changed fields to English
   const needsTranslation = input.title || input.excerpt || input.content || input.meta_title || input.meta_description
+  let translationWarning: string | undefined
   if (needsTranslation) {
-    const translated = await translatePost({
+    const translation = await translatePost({
       title: input.title,
       excerpt: input.excerpt,
       content: input.content,
       metaTitle: input.meta_title,
       metaDescription: input.meta_description,
     })
+    const translated = translation.content
+    // On failure, keep the existing English fields (do not overwrite with null) and warn.
     if (translated.title_en) updateData.title_en = translated.title_en
     if (translated.excerpt_en) updateData.excerpt_en = translated.excerpt_en
     if (translated.content_en) updateData.content_en = { html: translated.content_en }
     if (translated.meta_title_en) updateData.meta_title_en = translated.meta_title_en
     if (translated.meta_description_en) updateData.meta_description_en = translated.meta_description_en
+    if (translation.attempted && !translation.ok) {
+      translationWarning = translation.error
+    }
   }
 
   // If status changed to published, set published_at
@@ -543,7 +596,7 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>) {
   revalidatePath(`/post/${data.slug}`)
   revalidatePath('/admin/posts')
 
-  return { success: true, data }
+  return { success: true, data, warning: translationWarning }
 }
 
 export async function deletePost(id: string) {

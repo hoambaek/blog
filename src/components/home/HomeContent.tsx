@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, ArrowUpRight, ChevronRight } from 'lucide-react'
-import { useTranslation, useLocale } from '@/lib/i18n'
+import { useTranslation, useLocale, getCategoryName } from '@/lib/i18n'
 
 interface Post {
   id: string
@@ -203,7 +203,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                       )}
                     </div>
                     <div className="flex items-center gap-4 mb-3">
-                      <Kicker>{post.category?.name}</Kicker>
+                      <Kicker>{getCategoryName(t, post.category?.slug, post.category?.name)}</Kicker>
                       <span className="text-[11px] tracking-[0.1em] text-muted-foreground tabular-nums">
                         {formatDateline(post.published_at)}
                       </span>
@@ -244,7 +244,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                   <article className="grid grid-cols-12 gap-x-6 gap-y-1.5 md:gap-8 items-baseline py-6 md:py-7 px-4 -mx-4 transition-colors duration-300 group-hover:bg-secondary/60">
                     {/* Department */}
                     <div className="col-span-12 md:col-span-3">
-                      <Kicker>{post.category?.name}</Kicker>
+                      <Kicker>{getCategoryName(t, post.category?.slug, post.category?.name)}</Kicker>
                     </div>
 
                     {/* Headline */}

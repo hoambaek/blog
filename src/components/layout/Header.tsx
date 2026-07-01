@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { LanguageSelector } from '@/components/LanguageSelector'
-import { useTranslation } from '@/lib/i18n'
+import { useTranslation, useLocale, getCategoryName } from '@/lib/i18n'
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -23,6 +23,7 @@ export function Header() {
   const lastScrollY = useRef(0)
   const router = useRouter()
   const t = useTranslation()
+  const { locale } = useLocale()
 
   // Transparent over the dark hero until scrolled (post hero is now full-bleed)
   const showScrolledStyle = isScrolled
@@ -118,7 +119,7 @@ export function Header() {
                       className="h-[26px] w-auto"
                       priority
                     />
-                    <p className="text-[10px] text-white/40 mt-3 tracking-[0.3em] uppercase">뮤즈드마레</p>
+                    <p className="text-[10px] text-white/40 mt-3 tracking-[0.3em] uppercase">{locale === 'en' ? 'Muse de Marée' : '뮤즈드마레'}</p>
                   </div>
 
                   {/* Search */}
@@ -148,7 +149,7 @@ export function Header() {
                         >
                           <span className="text-[10px] text-white/20 font-light">{String(index + 1).padStart(2, '0')}</span>
                           <span className="font-display text-base text-white/80 group-hover:text-white transition-colors">
-                            {category.name}
+                            {getCategoryName(t, category.slug, category.name)}
                           </span>
                         </Link>
                       ))}
@@ -290,7 +291,7 @@ export function Header() {
                         : 'text-white/70 hover:text-white'
                     }`}
                   >
-                    {category.name}
+                    {getCategoryName(t, category.slug, category.name)}
                     <span className={`absolute -bottom-1 left-0 w-0 h-px group-hover:w-full transition-all duration-300 ${
                       showScrolledStyle ? 'bg-foreground' : 'bg-white/50'
                     }`} />
@@ -366,7 +367,7 @@ export function Header() {
 
               {/* Quick Links */}
               <div className="mt-8 pt-8 border-t border-white/[0.08]">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 mb-4">카테고리</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 mb-4">{t.sections.category}</p>
                 <div className="flex flex-wrap gap-3">
                   {categories.map((category) => (
                     <Link
@@ -375,7 +376,7 @@ export function Header() {
                       onClick={() => setIsSearchOpen(false)}
                       className="text-sm text-white/50 hover:text-white hover:bg-white/[0.05] px-4 py-2 border border-white/[0.08] transition-all"
                     >
-                      {category.name}
+                      {getCategoryName(t, category.slug, category.name)}
                     </Link>
                   ))}
                 </div>

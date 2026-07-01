@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Search, X } from 'lucide-react'
-import { useTranslation, useLocale } from '@/lib/i18n'
+import { useTranslation, useLocale, getCategoryName } from '@/lib/i18n'
 
 interface Post {
   id: string
@@ -203,7 +203,7 @@ export function SearchContent({
                         />
                       )}
                     </div>
-                    <p className="label-text mb-2">{post.category?.name}</p>
+                    <p className="label-text mb-2">{getCategoryName(t, post.category?.slug, post.category?.name)}</p>
                     <h3 className="font-display text-xl mb-2 group-hover:text-muted-foreground transition-colors">
                       {post.title}
                     </h3>

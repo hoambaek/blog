@@ -56,8 +56,8 @@ export function LanguageSelector() {
                   : 'hover:bg-white/10'
               }`}
             >
-              <span className="text-[11px] font-medium tracking-wide w-6">{localeLabels[loc]}</span>
-              <span className="text-foreground drop-shadow-sm">{localeNames[loc]}</span>
+              <span className={`text-[11px] font-semibold tracking-wide w-6 ${locale === loc ? 'text-rose-gold' : 'text-foreground/70'}`}>{localeLabels[loc]}</span>
+              <span className="text-foreground">{localeNames[loc]}</span>
             </button>
           ))}
         </div>

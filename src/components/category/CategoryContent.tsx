@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useTranslation, useLocale } from '@/lib/i18n'
+import { useTranslation, useLocale, getCategoryName, getCategoryDescription } from '@/lib/i18n'
 
 interface Post {
   id: string
@@ -59,7 +59,7 @@ export function CategoryContent({
   // Translate "all posts" category for display
   const displayName = slug === 'all'
     ? t.post.allPosts
-    : category.name
+    : getCategoryName(t, category.slug, category.name)
 
   const isEn = locale === 'en'
   const postTitle = (p: Post) => isEn ? (p.title_en || p.title) : p.title
@@ -67,7 +67,7 @@ export function CategoryContent({
 
   const displayDescription = slug === 'all'
     ? (locale === 'ko' ? '뮤즈드마레의 모든 이야기를 만나보세요.' : 'Discover all stories from Muse de Marée.')
-    : category.description
+    : getCategoryDescription(locale, category.slug, category.description)
 
   return (
     <div>
@@ -149,7 +149,7 @@ export function CategoryContent({
                       />
                     )}
                   </div>
-                  <p className="label-text mb-2">{post.category?.name}</p>
+                  <p className="label-text mb-2">{getCategoryName(t, post.category?.slug, post.category?.name)}</p>
                   <h2 className="font-display text-xl mb-2 group-hover:text-muted-foreground transition-colors">
                     {postTitle(post)}
                   </h2>

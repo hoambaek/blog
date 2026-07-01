@@ -263,7 +263,7 @@ export default function SubscribePage() {
                 <blockquote className="relative">
                   <span className="absolute -top-3 -left-1 text-3xl text-white/20 font-display">"</span>
                   <p className="font-display text-base italic text-white/40 pl-4">
-                    샹파뉴가 만들고, 남해가 쓴 시간
+                    {t.footer.brandQuote.replace('\n', ' ')}
                   </p>
                 </blockquote>
               </div>
