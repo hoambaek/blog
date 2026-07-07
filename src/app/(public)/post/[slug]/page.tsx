@@ -27,9 +27,9 @@ export default async function PostPage({
   ])
 
   const breadcrumbItems = [
-    { name: 'Home', url: 'https://journal.musedemaree.com' },
-    ...(post.category ? [{ name: post.category.name, url: `https://journal.musedemaree.com/category/${post.category.slug}` }] : []),
-    { name: post.title, url: `https://journal.musedemaree.com/post/${post.slug}` },
+    { name: 'Home', url: 'https://blog.musedemaree.com' },
+    ...(post.category ? [{ name: post.category.name, url: `https://blog.musedemaree.com/category/${post.category.slug}` }] : []),
+    { name: post.title, url: `https://blog.musedemaree.com/post/${post.slug}` },
   ]
 
   // AEO: Extract FAQ items from post content for FAQ Schema
@@ -95,7 +95,7 @@ export async function generateMetadata({
       description: aeoDescription.slice(0, 160),
     },
     alternates: {
-      canonical: `https://journal.musedemaree.com/post/${post.slug}`,
+      canonical: `https://blog.musedemaree.com/post/${post.slug}`,
     },
   }
 }

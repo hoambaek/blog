@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 
-const SITE_URL = 'https://journal.musedemaree.com'
+const SITE_URL = 'https://blog.musedemaree.com'
 
 function stripHtml(html: string): string {
   return html

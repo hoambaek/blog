@@ -1,4 +1,4 @@
-const SITE_URL = 'https://journal.musedemaree.com'
+const SITE_URL = 'https://blog.musedemaree.com'
 
 export function GET() {
   const robotsTxt = `# Muse de Marée - Robots.txt

@@ -55,7 +55,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const brandPrefix = '뮤즈드마레(Muse de Marée)'
-  const siteUrl = 'https://journal.musedemaree.com'
+  const siteUrl = 'https://blog.musedemaree.com'
 
   if (slug === 'all') {
     const description = `해저숙성 샴페인 ${brandPrefix}의 모든 이야기 — 바다의 일지, 메종, 문화와 예술, 테이블 위에서.`

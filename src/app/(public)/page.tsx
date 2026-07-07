@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description: '샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.',
     type: 'website',
     siteName: 'Muse de Marée',
-    url: 'https://journal.musedemaree.com',
+    url: 'https://blog.musedemaree.com',
   },
   twitter: {
     card: 'summary_large_image',
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     description: '샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.',
   },
   alternates: {
-    canonical: 'https://journal.musedemaree.com',
+    canonical: 'https://blog.musedemaree.com',
   },
 }
 

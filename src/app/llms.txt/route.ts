@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 
-const SITE_URL = 'https://journal.musedemaree.com'
+const SITE_URL = 'https://blog.musedemaree.com'
 
 export async function GET() {
   const supabase = await createClient()

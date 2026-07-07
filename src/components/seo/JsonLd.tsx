@@ -1,6 +1,6 @@
 import type { PostWithCategory } from '@/lib/supabase/types'
 
-const SITE_URL = 'https://journal.musedemaree.com'
+const SITE_URL = 'https://blog.musedemaree.com'
 const SITE_NAME = 'Muse de Marée'
 const ORGANIZATION_NAME = 'Muse de Marée'
 const BRAND_DESCRIPTION = '샴페인은 샹파뉴가 만들고, 그 변화는 한국 남해의 바다가 만듭니다. 바다의 시간을 기록하는 브랜드, 뮤즈드마레.'
