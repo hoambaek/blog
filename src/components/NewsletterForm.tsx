@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { ArrowRight, Check } from 'lucide-react'
+import { sendGAEvent } from '@next/third-parties/google'
 import { subscribe } from '@/lib/actions/subscribers'
 import { useTranslation } from '@/lib/i18n'
 
@@ -38,6 +39,9 @@ export function NewsletterForm({ source = 'website', variant = 'light' }: Newsle
         setStatus('success')
         setMessage(result.message || t.newsletter.success)
         setEmail('')
+        if ('dataLayer' in window) {
+          sendGAEvent('event', 'subscribe_submit', { source })
+        }
       } else {
         setStatus('error')
         setMessage(result.error || t.newsletter.error)

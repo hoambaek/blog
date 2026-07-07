@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Check, ArrowLeft } from 'lucide-react'
+import { sendGAEvent } from '@next/third-parties/google'
 import { subscribe } from '@/lib/actions/subscribers'
 import { useTranslation, useLocale } from '@/lib/i18n'
 
@@ -43,6 +44,9 @@ export default function SubscribePage() {
       if (result.success) {
         setStatus('success')
         setMessage(result.message || t.newsletter.success)
+        if ('dataLayer' in window) {
+          sendGAEvent('event', 'subscribe_submit', { source: 'subscribe-page' })
+        }
       } else {
         setStatus('error')
         setMessage(result.error || t.newsletter.error)

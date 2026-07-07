@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useTranslation, useLocale } from '@/lib/i18n'
+import { NewsletterForm } from '@/components/NewsletterForm'
 
 interface Post {
   id: string
@@ -157,6 +158,19 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
           />
         </div>
       </div>
+
+      {/* Post-end subscribe — 글을 다 읽은 독자에게 기록 구독 제안 */}
+      <section className="border-t border-border py-10 sm:py-12 md:py-16">
+        <div className="container-narrow px-5 sm:px-6 text-center">
+          <h2 className="font-display text-xl sm:text-2xl mb-2 sm:mb-3">
+            {t.newsletter.moreStories}
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 break-keep">
+            {t.newsletter.moreStoriesDescription}
+          </p>
+          <NewsletterForm source="post-end" />
+        </div>
+      </section>
 
       {/* Related Posts - Compact mobile design */}
       {relatedPosts.length > 0 && (
