@@ -7,6 +7,7 @@ import {
   Mrs_Saint_Delafield,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
@@ -92,6 +93,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaId = process.env.NEXT_PUBLIC_GA_ID ?? "G-YVXMD6VF59";
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
@@ -108,6 +110,7 @@ export default function RootLayout({
           {children}
         </I18nProvider>
         <Analytics />
+        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
