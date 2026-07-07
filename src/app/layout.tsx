@@ -94,6 +94,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID ?? "G-YVXMD6VF59";
+  // 프로덕션 배포에서만 GA 작동 (preview·로컬 개발 트래픽 제외)
+  const gaEnabled = process.env.VERCEL_ENV === "production" && !!gaId;
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
@@ -110,7 +112,7 @@ export default function RootLayout({
           {children}
         </I18nProvider>
         <Analytics />
-        {gaId && <GoogleAnalytics gaId={gaId} />}
+        {gaEnabled && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
