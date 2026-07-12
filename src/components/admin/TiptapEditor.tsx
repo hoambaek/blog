@@ -9,6 +9,8 @@ import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
 import HardBreak from '@tiptap/extension-hard-break'
 import { TableKit } from '@tiptap/extension-table'
+import { Video } from '@/lib/tiptap/video'
+import { uploadMediaFile } from '@/lib/upload/client'
 import {
   Bold,
   Italic,
@@ -87,6 +89,8 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
           levels: [2, 3],
         },
         hardBreak: false, // We'll use our own configuration
+        link: false, // We'll use our own configuration
+        underline: false, // We'll use our own configuration
       }),
       HardBreak.configure({
         keepMarks: true,
@@ -112,6 +116,7 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
       TableKit.configure({
         table: { resizable: false },
       }),
+      Video,
     ],
     content,
     editorProps: {
@@ -179,28 +184,19 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
     setIsUploadingImage(true)
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('folder', 'posts')
+      const { url, optimization } = await uploadMediaFile(file, 'posts')
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (data.success && data.url) {
-        editor.chain().focus().setImage({ src: data.url }).run()
-        if (data.optimization) {
-          console.log(`Image optimized: ${data.optimization.savings}% size reduction`)
-        }
+      if (isVideo) {
+        editor.chain().focus().setVideo({ src: url }).run()
       } else {
-        alert(data.error || '이미지 업로드에 실패했습니다.')
+        editor.chain().focus().setImage({ src: url }).run()
+      }
+      if (optimization) {
+        console.log(`Image optimized: ${optimization.savings}% size reduction`)
       }
     } catch (error) {
-      console.error('Error uploading image:', error)
-      alert('이미지 업로드 중 오류가 발생했습니다.')
+      console.error('Error uploading media:', error)
+      alert(error instanceof Error ? error.message : '업로드 중 오류가 발생했습니다.')
     } finally {
       setIsUploadingImage(false)
     }

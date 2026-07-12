@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Upload, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast'
+import { uploadMediaFile } from '@/lib/upload/client'
 
 interface ImageUploadProps {
   value?: string
@@ -51,22 +52,9 @@ export function ImageUpload({ value, onChange, folder = 'posts' }: ImageUploadPr
     setError(null)
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('folder', folder)
+      const { url } = await uploadMediaFile(file, folder)
 
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Upload failed')
-      }
-
-      onChange(data.url)
+      onChange(url)
       showToast(t.uploadSuccess, 'success')
     } catch (err) {
       console.error('Upload error:', err)
