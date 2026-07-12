@@ -29,6 +29,7 @@ import {
   Sparkles,
   X,
   Loader2,
+  Trash2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -83,6 +84,7 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
 
   const editor = useEditor({
     immediatelyRender: false,
+    shouldRerenderOnTransaction: true,
     extensions: [
       StarterKit.configure({
         heading: {
@@ -369,6 +371,17 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
           data-active={editor.isActive('orderedList')}
         >
           <ListOrdered className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => editor.chain().focus().deleteTable().run()}
+          disabled={!editor.isActive('table')}
+          title="표 삭제 (커서가 표 안에 있을 때)"
+        >
+          <Trash2 className="h-4 w-4" />
         </Button>
 
         <div className="w-px h-6 bg-border mx-1" />
