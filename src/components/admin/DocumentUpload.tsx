@@ -257,6 +257,14 @@ export function DocumentUpload({ onParsed, currentCategory, categories = [] }: D
     // Convert blockquotes
     html = html.replace(/^>\s*"?(.*?)"?$/gm, '<blockquote>$1</blockquote>')
 
+    // Convert markdown links [text](url) — external links open in a new tab
+    html = html.replace(/(?<!!)\[([^\]]+)\]\(([^)\s]+)\)/g, (_match, text, url) => {
+      const isInternal = url.startsWith('/') || url.includes('musedemaree.com')
+      return isInternal
+        ? `<a href="${url}">${text}</a>`
+        : `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`
+    })
+
     // Convert bold and italic
     html = html.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>')
     html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -271,6 +279,23 @@ export function DocumentUpload({ onParsed, currentCategory, categories = [] }: D
 
     // Remove remaining code blocks
     html = html.replace(/```[\s\S]*?```/g, '')
+
+    // Convert markdown tables (header row + separator row + body rows) to HTML tables
+    html = html.replace(
+      /^\|.+\|[ \t]*\n\|[ \t:|-]+\|[ \t]*(?:\n\|.+\|[ \t]*)*/gm,
+      (tableBlock) => {
+        const rows = tableBlock.trim().split('\n')
+        const parseCells = (row: string) =>
+          row.replace(/^\s*\||\|\s*$/g, '').split('|').map((c) => c.trim())
+        const headers = parseCells(rows[0])
+        const bodyRows = rows.slice(2).map(parseCells)
+        const thead = `<tr>${headers.map((h) => `<th>${h}</th>`).join('')}</tr>`
+        const tbody = bodyRows
+          .map((cells) => `<tr>${cells.map((c) => `<td>${c}</td>`).join('')}</tr>`)
+          .join('')
+        return `<table><tbody>${thead}${tbody}</tbody></table>`
+      }
+    )
 
     // Split into paragraphs and clean up
     const lines = html.split('\n')
