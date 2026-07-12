@@ -283,7 +283,7 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
   return (
     <div className="border border-border bg-background">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-border bg-muted/30">
+      <div className="sticky top-14 lg:top-0 z-30 flex flex-wrap items-center gap-1 p-2 border-b border-border bg-background">
         <Button
           type="button"
           variant="ghost"
