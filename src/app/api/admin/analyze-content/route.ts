@@ -70,9 +70,9 @@ Generate a cover image prompt that visually represents this article's theme and 
       system: systemPrompt,
     })
 
-    const generatedPrompt = response.content[0].type === 'text'
-      ? response.content[0].text.trim()
-      : ''
+    // thinking 블록이 먼저 올 수 있으므로 text 블록을 찾아서 사용
+    const textBlock = response.content.find((block) => block.type === 'text')
+    const generatedPrompt = textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
 
     return NextResponse.json({
       success: true,

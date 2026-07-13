@@ -325,9 +325,9 @@ ${structureGuide}
       ],
     })
 
-    // 응답 추출
-    const responseContent = message.content[0]
-    if (responseContent.type !== 'text') {
+    // 응답 추출 — thinking 블록이 먼저 올 수 있으므로 text 블록을 찾아서 사용
+    const responseContent = message.content.find((block) => block.type === 'text')
+    if (!responseContent || responseContent.type !== 'text') {
       throw new Error('Unexpected response type')
     }
 

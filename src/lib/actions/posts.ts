@@ -87,7 +87,7 @@ Respond ONLY with valid JSON:
 }`
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-5',
+      model: 'claude-opus-4-8',
       max_tokens: 16384,
       messages: [{ role: 'user', content: prompt }],
     })
@@ -103,7 +103,9 @@ Respond ONLY with valid JSON:
       }
     }
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : ''
+    // 모델이 thinking 블록을 먼저 반환할 수 있으므로(claude-sonnet-5 적응형 추론) text 블록을 찾아서 사용
+    const textBlock = response.content.find((block) => block.type === 'text')
+    const text = textBlock && textBlock.type === 'text' ? textBlock.text : ''
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0])
