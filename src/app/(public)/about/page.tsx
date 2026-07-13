@@ -35,6 +35,12 @@ export default function AboutPage() {
       ctaTitle: '함께하세요',
       ctaDesc: '뮤즈드마레의 새로운 기록을 가장 먼저 만나보세요.',
       ctaButton: '뉴스레터 구독하기',
+      data: [
+        { label: '위치', value: '한국 남해' },
+        { label: '수심', value: '30m' },
+        { label: '평균 수온', value: '11.4°C' },
+        { label: '인양', value: '연 1회' },
+      ],
     },
     en: {
       heroTitle: 'Time Written by the Sea',
@@ -61,6 +67,12 @@ export default function AboutPage() {
       ctaTitle: 'Join Us',
       ctaDesc: 'Be the first to discover the new records of Muse de Marée.',
       ctaButton: 'Subscribe to Newsletter',
+      data: [
+        { label: 'Location', value: 'South Sea, Korea' },
+        { label: 'Depth', value: '30m' },
+        { label: 'Mean Temp', value: '11.4°C' },
+        { label: 'Retrieval', value: 'Once a year' },
+      ],
     },
   }
 
@@ -68,120 +80,104 @@ export default function AboutPage() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-24 md:pt-48 md:pb-32 overflow-hidden">
-        <div className="absolute inset-0">
+      {/* Masthead - 백지 위 타이포그래피 개막 (홈의 다크 포토 히어로와 대비) */}
+      <section className="pt-32 md:pt-44">
+        <div className="container-wide">
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-muted-foreground mb-8">
+            About the Journal
+          </p>
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[1.05] mb-8 break-keep max-w-4xl">
+            {c.heroTitle}
+          </h1>
+          <p className="text-base md:text-xl text-muted-foreground font-light leading-relaxed max-w-2xl mb-14 md:mb-20">
+            {c.heroSubtitle}
+          </p>
+
+          {/* 관측 데이터 스트립 - 이 저널의 정체성(기록)을 데이터로 선언 */}
+          <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-border">
+            {c.data.map((item, index) => (
+              <div
+                key={index}
+                className={`py-5 md:py-6 pr-4 md:pr-6 border-border ${
+                  index % 2 === 0 ? 'pl-0' : 'pl-4 border-l'
+                } md:pl-6 md:first:pl-0 ${index > 0 ? 'md:border-l' : ''}`}
+              >
+                <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+                  {item.label}
+                </p>
+                <p className="font-display text-lg md:text-2xl">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Photo Band - 풀블리드 사각 이미지 */}
+      <section className="mt-16 md:mt-24">
+        <div className="relative h-[320px] md:h-[520px]">
           <Image
             src="/bg2.webp"
             alt="Muse de Marée"
             fill
-            className="object-cover scale-105"
+            className="object-cover"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60" />
         </div>
-
-        <div className="container-narrow relative z-10 text-center text-white">
-          {/* Tagline */}
-          <p
-            className="uppercase text-[10px] md:text-xs tracking-[0.4em] text-white/50 mb-8 font-light animate-fade-in-up"
-            style={{ animationDelay: '0.3s' }}
-          >
-            About the Journal
-          </p>
-
-          <h1 className="font-display text-3xl md:text-4xl lg:text-5xl xl:text-6xl mb-6 leading-[1.2] animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            {c.heroTitle}
-          </h1>
-          <p className="text-base md:text-lg text-white/60 max-w-2xl mx-auto font-light leading-relaxed animate-fade-in-up lg:whitespace-nowrap" style={{ animationDelay: '0.5s' }}>
-            {c.heroSubtitle}
-          </p>
-        </div>
-
       </section>
 
       {/* Story Section - Editorial Magazine Style */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        {/* Subtle Background Pattern */}
-        <div className="absolute inset-0 opacity-[0.02]">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }} />
-        </div>
-
-        <div className="container-wide relative">
+      <section className="py-24 md:py-32">
+        <div className="container-wide">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-start">
-            {/* Left Column - Large Typography */}
-            <div className="lg:col-span-5">
+            <div className="lg:col-span-4">
               <div className="sticky top-32">
-                <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-foreground mb-6">{t.footer.aboutJournal}</p>
-                <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] mb-6">
+                <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-muted-foreground mb-6">
+                  Our Story
+                </p>
+                <h2 className="font-display text-4xl md:text-5xl leading-[1.1]">
                   {c.storyTitle}
                 </h2>
-                <div className="w-20 h-px bg-foreground" />
               </div>
             </div>
 
-            {/* Right Column - Story Content */}
-            <div className="lg:col-span-7">
-              <div className="space-y-8 text-lg md:text-xl text-muted-foreground leading-[1.8] font-light">
-                <p className="font-serif">{c.storyP1}</p>
-                <p className="font-serif">{c.storyP2}</p>
-              </div>
-
-              {/* Quote */}
-              <div className="mt-16 pt-12 border-t border-border">
-                <blockquote>
-                  <p className="font-display text-2xl md:text-3xl italic text-foreground/80 leading-relaxed whitespace-pre-line">
-                    {t.footer.brandQuote}
-                  </p>
-                  <footer className="mt-6">
-                    <Image
-                      src="/images/logo/logo_text_trans.png"
-                      alt="Muse de Marée"
-                      width={260}
-                      height={40}
-                      className="h-[34px] w-auto opacity-80"
-                    />
-                  </footer>
-                </blockquote>
-              </div>
+            <div className="lg:col-span-8">
+              {/* 리드 문단은 스탠드퍼스트로 크게 */}
+              <p className="font-serif text-xl md:text-2xl leading-[1.7] text-foreground mb-10 break-keep">
+                {c.storyP1}
+              </p>
+              <p className="font-serif text-lg md:text-xl leading-[1.8] text-muted-foreground font-light break-keep">
+                {c.storyP2}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Values Section - Refined Grid */}
-      <section className="relative py-24 md:py-32 bg-[#000000] text-white overflow-hidden">
-        <div className="container-wide relative">
-          {/* Section Header */}
-          <div className="text-center mb-20">
-            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl">{c.valuesTitle}</h2>
+      {/* Values Section - 다크 밴드, 에디토리얼 인덱스 행 */}
+      <section className="bg-[#000000] text-white py-24 md:py-32">
+        <div className="container-wide">
+          <div className="flex items-baseline justify-between mb-14 md:mb-20">
+            <h2 className="font-display text-3xl md:text-5xl">{c.valuesTitle}</h2>
+            <span className="hidden md:block text-[10px] uppercase tracking-[0.3em] text-white/40">
+              Four Pillars
+            </span>
           </div>
 
-          {/* Values Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06]">
+          <div className="border-t border-white/10">
             {c.values.map((value, index) => (
               <div
                 key={index}
-                className="group relative bg-[#000000] p-10 md:p-12 hover:bg-white/[0.02] transition-colors duration-500"
+                className="grid md:grid-cols-12 gap-3 md:gap-8 py-10 md:py-14 border-b border-white/10"
               >
-                {/* Number */}
-                <span className="block font-display text-5xl md:text-6xl text-white/40 mb-6 group-hover:text-white/70 transition-colors duration-500">
+                <span className="md:col-span-1 text-[10px] tracking-[0.3em] text-white/40 md:pt-3">
                   {value.icon}
                 </span>
-
-                {/* Content */}
-                <h3 className="font-display text-xl md:text-2xl text-white mb-4 break-keep">
+                <h3 className="md:col-span-5 font-display text-2xl md:text-3xl break-keep">
                   {value.title}
                 </h3>
-                <p className="text-sm md:text-base text-white/50 leading-relaxed font-light">
+                <p className="md:col-span-6 text-white/50 font-light leading-relaxed text-base md:text-lg break-keep">
                   {value.desc}
                 </p>
-
-                {/* Hover Accent */}
-                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-white group-hover:w-full transition-all duration-700" />
               </div>
             ))}
           </div>
@@ -230,6 +226,26 @@ export default function AboutPage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Colophon - 인용구와 서명으로 페이지를 닫는다 */}
+      <section className="py-24 md:py-36 border-t border-border">
+        <div className="container-narrow text-center">
+          <blockquote>
+            <p className="font-display text-2xl md:text-4xl italic text-foreground/80 leading-relaxed whitespace-pre-line break-keep">
+              {t.footer.brandQuote}
+            </p>
+            <footer className="mt-10">
+              <Image
+                src="/images/logo/logo_text_trans.png"
+                alt="Muse de Marée"
+                width={260}
+                height={40}
+                className="h-[28px] w-auto opacity-80 mx-auto"
+              />
+            </footer>
+          </blockquote>
         </div>
       </section>
 
