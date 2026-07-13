@@ -24,7 +24,7 @@ export function ArticleJsonLd({ post }: ArticleJsonLdProps) {
     '@id': `${SITE_URL}/post/${post.slug}#article`,
     headline: post.title,
     description: post.excerpt || post.meta_description || plainTextContent.slice(0, 160),
-    image: post.cover_image_url || post.og_image_url || `${SITE_URL}/og-default.png`,
+    image: post.cover_image_url || post.og_image_url || `${SITE_URL}/bg.png`,
     datePublished: post.published_at,
     dateModified: post.updated_at,
     author: {
@@ -38,7 +38,7 @@ export function ArticleJsonLd({ post }: ArticleJsonLdProps) {
       url: 'https://musedemaree.com',
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo.png`,
+        url: `${SITE_URL}/icon-512.png`,
       },
     },
     mainEntityOfPage: {
@@ -144,7 +144,7 @@ export function OrganizationJsonLd() {
     '@id': 'https://musedemaree.com#organization',
     name: ORGANIZATION_NAME,
     url: 'https://musedemaree.com',
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/icon-512.png`,
     description: '샴페인은 샹파뉴가 만들고, 그 변화는 한국 남해의 바다가 만듭니다. 바다의 시간을 기록하는 브랜드, 뮤즈드마레.',
     sameAs: [
       'https://instagram.com/musedemaree',
@@ -198,8 +198,17 @@ export function FAQPageJsonLd({ faqs }: FAQPageJsonLdProps) {
 
 /**
  * HTML 콘텐츠에서 FAQ 항목을 자동 추출
- * h2/h3 태그를 질문으로, 뒤따르는 p 태그를 답변으로 변환
+ * 질문형 h2/h3 태그만 질문으로 인정하고, 뒤따르는 p 태그를 답변으로 변환.
+ * 서술형 소제목("남해의 겨울" 등)을 Question으로 둔갑시키면 FAQPage 스키마가
+ * 부정확해지므로, 질문 형태가 아니면 제외한다 (없으면 스키마 자체를 안 낸다).
  */
+function isQuestionLike(text: string): boolean {
+  if (text.includes('?') || text.includes('？')) return true
+  return /(무엇|무슨|왜|어떻게|어디서|언제|누가|얼마나|인가요|일까요|할까요|다를까|맞을까|어떤가)/.test(
+    text
+  )
+}
+
 export function extractFAQFromContent(htmlContent: string): FAQItem[] {
   const faqs: FAQItem[] = []
   // h2 또는 h3 뒤에 오는 텍스트를 Q&A 쌍으로 추출
@@ -208,7 +217,7 @@ export function extractFAQFromContent(htmlContent: string): FAQItem[] {
 
   for (const match of matches) {
     const question = match[1].replace(/<[^>]*>/g, '').trim()
-    if (!question) continue
+    if (!question || !isQuestionLike(question)) continue
 
     // 해당 heading 이후의 첫 번째 paragraph 텍스트 추출
     const afterHeading = htmlContent.slice((match.index || 0) + match[0].length)
