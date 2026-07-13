@@ -29,7 +29,7 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
       title: '환영합니다',
       intro: '뮤즈드마레의 기록을 함께할 수 있게 되어 기쁩니다.',
       description:
-        'Muse de Marée의 저널에서 수심 30m에서 기록되는 바다의 시간을 전해드립니다. 관측 일지와 인양 소식, 미식, 문화와 예술의 순간들을 담아 보내드립니다.',
+        'Muse de Marée의 저널에서 깊은 바다에서 기록되는 바다의 시간을 전해드립니다. 관측 일지와 인양 소식, 미식, 문화와 예술의 순간들을 담아 보내드립니다.',
       whatToExpect: '받아보실 수 있는 소식',
       bullets: [
         '새로운 포스트 알림',
@@ -45,7 +45,7 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
       title: 'Welcome',
       intro: 'We are delighted to share the records of Muse de Marée with you.',
       description:
-        'The journal of Muse de Marée brings you the time of the sea, recorded at 30m below — observation logs, retrieval news, gastronomy, culture and art.',
+        'The journal of Muse de Marée brings you the time of the sea, recorded in the deep sea — observation logs, retrieval news, gastronomy, culture and art.',
       whatToExpect: 'What to expect',
       bullets: [
         'New post notifications',
@@ -67,6 +67,7 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
         {/* 모바일: 인라인 스타일보다 우선하도록 !important 필수 (지원 안 하는 클라이언트는 상향된 기본값으로 동작) */}
         <style>{`
           @media only screen and (max-width: 480px) {
+            .email-card { margin: 0 auto !important; }
             .email-header { padding: 40px 0 34px !important; }
             .email-content { padding: 40px 24px 44px !important; }
             .email-title { font-size: 28px !important; line-height: 36px !important; }
@@ -75,7 +76,7 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
         `}</style>
       </Head>
       <Body style={styles.body}>
-        <Container style={styles.card}>
+        <Container className="email-card" style={styles.card}>
           {/* ── 헤더 (로고 + 워드마크) ── */}
           <Section className="email-header" style={styles.header}>
             <Img
@@ -169,7 +170,7 @@ const mono = '"IBM Plex Mono", "Courier New", monospace'
 const styles = {
   body: {
     margin: '0',
-    padding: '40px 0',
+    padding: '0',
     backgroundColor: '#DDD8D2',
     fontFamily: sans,
   },
@@ -178,7 +179,9 @@ const styles = {
     // 전체를 축소 렌더링해 글자가 작아지는 원인이 됨 (fluid 방식)
     width: '100%',
     maxWidth: '600px',
-    margin: '0 auto',
+    // 바깥 상하 여백은 body padding이 아닌 여기에 둔다 — react-email이
+    // body padding을 내부 td로 옮겨서 미디어쿼리 body 셀렉터가 안 닿음
+    margin: '40px auto',
     backgroundColor: '#C4BFBB',
   },
   header: {
