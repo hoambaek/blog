@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Eye, Send } from 'lucide-react'
+import { ArrowLeft, Save, Eye, Send, Check, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,16 +14,34 @@ import { AICoverImageGenerator } from '@/components/admin/AICoverImageGenerator'
 import { createPost, updatePost } from '@/lib/actions/posts'
 import { useToast } from '@/components/ui/toast'
 import type { Category, PostWithCategory } from '@/lib/supabase/types'
+import { planContentTranslation, type TranslatedContent, type TranslationInput } from '@/lib/translation'
 
 interface PostEditorFormProps {
   categories: Category[]
   post?: PostWithCategory
 }
 
+// 저장 진행 상태: 검증 → 영문 번역(실제 진행률) → 저장
+type SaveStep = 'check' | 'translate' | 'save'
+interface SaveProgress {
+  step: SaveStep
+  pct: number
+  publishing: boolean
+  // 번역 단계 부가 설명 (변경된 문단만 / 변경 없음 등)
+  translateNote?: string
+}
+
+// /api/admin/translate가 보내는 ndjson 이벤트
+type TranslateEvent =
+  | { type: 'progress'; pct: number }
+  | { type: 'result'; translation: TranslatedContent }
+  | { type: 'error'; message: string }
+
 export function PostEditorForm({ categories, post }: PostEditorFormProps) {
   const router = useRouter()
   const { showToast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
+  const [saveProgress, setSaveProgress] = useState<SaveProgress | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const t = {
@@ -154,6 +172,57 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     return category?.slug || 'sea-log'
   }
 
+  // 스트리밍 번역 라우트 호출 — 진행률을 모달에 반영하고 번역 결과를 돌려준다.
+  // 실패하면 null을 반환하고 저장 단계(서버 액션 내부 번역)로 폴백한다.
+  const runStreamingTranslation = async (input: TranslationInput): Promise<TranslatedContent | null> => {
+    try {
+      const res = await fetch('/api/admin/translate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(input),
+      })
+      if (!res.ok || !res.body) return null
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let translation: TranslatedContent | null = null
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+
+        let newlineIndex = buffer.indexOf('\n')
+        while (newlineIndex >= 0) {
+          const line = buffer.slice(0, newlineIndex).trim()
+          buffer = buffer.slice(newlineIndex + 1)
+          newlineIndex = buffer.indexOf('\n')
+          if (!line) continue
+          try {
+            const event = JSON.parse(line) as TranslateEvent
+            if (event.type === 'progress') {
+              // 번역 구간을 전체 진행률 8~88%에 매핑
+              const overall = 8 + Math.round(event.pct * 0.8)
+              setSaveProgress((prev) => (prev ? { ...prev, step: 'translate', pct: overall } : prev))
+            } else if (event.type === 'result') {
+              translation = event.translation
+            } else if (event.type === 'error') {
+              console.error('Streaming translation failed:', event.message)
+              return null
+            }
+          } catch {
+            // 손상된 이벤트 라인은 무시
+          }
+        }
+      }
+      return translation
+    } catch (err) {
+      console.error('Streaming translation request failed:', err)
+      return null
+    }
+  }
+
   const handleSave = async (status: 'draft' | 'published' = 'draft') => {
     if (!formData.title.trim()) {
       setError(t.titleRequired)
@@ -166,6 +235,8 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
 
     setIsSaving(true)
     setError(null)
+    const publishing = status === 'published'
+    setSaveProgress({ step: 'check', pct: 3, publishing })
 
     try {
       const postData = {
@@ -181,14 +252,86 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
         meta_description: formData.metaDescription || undefined,
       }
 
+      // 1단계: 무엇을 번역할지 결정 — 수정 저장이면 원본과 비교해 바뀐 것만
+      let translationInput: TranslationInput = {
+        title: formData.title,
+        excerpt: formData.excerpt || undefined,
+        content: formData.content || undefined,
+        metaTitle: formData.metaTitle || undefined,
+        metaDescription: formData.metaDescription || undefined,
+      }
+      let contentPlan: ReturnType<typeof planContentTranslation> | null = null
+      let translateNote: string | undefined
+
+      if (post) {
+        const oldEnHtml = (post.content_en as { html?: string } | null)?.html || null
+        contentPlan = planContentTranslation(getHtmlContent(), formData.content, oldEnHtml)
+
+        const input: TranslationInput = {}
+        if (formData.title !== (post.title || '')) input.title = formData.title
+        if ((formData.excerpt || '') !== (post.excerpt || '') && formData.excerpt) input.excerpt = formData.excerpt
+        if ((formData.metaTitle || '') !== (post.meta_title || '') && formData.metaTitle) input.metaTitle = formData.metaTitle
+        if ((formData.metaDescription || '') !== (post.meta_description || '') && formData.metaDescription) {
+          input.metaDescription = formData.metaDescription
+        }
+        if (contentPlan.mode === 'full') input.content = formData.content
+        else if (contentPlan.mode === 'partial') input.content = contentPlan.htmlToTranslate
+
+        translationInput = input
+        if (contentPlan.mode === 'partial') translateNote = '변경된 문단만 번역'
+      }
+
+      const hasTextChanges = Object.values(translationInput).some(Boolean)
+
+      // 2단계: 영문 번역 (실제 생성 진행률 표시). 텍스트 변경이 없으면 건너뛴다.
+      let pretranslated: TranslatedContent | null = null
+      if (hasTextChanges) {
+        setSaveProgress({ step: 'translate', pct: 8, publishing, translateNote })
+        const translated = await runStreamingTranslation(translationInput)
+        if (translated) {
+          // 본문 영문: 부분 번역이면 기존 영문본에 짜깁기, 미디어만 변경이면 이미지 동기화, 전체면 그대로
+          let contentEn: string | null = translationInput.content ? translated.content_en : null
+          let assembleFailed = false
+          if (contentPlan && (contentPlan.mode === 'partial' || contentPlan.mode === 'media-only')) {
+            contentEn = contentPlan.assemble?.(translated.content_en ?? undefined) ?? null
+            // 짜깁기 실패(블록 수 불일치) → pretranslated 없이 저장해 서버가 전체를 다시 번역
+            assembleFailed = contentPlan.mode === 'partial' && !contentEn
+          }
+          if (!assembleFailed) {
+            // 요청한 필드만 반영 (요청 안 한 필드는 null → 서버가 기존 영문을 유지)
+            pretranslated = {
+              title_en: translationInput.title ? translated.title_en : null,
+              excerpt_en: translationInput.excerpt ? translated.excerpt_en : null,
+              content_en: contentEn,
+              meta_title_en: translationInput.metaTitle ? translated.meta_title_en : null,
+              meta_description_en: translationInput.metaDescription ? translated.meta_description_en : null,
+            }
+          }
+        }
+      } else {
+        // 텍스트 변경 없음 — 번역 건너뜀. 이미지만 바뀐 경우 영문본의 이미지를 동기화.
+        const syncedContentEn = contentPlan?.mode === 'media-only' ? (contentPlan.assemble?.() ?? null) : null
+        pretranslated = {
+          title_en: null,
+          excerpt_en: null,
+          content_en: syncedContentEn,
+          meta_title_en: null,
+          meta_description_en: null,
+        }
+        setSaveProgress({ step: 'save', pct: 90, publishing, translateNote: '변경 없음 — 건너뜀' })
+      }
+
+      // 3단계: 저장 (번역 실패 시 pretranslated=null → 서버 액션이 내부에서 번역을 재시도)
+      setSaveProgress((prev) => ({ step: 'save', pct: 90, publishing, translateNote: prev?.translateNote }))
       let result
       if (post) {
-        result = await updatePost(post.id, postData)
+        result = await updatePost(post.id, postData, pretranslated)
       } else {
-        result = await createPost(postData)
+        result = await createPost(postData, pretranslated)
       }
 
       if (result.success) {
+        setSaveProgress({ step: 'save', pct: 100, publishing })
         showToast(status === 'published' ? t.publishedSuccess : t.savedSuccess, 'success')
         // Post saved but the English auto-translation failed — surface it instead of silently keeping stale English.
         if (result.warning) {
@@ -205,11 +348,87 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       showToast(t.saveError, 'error')
     } finally {
       setIsSaving(false)
+      setSaveProgress(null)
     }
   }
 
+  // 진행 모달의 단계 정의 (순서 고정)
+  const progressSteps: { key: SaveStep; label: string }[] = [
+    { key: 'check', label: '내용 확인' },
+    { key: 'translate', label: '영문 번역 (Claude Opus)' },
+    { key: 'save', label: saveProgress?.publishing ? '저장 및 발행' : '저장' },
+  ]
+  const stepOrder: SaveStep[] = ['check', 'translate', 'save']
+
   return (
     <>
+      {/* 저장 진행 모달 */}
+      {saveProgress && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+          <div className="w-full max-w-sm border border-border bg-card p-6 shadow-xl">
+            <div className="flex items-baseline justify-between mb-5">
+              <h2 className="text-base font-semibold">
+                {saveProgress.publishing ? '포스트 발행 중' : '포스트 저장 중'}
+              </h2>
+              <span className="text-sm font-medium tabular-nums text-primary">
+                {saveProgress.pct}%
+              </span>
+            </div>
+
+            {/* 진행 바 */}
+            <div className="h-1 w-full bg-muted mb-5">
+              <div
+                className="h-1 bg-primary transition-all duration-300 ease-out"
+                style={{ width: `${saveProgress.pct}%` }}
+              />
+            </div>
+
+            {/* 단계 목록 */}
+            <ul className="space-y-3">
+              {progressSteps.map((step) => {
+                const currentIndex = stepOrder.indexOf(saveProgress.step)
+                const stepIndex = stepOrder.indexOf(step.key)
+                const isDone = stepIndex < currentIndex || saveProgress.pct >= 100
+                const isActive = stepIndex === currentIndex && saveProgress.pct < 100
+                return (
+                  <li key={step.key} className="flex items-center gap-3 text-sm">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+                      {isDone ? (
+                        <Check className="h-4 w-4 text-primary" />
+                      ) : isActive ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      ) : (
+                        <span className="h-1.5 w-1.5 bg-border" />
+                      )}
+                    </span>
+                    <span
+                      className={
+                        isDone
+                          ? 'text-muted-foreground line-through decoration-border'
+                          : isActive
+                            ? 'font-medium text-foreground'
+                            : 'text-muted-foreground'
+                      }
+                    >
+                      {step.label}
+                    </span>
+                    {step.key === 'translate' && (isActive || saveProgress.translateNote) && (
+                      <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+                        {saveProgress.translateNote ?? '번역 생성 중…'}
+                      </span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+
+            <p className="mt-5 text-xs text-muted-foreground">
+              본문 길이에 따라 20~40초 정도 걸립니다. 창을 닫지 마세요.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">

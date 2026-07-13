@@ -4,18 +4,18 @@ import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { Post, PostWithCategory, Category } from '@/lib/supabase/types'
 import Anthropic from '@anthropic-ai/sdk'
+import {
+  buildTranslationPrompt,
+  parseTranslationResponse,
+  EMPTY_TRANSLATION,
+  TRANSLATION_MODEL,
+  TRANSLATION_MAX_TOKENS,
+  type TranslatedContent,
+} from '@/lib/translation'
 
 // ═══════════════════════════════════════════════════
 // Translation Helper for Meta Fields
 // ═══════════════════════════════════════════════════
-
-interface TranslatedContent {
-  title_en: string | null
-  excerpt_en: string | null
-  content_en: string | null
-  meta_title_en: string | null
-  meta_description_en: string | null
-}
 
 interface TranslationResult {
   content: TranslatedContent
@@ -25,14 +25,6 @@ interface TranslationResult {
   ok: boolean
   // human-readable reason (Korean) shown to the admin when ok === false
   error?: string
-}
-
-const EMPTY_TRANSLATION: TranslatedContent = {
-  title_en: null,
-  excerpt_en: null,
-  content_en: null,
-  meta_title_en: null,
-  meta_description_en: null,
 }
 
 async function translatePost(input: {
@@ -60,36 +52,10 @@ async function translatePost(input: {
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-    const prompt = `You are translating content for Muse de Marée (뮤즈드마레), Korea's only sea-aged champagne brand.
-
-## Translation Guidelines
-- Maintain a sophisticated luxury tone with elegant, natural English.
-- ALWAYS use the full brand name "Muse de Marée" consistently — never use pronouns like "we", "our", or "they" to refer to the brand.
-- Preserve all specific data, numbers, and measurements exactly (e.g., depths, temperatures, aging periods).
-- For META_DESC: Include the brand name "Muse de Marée" and key data points. Keep it factual and specific, not abstract.
-  Example: "Muse de Marée ages champagne at 20m depth for 12 months at 10-14°C" instead of "A beautiful champagne from the sea."
-- For TITLE: If the original title is poetic/abstract, translate faithfully but ensure it contains the core topic keyword.
-
-## Content to Translate
-${input.title ? `TITLE: ${input.title}` : ''}
-${input.excerpt ? `EXCERPT: ${input.excerpt}` : ''}
-${input.metaTitle ? `META_TITLE: ${input.metaTitle}` : ''}
-${input.metaDescription ? `META_DESC: ${input.metaDescription}` : ''}
-${input.content ? `CONTENT_HTML: ${input.content}` : ''}
-
-Respond ONLY with valid JSON:
-{
-  "title_en": "translated title or null",
-  "excerpt_en": "translated excerpt or null",
-  "content_en": "translated HTML content or null",
-  "meta_title_en": "translated meta title or null",
-  "meta_description_en": "translated meta description or null"
-}`
-
     const response = await anthropic.messages.create({
-      model: 'claude-opus-4-8',
-      max_tokens: 16384,
-      messages: [{ role: 'user', content: prompt }],
+      model: TRANSLATION_MODEL,
+      max_tokens: TRANSLATION_MAX_TOKENS,
+      messages: [{ role: 'user', content: buildTranslationPrompt(input) }],
     })
 
     // Truncated response → JSON is incomplete and would silently drop content.
@@ -103,23 +69,11 @@ Respond ONLY with valid JSON:
       }
     }
 
-    // 모델이 thinking 블록을 먼저 반환할 수 있으므로(claude-sonnet-5 적응형 추론) text 블록을 찾아서 사용
+    // 모델이 thinking 블록을 먼저 반환할 수 있으므로 text 블록을 찾아서 사용
     const textBlock = response.content.find((block) => block.type === 'text')
-    const text = textBlock && textBlock.type === 'text' ? textBlock.text : ''
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0])
-      return {
-        content: {
-          title_en: parsed.title_en || null,
-          excerpt_en: parsed.excerpt_en || null,
-          content_en: parsed.content_en || null,
-          meta_title_en: parsed.meta_title_en || null,
-          meta_description_en: parsed.meta_description_en || null,
-        },
-        attempted: true,
-        ok: true,
-      }
+    const translated = parseTranslationResponse(textBlock && textBlock.type === 'text' ? textBlock.text : '')
+    if (translated) {
+      return { content: translated, attempted: true, ok: true }
     }
 
     console.error('Translation response contained no JSON')
@@ -486,21 +440,24 @@ interface CreatePostInput {
   author_id?: string
 }
 
-export async function createPost(input: CreatePostInput) {
+export async function createPost(input: CreatePostInput, pretranslated?: TranslatedContent | null) {
   const supabase = await createAdminClient()
 
   // Calculate reading time (roughly 200 words per minute)
   const wordCount = input.content.replace(/<[^>]*>/g, '').split(/\s+/).length
   const readingTime = Math.max(1, Math.ceil(wordCount / 200))
 
-  // Translate all fields to English in one API call
-  const translation = await translatePost({
-    title: input.title,
-    excerpt: input.excerpt,
-    content: input.content,
-    metaTitle: input.meta_title,
-    metaDescription: input.meta_description,
-  })
+  // 클라이언트가 스트리밍 라우트(/api/admin/translate)로 미리 번역한 결과가 있으면 재사용,
+  // 없으면(다른 호출 경로·번역 실패 폴백) 여기서 직접 번역
+  const translation: TranslationResult = pretranslated
+    ? { content: pretranslated, attempted: true, ok: true }
+    : await translatePost({
+        title: input.title,
+        excerpt: input.excerpt,
+        content: input.content,
+        metaTitle: input.meta_title,
+        metaDescription: input.meta_description,
+      })
   const translated = translation.content
 
   const postData = {
@@ -534,7 +491,7 @@ export async function createPost(input: CreatePostInput) {
   return { success: true, data, warning }
 }
 
-export async function updatePost(id: string, input: Partial<CreatePostInput>) {
+export async function updatePost(id: string, input: Partial<CreatePostInput>, pretranslated?: TranslatedContent | null) {
   const supabase = await createAdminClient()
 
   const updateData: Record<string, unknown> = { ...input }
@@ -550,13 +507,16 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>) {
   const needsTranslation = input.title || input.excerpt || input.content || input.meta_title || input.meta_description
   let translationWarning: string | undefined
   if (needsTranslation) {
-    const translation = await translatePost({
-      title: input.title,
-      excerpt: input.excerpt,
-      content: input.content,
-      metaTitle: input.meta_title,
-      metaDescription: input.meta_description,
-    })
+    // 클라이언트가 미리 번역한 결과가 있으면 재사용, 없으면 여기서 직접 번역 (createPost와 동일한 폴백)
+    const translation: TranslationResult = pretranslated
+      ? { content: pretranslated, attempted: true, ok: true }
+      : await translatePost({
+          title: input.title,
+          excerpt: input.excerpt,
+          content: input.content,
+          metaTitle: input.meta_title,
+          metaDescription: input.meta_description,
+        })
     const translated = translation.content
     // On failure, keep the existing English fields (do not overwrite with null) and warn.
     if (translated.title_en) updateData.title_en = translated.title_en
