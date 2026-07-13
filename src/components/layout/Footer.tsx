@@ -37,10 +37,10 @@ export function Footer() {
       {/* Newsletter Section - Subtle & Refined */}
       {!hideNewsletter && (
       <section className="bg-[#000000] text-white border-b border-white/[0.04]">
-        <div className="container-narrow py-8 sm:py-10 md:py-14 px-5 sm:px-6">
+        <div className="container-narrow py-5 sm:py-8 md:py-10 px-5 sm:px-6">
           <div className="text-center max-w-lg mx-auto">
             {/* Minimal label */}
-            <p className="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-white/70 mb-2 sm:mb-4">
+            <p className="text-[8px] sm:text-[9px] uppercase tracking-[0.3em] text-white/70 mb-1.5 sm:mb-4">
               Newsletter
             </p>
 
@@ -50,7 +50,7 @@ export function Footer() {
             </h2>
 
             {/* Muted description */}
-            <p className="text-[11px] sm:text-sm text-white/30 mb-5 sm:mb-8 font-light leading-relaxed">
+            <p className="text-[11px] sm:text-sm text-white/30 mb-3.5 sm:mb-6 font-light leading-relaxed">
               {t.newsletter.description}
             </p>
 
@@ -63,11 +63,11 @@ export function Footer() {
 
       {/* Main Footer - Compact on Mobile */}
       <section className="bg-[#000000] border-t border-white/[0.06]">
-        <div className="container-wide py-8 sm:py-12 md:py-20 px-5 sm:px-6">
+        <div className="container-wide py-5 sm:py-8 md:py-12 px-5 sm:px-6">
           {/* Mobile: Simple stacked layout */}
           <div className="md:hidden">
             {/* Brand */}
-            <Link href="/" className="inline-block mb-5" aria-label="Muse de Marée">
+            <Link href="/" className="inline-block mb-4" aria-label="Muse de Marée">
               <Image
                 src="/images/logo/logo_text_trans_W.png"
                 alt="Muse de Marée"
@@ -78,7 +78,7 @@ export function Footer() {
             </Link>
 
             {/* Compact Link Grid - 3 columns on mobile */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-4 mb-5">
               {/* Journal - only show 3 items */}
               <div>
                 <h4 className="text-[8px] uppercase tracking-[0.2em] text-white/70 mb-2.5">
@@ -151,7 +151,7 @@ export function Footer() {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-white/[0.06] mb-4" />
+            <div className="h-px bg-white/[0.06] mb-3" />
 
             {/* Bottom - Compact */}
             <div className="flex justify-between items-center">
@@ -172,7 +172,7 @@ export function Footer() {
           {/* Desktop: Full layout */}
           <div className="hidden md:block">
             {/* Top Section - Brand + Links */}
-            <div className="grid lg:grid-cols-12 gap-8 mb-16">
+            <div className="grid lg:grid-cols-12 gap-8 mb-10">
               {/* Brand Column */}
               <div className="lg:col-span-4">
                 <Link href="/" className="inline-block mb-6" aria-label="Muse de Marée">
@@ -194,10 +194,10 @@ export function Footer() {
                 <div className="grid grid-cols-3 gap-8">
                   {/* Journal */}
                   <div>
-                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/80 mb-5">
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/80 mb-4">
                       {t.footer.journal}
                     </h4>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2">
                       {footerLinks.journal.map((link) => (
                         <li key={link.href}>
                           <Link
@@ -213,10 +213,10 @@ export function Footer() {
 
                   {/* Info */}
                   <div>
-                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/80 mb-5">
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/80 mb-4">
                       {t.footer.info}
                     </h4>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2">
                       {footerLinks.about.map((link) => (
                         <li key={link.href}>
                           {'external' in link && link.external ? (
@@ -243,10 +243,10 @@ export function Footer() {
 
                   {/* Social */}
                   <div>
-                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/80 mb-5">
+                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-white/80 mb-4">
                       {t.footer.social}
                     </h4>
-                    <ul className="space-y-3">
+                    <ul className="space-y-2">
                       {footerLinks.social.map((link) => (
                         <li key={link.href}>
                           <a
@@ -268,7 +268,7 @@ export function Footer() {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-white/[0.06] mb-8" />
+            <div className="h-px bg-white/[0.06] mb-6" />
 
             {/* Bottom Section */}
             <div className="flex justify-between items-center">
@@ -296,12 +296,13 @@ export function Footer() {
                 >
                   {t.footer.terms}
                 </Link>
-                <Link
+                {/* 전체 페이지 로드로 진입해야 만료된 세션의 핸드셰이크 리다이렉트를 브라우저가 따라갈 수 있다 */}
+                <a
                   href="/admin"
                   className="text-xs text-white/20 hover:text-white/40 transition-colors"
                 >
                   Admin
-                </Link>
+                </a>
               </div>
             </div>
           </div>

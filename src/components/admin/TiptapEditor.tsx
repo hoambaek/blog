@@ -402,7 +402,7 @@ export function TiptapEditor({ content, onChange, placeholder = '본문을 작�
           size="icon"
           className="h-8 w-8"
           onClick={() => fileInputRef.current?.click()}
-          title="이미지 업로드"
+          title="이미지·영상 업로드"
           disabled={isUploadingImage}
         >
           {isUploadingImage ? (

@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -17,6 +18,7 @@ interface Post {
   content_en: unknown
   cover_image_url: string | null
   published_at: string | null
+  updated_at: string | null
   reading_time_minutes: number | null
   category: {
     name: string
@@ -68,6 +70,63 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
     .replace(signatureAtEnd, '')
     .replace(emptyParaAtEnd, '')
 
+  // 본문 영상을 Threads식으로 재생: 무음·인라인·루프, 화면에 보일 때만 자동재생.
+  // 저장된 HTML(<video controls>)은 그대로 두고 렌더링 시점에만 업그레이드하므로
+  // 기존 발행 글의 영상에도 자동 적용된다.
+  const contentRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const root = contentRef.current
+    if (!root) return
+    const videos = Array.from(root.querySelectorAll('video'))
+    if (videos.length === 0) return
+
+    // 탭/클릭으로 일시정지·재생 토글. 사용자가 멈춘 영상은 스크롤로 다시 보여도 자동재생하지 않는다.
+    const toggle = (event: Event) => {
+      const video = event.currentTarget as HTMLVideoElement
+      if (video.paused) {
+        delete video.dataset.userPaused
+        video.play().catch(() => {})
+      } else {
+        video.dataset.userPaused = 'true'
+        video.pause()
+      }
+    }
+
+    videos.forEach((video) => {
+      // iOS 사파리 무음 자동재생 조건: muted + playsinline (속성과 프로퍼티 둘 다)
+      video.muted = true
+      video.setAttribute('muted', '')
+      video.playsInline = true
+      video.setAttribute('playsinline', '')
+      video.loop = true
+      video.removeAttribute('controls')
+      video.preload = 'metadata'
+      video.style.cursor = 'pointer'
+      video.addEventListener('click', toggle)
+    })
+
+    // 화면의 40% 이상 보이면 재생, 벗어나면 일시정지
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const video = entry.target as HTMLVideoElement
+          if (entry.isIntersecting) {
+            if (video.dataset.userPaused !== 'true') video.play().catch(() => {})
+          } else {
+            video.pause()
+          }
+        }
+      },
+      { threshold: 0.4 },
+    )
+    videos.forEach((video) => observer.observe(video))
+
+    return () => {
+      observer.disconnect()
+      videos.forEach((video) => video.removeEventListener('click', toggle))
+    }
+  }, [htmlContent])
+
   // Get translated category name based on slug
   const getCategoryName = (slug: string | undefined) => {
     if (!slug) return t.post.allPosts
@@ -112,12 +171,19 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
               ))}
             </h1>
             {displayExcerpt && (
-              <p className="font-serif italic text-base sm:text-lg md:text-xl text-white/80 leading-relaxed break-keep max-w-2xl mx-auto mb-5 sm:mb-6">
+              <p className="aeo-summary font-serif italic text-base sm:text-lg md:text-xl text-white/80 leading-relaxed break-keep max-w-2xl mx-auto mb-5 sm:mb-6">
                 {displayExcerpt}
               </p>
             )}
             <p className="text-[11px] sm:text-xs text-white/70 tracking-wide">
               {formatDate(post.published_at, locale)} · {post.reading_time_minutes || 5}{t.post.readingTime}
+              {/* 갱신일 — 발행 후 하루 이상 지나 수정된 글만 표기 (검색·AI 신선도 신호) */}
+              {post.updated_at &&
+                post.published_at &&
+                new Date(post.updated_at).getTime() - new Date(post.published_at).getTime() >
+                  24 * 60 * 60 * 1000 && (
+                  <> · {formatDate(post.updated_at, locale)} {isEn ? 'updated' : '갱신'}</>
+                )}
             </p>
           </div>
         </div>
@@ -144,6 +210,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
             prose-strong:text-foreground prose-strong:font-medium
             prose-li:text-muted-foreground prose-li:leading-relaxed prose-li:text-[15px] prose-li:sm:text-base
           "
+          ref={contentRef}
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
 
