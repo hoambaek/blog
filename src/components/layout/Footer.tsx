@@ -3,9 +3,41 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
-import { useTranslation } from '@/lib/i18n'
+import { ArrowRight, Globe } from 'lucide-react'
+import { useTranslation, useLocale, type Locale } from '@/lib/i18n'
 import { NewsletterForm } from '@/components/NewsletterForm'
+
+const footerLocaleNames: Record<Locale, string> = {
+  ko: '한국어',
+  en: 'English',
+}
+
+function FooterLanguageToggle() {
+  const { locale, setLocale } = useLocale()
+
+  return (
+    <div className="inline-flex items-center gap-2">
+      <Globe className="w-3 h-3 text-white/50 shrink-0" strokeWidth={1.5} />
+      {(Object.keys(footerLocaleNames) as Locale[]).map((loc, i) => (
+        <span key={loc} className="flex items-center gap-2">
+          {i > 0 && <span className="text-[10px] text-white/15">·</span>}
+          <button
+            onClick={() => setLocale(loc)}
+            className={`text-[11px] tracking-wide transition-colors ${
+              locale === loc
+                ? 'text-white/80'
+                : 'text-white/30 hover:text-white/60'
+            }`}
+            aria-label={`Switch language to ${footerLocaleNames[loc]}`}
+            aria-current={locale === loc ? 'true' : undefined}
+          >
+            {footerLocaleNames[loc]}
+          </button>
+        </span>
+      ))}
+    </div>
+  )
+}
 
 export function Footer() {
   const pathname = usePathname()
@@ -67,15 +99,18 @@ export function Footer() {
           {/* Mobile: Simple stacked layout */}
           <div className="md:hidden">
             {/* Brand */}
-            <Link href="/" className="inline-block mb-4" aria-label="Muse de Marée">
-              <Image
-                src="/images/logo/logo_text_trans_W.png"
-                alt="Muse de Marée"
-                width={150}
-                height={23}
-                className="h-[20px] w-auto"
-              />
-            </Link>
+            <div className="flex items-center justify-between mb-5">
+              <Link href="/" className="inline-block" aria-label="Muse de Marée">
+                <Image
+                  src="/images/logo/logo_text_trans_W.png"
+                  alt="Muse de Marée"
+                  width={150}
+                  height={23}
+                  className="h-[20px] w-auto"
+                />
+              </Link>
+              <FooterLanguageToggle />
+            </div>
 
             {/* Compact Link Grid - 3 columns on mobile */}
             <div className="grid grid-cols-3 gap-4 mb-5">
@@ -187,6 +222,9 @@ export function Footer() {
                 <p className="text-sm text-white/40 leading-relaxed max-w-xs">
                   {t.footer.brandDescription}
                 </p>
+                <div className="mt-6">
+                  <FooterLanguageToggle />
+                </div>
               </div>
 
               {/* Links Columns */}
@@ -282,7 +320,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="text-xs text-white/30 hover:text-white/60 transition-colors"
                 >
-                  {t.footer.home}
+                  musedemaree.com
                 </a>
                 <Link
                   href="/privacy"

@@ -198,7 +198,7 @@ export const ko: Dictionary = {
     brandQuote: '샹파뉴가 만들고,\n남해가 쓴 시간',
     privacy: '개인정보처리방침',
     terms: '이용약관',
-    home: '홈페이지',
+    home: '공식 웹사이트',
     aboutJournal: '저널 소개',
     newsletterSubscribe: '뉴스레터 구독',
     privacyConsent: '구독 신청 시 개인정보처리방침에 동의하게 됩니다.',

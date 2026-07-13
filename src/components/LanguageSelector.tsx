@@ -45,7 +45,7 @@ export function LanguageSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 bg-[#FAF8F5]/80 backdrop-blur-xl shadow-xl z-50 min-w-[130px] overflow-hidden">
+        <div className="absolute left-0 lg:left-auto lg:right-0 top-full mt-1 bg-[#FAF8F5]/80 backdrop-blur-xl shadow-xl z-50 min-w-[130px] overflow-hidden">
           {locales.map((loc) => (
             <button
               key={loc}

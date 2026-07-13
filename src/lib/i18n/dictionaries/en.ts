@@ -75,7 +75,7 @@ export const en: Dictionary = {
     brandQuote: 'Made in Champagne,\nwritten by the South Sea',
     privacy: 'Privacy Policy',
     terms: 'Terms of Service',
-    home: 'Homepage',
+    home: 'Official Website',
     aboutJournal: 'About Journal',
     newsletterSubscribe: 'Newsletter',
     privacyConsent: 'By subscribing, you agree to our Privacy Policy.',

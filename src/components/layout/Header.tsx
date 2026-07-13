@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { Search, Menu, X, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -22,11 +22,13 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const lastScrollY = useRef(0)
   const router = useRouter()
+  const pathname = usePathname()
   const t = useTranslation()
   const { locale } = useLocale()
 
-  // Transparent over the dark hero until scrolled (post hero is now full-bleed)
-  const showScrolledStyle = isScrolled
+  // Transparent over the dark hero until scrolled (post hero is now full-bleed).
+  // about은 백지 마스트헤드라 처음부터 잉크(스크롤) 스타일을 쓴다.
+  const showScrolledStyle = isScrolled || pathname === '/about'
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,7 +93,12 @@ export function Header() {
         <div className="container-wide">
           {/* Mobile Header - Single line when scrolled */}
           <div className="flex lg:hidden h-12 items-center justify-between">
-            {/* Left: Mobile Menu */}
+            {/* Left: Language (랜딩과 동일하게 메뉴는 오른쪽) */}
+            <div className={`${!showScrolledStyle ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
+              <LanguageSelector />
+            </div>
+
+            {/* Right: Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button
@@ -103,7 +110,7 @@ export function Header() {
                   <span className="sr-only">MENU</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[340px] p-0 border-0 bg-[#000000]" onOpenAutoFocus={(e) => e.preventDefault()}>
+              <SheetContent side="right" className="w-[340px] p-0 border-0 bg-[#000000]" onOpenAutoFocus={(e) => e.preventDefault()}>
                 {/* Dark Luxury Mobile Menu */}
                 <div className="h-full flex flex-col">
                   {/* Header with Logo */}
@@ -225,10 +232,6 @@ export function Header() {
               </span>
             </Link>
 
-            {/* Right: Language only on mobile */}
-            <div className={`${!showScrolledStyle ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
-              <LanguageSelector />
-            </div>
           </div>
 
           {/* Desktop Header */}
