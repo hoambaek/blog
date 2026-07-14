@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Search, Menu, X, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,7 +18,9 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isHidden, setIsHidden] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const lastScrollY = useRef(0)
   const router = useRouter()
   const pathname = usePathname()
   const t = useTranslation()
@@ -30,7 +32,15 @@ export function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100)
+      const currentScrollY = window.scrollY
+      setIsScrolled(currentScrollY > 100)
+      // 아래로 스크롤하면 숨기고, 위로 올리면 다시 보인다 — 데스크톱 전용(lg 미만은 CSS로 항상 표시)
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setIsHidden(true)
+      } else {
+        setIsHidden(false)
+      }
+      lastScrollY.current = currentScrollY
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
@@ -87,7 +97,7 @@ export function Header() {
           showScrolledStyle
             ? 'bg-background/98 backdrop-blur-md shadow-[0_1px_0_0_var(--border),0_1px_3px_0_rgba(0,0,0,0.05)]'
             : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent shadow-none'
-        }`}
+        } ${isHidden ? 'lg:-translate-y-full' : ''}`}
       >
         <div className="container-wide">
           {/* Mobile Header - Single line when scrolled */}
