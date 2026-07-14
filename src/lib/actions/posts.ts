@@ -429,6 +429,8 @@ interface CreatePostInput {
   title: string
   slug: string
   excerpt?: string
+  /** 사진·자료 출처 (언어 공용, 비우면 본문에 표시 안 함) */
+  photo_credits?: string | null
   content: string
   category_id?: string
   status: 'draft' | 'published' | 'scheduled'

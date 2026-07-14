@@ -186,6 +186,7 @@ export type Database = {
           title: string
           slug: string
           excerpt: string | null
+          photo_credits: string | null
           content: Json
           cover_image_url: string | null
           category_id: string | null
@@ -213,6 +214,7 @@ export type Database = {
           title: string
           slug: string
           excerpt?: string | null
+          photo_credits?: string | null
           content?: Json
           cover_image_url?: string | null
           category_id?: string | null
@@ -240,6 +242,7 @@ export type Database = {
           title?: string
           slug?: string
           excerpt?: string | null
+          photo_credits?: string | null
           content?: Json
           cover_image_url?: string | null
           category_id?: string | null

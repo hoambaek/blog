@@ -14,6 +14,7 @@ interface Post {
   title_en: string | null
   excerpt: string | null
   excerpt_en: string | null
+  photo_credits: string | null
   content: unknown
   content_en: unknown
   cover_image_url: string | null
@@ -224,6 +225,18 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
             className="h-[26px] w-auto opacity-60"
           />
         </div>
+
+        {/* Photo credits — 값이 있을 때만 로고 서명 아래에 표시 */}
+        {post.photo_credits?.trim() && (
+          <div className="mt-8 pt-4 border-t border-border">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mb-2">
+              {isEn ? 'Credits' : '출처'}
+            </p>
+            <p className="text-xs text-muted-foreground/70 leading-relaxed whitespace-pre-line break-keep">
+              {post.photo_credits.trim()}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Post-end subscribe — 글을 다 읽은 독자에게 기록 구독 제안 */}

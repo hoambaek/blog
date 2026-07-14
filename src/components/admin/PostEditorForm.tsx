@@ -62,6 +62,8 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     slug: '슬러그',
     excerpt: '발췌문',
     excerptPlaceholder: '포스트의 간단한 설명...',
+    photoCredits: '사진·자료 출처',
+    photoCreditsPlaceholder: '예: 사진 Mignon-Boulard 제공 (한 줄에 하나씩, 비우면 표시되지 않습니다)',
     coverImage: '커버 이미지',
     dragOrClick: '이미지를 드래그하거나 클릭하여 업로드',
     orImageUrl: '또는 이미지 URL 입력',
@@ -94,6 +96,7 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     title: post?.title || '',
     slug: post?.slug || '',
     excerpt: post?.excerpt || '',
+    photoCredits: post?.photo_credits || '',
     content: getHtmlContent(),
     categoryId: post?.category_id || '',
     status: (post?.status || 'draft') as 'draft' | 'published' | 'scheduled',
@@ -243,6 +246,7 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
         title: formData.title,
         slug: formData.slug,
         excerpt: formData.excerpt || undefined,
+        photo_credits: formData.photoCredits.trim() || null,
         content: formData.content,
         category_id: formData.categoryId || undefined,
         status,
@@ -572,6 +576,20 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
                 setFormData((prev) => ({ ...prev, excerpt: e.target.value }))
               }
               placeholder={t.excerptPlaceholder}
+            />
+          </div>
+
+          {/* Photo Credits — 값이 있을 때만 본문 끝 로고 아래에 표시된다 */}
+          <div className="border border-border p-4 bg-card">
+            <Label className="text-sm font-medium mb-2 block">{t.photoCredits}</Label>
+            <textarea
+              className="w-full px-3 py-2 border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              rows={2}
+              value={formData.photoCredits}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, photoCredits: e.target.value }))
+              }
+              placeholder={t.photoCreditsPlaceholder}
             />
           </div>
 
