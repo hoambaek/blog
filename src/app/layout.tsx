@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Playfair_Display,
   Lora,
@@ -52,6 +52,13 @@ const mrsSaintDelafield = Mrs_Saint_Delafield({
   weight: ["400"],
   display: "swap",
 });
+
+// 노치(safe area) 뒤까지 콘텐츠를 확장 — 상단 상태바 영역은 Header의 차폐 바가 칠한다 (랜딩과 동일 문법)
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: {

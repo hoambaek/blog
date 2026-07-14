@@ -93,8 +93,11 @@ export function Footer() {
       </section>
       )}
 
-      {/* Main Footer - Compact on Mobile */}
-      <section className="bg-[#000000] border-t border-white/[0.06]">
+      {/* Main Footer - Compact on Mobile. 하단 safe-area까지 검정으로 채워 홈 인디케이터 영역과 잇는다 */}
+      <section
+        className="bg-[#000000] border-t border-white/[0.06]"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      >
         <div className="container-wide py-5 sm:py-8 md:py-12 px-5 sm:px-6">
           {/* Mobile: Simple stacked layout */}
           <div className="md:hidden">

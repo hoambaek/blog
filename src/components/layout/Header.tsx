@@ -83,8 +83,16 @@ export function Header() {
 
   return (
     <>
+      {/* Safe-area(노치) 차폐 — 상태바 영역을 헤더와 같은 색으로 칠해 메뉴바와 한 몸으로 잇는다.
+          헤더가 스크롤로 숨어도 이 바는 남아 상태바 뒤로 본문이 비치지 않는다. */}
+      <div
+        aria-hidden="true"
+        className={`fixed top-0 z-[60] w-full h-[env(safe-area-inset-top)] pointer-events-none transition-colors duration-500 ${
+          showScrolledStyle ? 'bg-background' : 'bg-black/60'
+        }`}
+      />
       <header
-        className={`fixed top-0 z-50 w-full transition-all duration-500 ${
+        className={`fixed top-0 z-50 w-full pt-[env(safe-area-inset-top)] transition-all duration-500 ${
           showScrolledStyle
             ? 'bg-background/98 backdrop-blur-md shadow-[0_1px_0_0_var(--border),0_1px_3px_0_rgba(0,0,0,0.05)]'
             : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent shadow-none'
