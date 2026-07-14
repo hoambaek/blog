@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter, usePathname } from 'next/navigation'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, Menu, X, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,9 +18,7 @@ export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isHidden, setIsHidden] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const lastScrollY = useRef(0)
   const router = useRouter()
   const pathname = usePathname()
   const t = useTranslation()
@@ -32,14 +30,7 @@ export function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
-      setIsScrolled(currentScrollY > 100)
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        setIsHidden(true)
-      } else {
-        setIsHidden(false)
-      }
-      lastScrollY.current = currentScrollY
+      setIsScrolled(window.scrollY > 100)
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
@@ -87,22 +78,22 @@ export function Header() {
           헤더가 스크롤로 숨어도 이 바는 남아 상태바 뒤로 본문이 비치지 않는다. */}
       <div
         aria-hidden="true"
-        className={`fixed top-0 z-[60] w-full h-[env(safe-area-inset-top)] pointer-events-none transition-colors duration-500 ${
+        className={`fixed top-0 z-[60] w-full h-[env(safe-area-inset-top)] pointer-events-none transition-colors duration-500 max-lg:bg-[#ECEAE6] ${
           showScrolledStyle ? 'bg-background' : 'bg-black/60'
         }`}
       />
       <header
-        className={`fixed top-0 z-50 w-full pt-[env(safe-area-inset-top)] transition-all duration-500 ${
+        className={`fixed top-0 z-50 w-full pt-[env(safe-area-inset-top)] transition-all duration-500 max-lg:bg-none max-lg:bg-[#ECEAE6] max-lg:backdrop-blur-none max-lg:shadow-none ${
           showScrolledStyle
             ? 'bg-background/98 backdrop-blur-md shadow-[0_1px_0_0_var(--border),0_1px_3px_0_rgba(0,0,0,0.05)]'
             : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent shadow-none'
-        } ${isHidden ? '-translate-y-full' : 'translate-y-0'}`}
+        }`}
       >
         <div className="container-wide">
           {/* Mobile Header - Single line when scrolled */}
           <div className="flex lg:hidden h-12 items-center justify-between">
             {/* Left: Language (랜딩과 동일하게 메뉴는 오른쪽) */}
-            <div className={`${!showScrolledStyle ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
+            <div className="[&_button]:text-muted-foreground">
               <LanguageSelector />
             </div>
 
@@ -112,7 +103,7 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`h-8 px-2 ${!showScrolledStyle ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
+                  className="h-8 px-2 text-muted-foreground hover:text-foreground"
                 >
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">MENU</span>
@@ -218,24 +209,16 @@ export function Header() {
               </SheetContent>
             </Sheet>
 
-            {/* Center: Logo (always visible on mobile) */}
+            {/* Center: Logo — 아이보리 고정 헤더라 항상 블랙 로고 (랜딩과 동일) */}
             <Link href="/" className="absolute left-1/2 -translate-x-1/2" aria-label="Muse de Marée">
               <span className="relative block h-[18px] w-[118px]">
                 <Image
-                  src="/images/logo/logo_text_trans_W.png"
+                  src="/images/logo/logo_text_trans.png"
                   alt="Muse de Marée"
                   fill
                   sizes="118px"
-                  className={`object-contain transition-opacity duration-300 ${showScrolledStyle ? 'opacity-0' : 'opacity-100'}`}
+                  className="object-contain opacity-70"
                   priority
-                />
-                <Image
-                  src="/images/logo/logo_text_trans.png"
-                  alt=""
-                  aria-hidden
-                  fill
-                  sizes="118px"
-                  className={`object-contain transition-opacity duration-300 ${showScrolledStyle ? 'opacity-100' : 'opacity-0'}`}
                 />
               </span>
             </Link>
@@ -316,13 +299,13 @@ export function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setIsSearchOpen(true)}
-                  className={`h-8 px-2 ${!showScrolledStyle ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}
+                  className="h-8 px-2 text-muted-foreground hover:text-foreground"
                 >
                   <Search className="h-3.5 w-3.5 mr-1" />
                   <span className="text-xs tracking-wide">{t.admin.search}</span>
                 </Button>
 
-                <div className={`${!showScrolledStyle ? '[&_button]:text-white/80 [&_button]:hover:text-white [&_button]:hover:bg-white/10' : '[&_button]:text-muted-foreground'}`}>
+                <div className="[&_button]:text-muted-foreground">
                   <LanguageSelector />
                 </div>
               </div>
