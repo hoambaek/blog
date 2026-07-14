@@ -424,14 +424,14 @@
 }
 
 /* ═══════════════════════════════════════════════════
-   Touch feedback — 탭하는 순간 즉시 어두워지고, 떼면 서서히 복귀.
-   호버가 없는 모바일에서 "눌렸다"는 신호를 준다 (데스크톱 클릭에도 동작).
+   Touch feedback — 누르면 서서히 스며들듯 옅어지고, 떼면 부드럽게 복귀.
+   급격한 스냅은 깜박임으로 읽히므로 금지 — 들어가는 쪽에도 반드시 이징을 준다.
    ═══════════════════════════════════════════════════ */
 .tap-dim {
   -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.45s ease;
 }
 .tap-dim:active {
-  opacity: 0.45;
-  transition-duration: 0s;
+  opacity: 0.75;
+  transition-duration: 0.2s;
 }
