@@ -221,7 +221,7 @@ export function Header() {
 
             {/* Center: Logo — 아이보리 고정 헤더라 항상 블랙 로고 (랜딩과 동일) */}
             <Link href="/" className="absolute left-1/2 -translate-x-1/2" aria-label="Muse de Marée">
-              <span className="relative block h-[18px] w-[118px]">
+              <span className="relative block h-[21px] w-[138px]">
                 <Image
                   src="/images/logo/logo_text_trans.png"
                   alt="Muse de Marée"
