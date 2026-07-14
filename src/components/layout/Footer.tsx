@@ -12,6 +12,18 @@ const footerLocaleNames: Record<Locale, string> = {
   en: 'English',
 }
 
+const INSTAGRAM_URL = 'https://www.instagram.com/muse_de_maree/'
+
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+    </svg>
+  )
+}
+
 function FooterLanguageToggle() {
   const { locale, setLocale } = useLocale()
 
@@ -59,7 +71,7 @@ export function Footer() {
       { name: t.footer.newsletterSubscribe, href: '/subscribe' },
     ],
     social: [
-      { name: 'Instagram', href: 'https://instagram.com/musedemaree', external: true },
+      { name: 'Instagram', href: INSTAGRAM_URL, external: true },
       { name: 'YouTube', href: 'https://youtube.com/@musedemaree', external: true },
     ],
   }
@@ -193,9 +205,20 @@ export function Footer() {
 
             {/* Bottom - Compact */}
             <div className="flex justify-between items-center">
-              <p className="text-[9px] text-white/25">
-                © {currentYear} Muse de Marée
-              </p>
+              <div className="flex items-center gap-2.5">
+                <p className="text-[9px] text-white/25">
+                  © {currentYear} Muse de Marée
+                </p>
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="text-white/25 hover:text-white/60 transition-colors"
+                >
+                  <InstagramIcon className="w-3.5 h-3.5" />
+                </a>
+              </div>
               <div className="flex items-center gap-3">
                 <Link href="/privacy" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
                   {t.footer.privacy}
@@ -313,9 +336,20 @@ export function Footer() {
 
             {/* Bottom Section */}
             <div className="flex justify-between items-center">
-              <p className="text-xs text-white/30">
-                © {currentYear} Muse de Marée. All rights reserved.
-              </p>
+              <div className="flex items-center gap-3">
+                <p className="text-xs text-white/30">
+                  © {currentYear} Muse de Marée. All rights reserved.
+                </p>
+                <a
+                  href={INSTAGRAM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="text-white/30 hover:text-white/60 transition-colors"
+                >
+                  <InstagramIcon className="w-4 h-4" />
+                </a>
+              </div>
               <div className="flex items-center gap-6">
                 <a
                   href="https://musedemaree.com/"
