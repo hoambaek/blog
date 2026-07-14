@@ -422,3 +422,16 @@
   color: var(--muted-foreground);
   font-style: italic;
 }
+
+/* ═══════════════════════════════════════════════════
+   Touch feedback — 탭하는 순간 즉시 어두워지고, 떼면 서서히 복귀.
+   호버가 없는 모바일에서 "눌렸다"는 신호를 준다 (데스크톱 클릭에도 동작).
+   ═══════════════════════════════════════════════════ */
+.tap-dim {
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.25s ease;
+}
+.tap-dim:active {
+  opacity: 0.45;
+  transition-duration: 0s;
+}

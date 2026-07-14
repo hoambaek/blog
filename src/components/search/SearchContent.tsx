@@ -191,7 +191,7 @@ export function SearchContent({
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => (
-                <Link key={post.id} href={`/post/${post.slug}`} className="group">
+                <Link key={post.id} href={`/post/${post.slug}`} className="tap-dim group">
                   <article className="card-hover">
                     <div className="aspect-[4/3] relative bg-muted mb-4 overflow-hidden">
                       {post.cover_image_url && (

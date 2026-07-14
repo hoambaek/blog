@@ -144,7 +144,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
             {mainFeatured ? (
               <Link
                 href={`/post/${mainFeatured.slug}`}
-                className="group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-white/80"
+                className="tap-dim group inline-flex items-center gap-2 md:gap-3 px-5 py-3 md:px-8 md:py-4 bg-white text-stone-900 text-[10px] md:text-xs font-semibold uppercase tracking-[0.15em] transition-all duration-300 hover:bg-white/80"
               >
                 {t.hero.cta}
                 <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4 transition-transform group-hover:translate-x-0.5" />
@@ -185,7 +185,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                 <Link
                   key={post.id}
                   href={`/post/${post.slug}`}
-                  className="group block"
+                  className="tap-dim group block"
                 >
                   <article>
                     <div className="aspect-[4/3] relative overflow-hidden bg-secondary mb-5">
@@ -239,7 +239,7 @@ export function HomeContent({ featuredPosts, latestPosts }: HomeContentProps) {
                 <Link
                   key={post.id}
                   href={`/post/${post.slug}`}
-                  className="group block border-b border-border"
+                  className="tap-dim group block border-b border-border"
                 >
                   <article className="grid grid-cols-12 gap-x-6 gap-y-1.5 md:gap-8 items-baseline py-6 md:py-7 px-4 -mx-4 transition-colors duration-300 group-hover:bg-secondary/60">
                     {/* Department */}

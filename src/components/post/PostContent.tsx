@@ -270,7 +270,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
                 <Link
                   key={relatedPost.id}
                   href={`/post/${relatedPost.slug}`}
-                  className="group flex-shrink-0 w-[75vw] sm:w-[60vw] md:w-auto snap-start"
+                  className="tap-dim group flex-shrink-0 w-[75vw] sm:w-[60vw] md:w-auto snap-start"
                 >
                   <article className="bg-background overflow-hidden transition-colors">
                     <div className="aspect-[16/10] relative bg-muted overflow-hidden">
@@ -308,7 +308,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
               {prev ? (
                 <Link
                   href={`/post/${prev.slug}`}
-                  className="group flex items-center gap-3 sm:gap-4 px-5 sm:px-6 md:px-8 py-5 sm:py-6 md:py-8 md:border-r border-b md:border-b-0 border-border hover:bg-muted/30 transition-colors"
+                  className="tap-dim group flex items-center gap-3 sm:gap-4 px-5 sm:px-6 md:px-8 py-5 sm:py-6 md:py-8 md:border-r border-b md:border-b-0 border-border hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-border flex items-center justify-center group-hover:border-foreground/30 transition-colors">
                     <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
@@ -328,7 +328,7 @@ export function PostContent({ post, relatedPosts, prev, next }: PostContentProps
               {next && (
                 <Link
                   href={`/post/${next.slug}`}
-                  className="group flex items-center justify-end gap-3 sm:gap-4 px-5 sm:px-6 md:px-8 py-5 sm:py-6 md:py-8 hover:bg-muted/30 transition-colors text-right"
+                  className="tap-dim group flex items-center justify-end gap-3 sm:gap-4 px-5 sm:px-6 md:px-8 py-5 sm:py-6 md:py-8 hover:bg-muted/30 transition-colors text-right"
                 >
                   <div className="min-w-0">
                     <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-0.5 sm:mb-1">
