@@ -13,6 +13,8 @@ const footerLocaleNames: Record<Locale, string> = {
 }
 
 const INSTAGRAM_URL = 'https://www.instagram.com/muse_de_maree/'
+const PRIVACY_URL = 'https://musedemaree.com/privacy'
+const TERMS_URL = 'https://musedemaree.com/terms'
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
@@ -220,12 +222,12 @@ export function Footer() {
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <Link href="/privacy" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
+                <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
                   {t.footer.privacy}
-                </Link>
-                <Link href="/terms" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
+                </a>
+                <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/25 hover:text-white/50 transition-colors">
                   {t.footer.terms}
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -359,18 +361,22 @@ export function Footer() {
                 >
                   musedemaree.com
                 </a>
-                <Link
-                  href="/privacy"
+                <a
+                  href={PRIVACY_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-xs text-white/30 hover:text-white/60 transition-colors"
                 >
                   {t.footer.privacy}
-                </Link>
-                <Link
-                  href="/terms"
+                </a>
+                <a
+                  href={TERMS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-xs text-white/30 hover:text-white/60 transition-colors"
                 >
                   {t.footer.terms}
-                </Link>
+                </a>
                 {/* 전체 페이지 로드로 진입해야 만료된 세션의 핸드셰이크 리다이렉트를 브라우저가 따라갈 수 있다 */}
                 <a
                   href="/admin"
