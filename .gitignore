@@ -45,3 +45,8 @@ supabase/.temp/
 
 # playwright mcp debug artifacts
 .playwright-mcp/
+
+# 촬영 원본·영상 소스 — 로컬 보관 (GitHub 파일당 100MB 제한 초과, image_video 623MB)
+# 발행 이미지는 Supabase storage에서 서빙되므로 레포에 둘 필요 없음
+image_video/
+docs/posts/*/ori/
