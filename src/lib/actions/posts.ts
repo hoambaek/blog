@@ -99,6 +99,28 @@ async function translatePost(input: {
 // Public Data Fetching (uses anon key with RLS)
 // ═══════════════════════════════════════════════════
 
+/**
+ * 발행된 글의 slug 목록 — /post/[slug]의 generateStaticParams용.
+ * 본문을 가져오지 않는다(빌드 때 전 글을 통째로 읽을 이유가 없다).
+ * 실패하면 빈 배열 — 그러면 빌드가 멈추는 대신 글이 요청 시 렌더된다.
+ */
+export async function getPublishedSlugs(): Promise<string[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('posts')
+    .select('slug')
+    .eq('status', 'published')
+    .is('deleted_at', null)
+
+  if (error) {
+    console.error('Error fetching published slugs:', error)
+    return []
+  }
+
+  return data.map((row) => row.slug).filter((slug): slug is string => !!slug)
+}
+
 export async function getFeaturedPosts(limit = 3): Promise<PostWithCategory[]> {
   const supabase = await createClient()
 
@@ -487,6 +509,8 @@ export async function createPost(input: CreatePostInput, pretranslated?: Transla
 
   revalidatePath('/')
   revalidatePath('/admin/posts')
+  /* 사이트맵도 이제 캐시를 탄다(2026-07-27) — 새 글이 한 시간 늦게 실리지 않도록 같이 비운다 */
+  revalidatePath('/sitemap.xml')
 
   // Post saved, but flag when the English translation did not go through.
   const warning = translation.attempted && !translation.ok ? translation.error : undefined
@@ -559,6 +583,7 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>, pr
   revalidatePath('/')
   revalidatePath(`/post/${data.slug}`)
   revalidatePath('/admin/posts')
+  revalidatePath('/sitemap.xml')
 
   return { success: true, data, warning: translationWarning }
 }
@@ -579,31 +604,14 @@ export async function deletePost(id: string) {
 
   revalidatePath('/')
   revalidatePath('/admin/posts')
+  revalidatePath('/sitemap.xml')
 
   return { success: true }
 }
 
-export async function incrementViewCount(id: string) {
-  const supabase = await createAdminClient()
-
-  const { error } = await supabase.rpc('increment_view_count', { post_id: id })
-
-  if (error) {
-    // Fallback if RPC doesn't exist
-    const { data: post } = await supabase
-      .from('posts')
-      .select('view_count')
-      .eq('id', id)
-      .single()
-
-    if (post) {
-      await supabase
-        .from('posts')
-        .update({ view_count: (post.view_count || 0) + 1 })
-        .eq('id', id)
-    }
-  }
-}
+/* incrementViewCount는 2026-07-27에 여기서 걷어냈다 — 집계 자리가 POST /api/views로 옮겨졌다.
+   이 파일은 'use server'라, 남겨 두면 아무 검증 없이 밖에서 부를 수 있는 서버 액션이
+   하나 더 열린 채로 남는다. 입구는 origin·uuid를 검사하는 라우트 하나면 된다. */
 
 // ═══════════════════════════════════════════════════
 // Dashboard Stats

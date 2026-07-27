@@ -2,6 +2,16 @@ import { createClient } from '@/lib/supabase/server'
 
 const SITE_URL = 'https://blog.musedemaree.com'
 
+/*
+ * 한 시간마다 다시 만든다.
+ *
+ * 전에는 Supabase 클라이언트가 cookies()를 읽어 우연히 매 요청 새로 만들어졌다.
+ * 그 배선을 걷어내자(2026-07-27) 이 라우트가 빌드 때 한 번 구워지면서,
+ * 새로 발행한 글이 다음 배포 전까지 사이트맵에 안 실리게 됐다.
+ * 검색엔진이 보는 목록이라 그대로 두면 색인이 늦어진다.
+ */
+export const revalidate = 3600
+
 function escapeXml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
