@@ -70,30 +70,36 @@ export function estimateResponseChars(input: TranslationInput): number {
 // 수정 저장 시 부분 번역 — 바뀐 블록만 번역하고 영문본에 짜깁기
 // ═══════════════════════════════════════════════════
 
-// Tiptap 본문은 최상위 블록(<p>, <h2>, <img>, <ul>, <blockquote>…)의 나열이다.
-// 같은 태그가 최상위에서 중첩되지 않으므로 non-greedy 매칭으로 안전하게 쪼갤 수 있다.
+// 본문은 최상위 블록(<p>, <h3>, <figure>, <ul>, <blockquote>, <dl>…)의 나열이다.
+// 같은 이름의 태그가 안에 다시 나올 수 있어(중첩 목록 <ul><li><ul>…) 깊이를 세어 짝을 맞춘다.
+const VOID_TAGS = new Set(['img', 'br', 'hr', 'source', 'input', 'meta', 'link', 'wbr', 'col', 'embed', 'area', 'track', 'param'])
+
 export function splitTopLevelBlocks(html: string): string[] {
   const blocks: string[] = []
-  const re = /<(\w+)(?:\s[^>]*)?\/?>/g
+  const re = /<(\/)?([a-zA-Z][\w-]*)(?:\s[^>]*)?(\/)?>/g
   let match: RegExpExecArray | null
-  let cursor = 0
+  let current: { tag: string; start: number; depth: number } | null = null
   while ((match = re.exec(html)) !== null) {
-    if (match.index < cursor) continue // 이전 블록 내부의 태그는 건너뜀
-    const tag = match[1].toLowerCase()
-    // 자기 종료형(img 등) 블록
-    if (/\/>$/.test(match[0]) || ['img', 'br', 'hr'].includes(tag)) {
-      blocks.push(match[0])
-      cursor = match.index + match[0].length
+    const closing = !!match[1]
+    const tag = match[2].toLowerCase()
+    const selfClosing = !!match[3] || VOID_TAGS.has(tag)
+    if (!current) {
+      if (closing) continue // 짝 없는 닫는 태그는 건너뜀
+      if (selfClosing) {
+        blocks.push(match[0])
+        continue
+      }
+      current = { tag, start: match.index, depth: 1 }
       continue
     }
-    const closeTag = `</${tag}>`
-    const closeIndex = html.indexOf(closeTag, match.index)
-    if (closeIndex < 0) return [] // 구조를 못 읽으면 실패 처리 → 전체 번역 폴백
-    const end = closeIndex + closeTag.length
-    blocks.push(html.slice(match.index, end))
-    cursor = end
-    re.lastIndex = end
+    if (tag !== current.tag || selfClosing) continue
+    current.depth += closing ? -1 : 1
+    if (current.depth === 0) {
+      blocks.push(html.slice(current.start, match.index + match[0].length))
+      current = null
+    }
   }
+  if (current) return [] // 구조를 못 읽으면 실패 처리 → 전체 번역 폴백
   return blocks
 }
 

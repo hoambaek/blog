@@ -1,16 +1,20 @@
-import { getCategories } from '@/lib/actions/categories'
-import { PostEditorForm } from '@/components/admin/PostEditorForm'
+import { getAdminSeries, getPublishedIndex } from '@/lib/admin/data'
+import { getSeaYearAvg } from '@/lib/journal/data'
+import { PostEditor } from '@/components/admin/editor/PostEditor'
 
-/* 새 글 폼의 카테고리 목록은 지금 목록이어야 한다 — 빌드 시점에 얼리지 않는다
-   (같은 이유: admin/page.tsx 주석) */
+/* 새 기록 — 편집 화면과 같은 틀. 연재 목록은 지금 목록이어야 하므로 굽지 않는다. */
 export const dynamic = 'force-dynamic'
 
 export default async function NewPostPage() {
-  const categories = await getCategories()
-
+  const [series, index, seaAvg] = await Promise.all([getAdminSeries(), getPublishedIndex(), getSeaYearAvg(null)])
   return (
-    <div className="max-w-6xl mx-auto">
-      <PostEditorForm categories={categories} />
-    </div>
+    <PostEditor
+      post={null}
+      series={series.map((s) => ({ id: s.id, name: s.name, slug: s.slug }))}
+      publishedIndex={index}
+      number={null}
+      seaAvg={seaAvg}
+      today={new Date().toISOString()}
+    />
   )
 }

@@ -17,6 +17,8 @@ export interface CodaSeries {
   slug: string
   name: string
   description: string | null
+  nameEn?: string | null
+  descriptionEn?: string | null
   count: number
   index: number
 }
@@ -61,7 +63,7 @@ export function JournalCoda({
                 <span className="tracking-[0.14em] text-paper/50">{countText(j.series.countOne, j.series.count, s.count)}</span>
               </span>
               <span className="font-serif-kr text-[26px] font-light leading-[34px] transition-opacity group-hover:opacity-80 md:text-[32px] md:leading-[42px]">
-                {getCategoryName(t, s.slug, s.name)}
+                {getCategoryName(t, s.slug, s.name, s.nameEn)}
               </span>
               {seriesFrench(s.slug) && (
                 <span className="hidden font-garamond text-[20px] font-light italic leading-[26px] text-paper/60 md:block">
@@ -69,7 +71,7 @@ export function JournalCoda({
                 </span>
               )}
               <span className="font-sans-kr text-[13.5px] font-light leading-[22px] text-paper/70 md:text-[14px] md:leading-6">
-                {getCategoryDescription(locale, s.slug, s.description)}
+                {getCategoryDescription(locale, s.slug, s.description, s.descriptionEn)}
               </span>
             </Link>
           ))}

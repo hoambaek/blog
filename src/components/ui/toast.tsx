@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
-import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react'
+import { X } from 'lucide-react'
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
@@ -47,7 +47,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
     // Auto remove after 3 seconds
     setTimeout(() => {
       removeToast(id)
-    }, 3000)
+    }, type === 'error' || type === 'warning' ? 7000 : 3500)
   }, [removeToast])
 
   return (
@@ -81,35 +81,23 @@ interface ToastItemProps {
 }
 
 function ToastItem({ toast, onClose }: ToastItemProps) {
-  const icons = {
-    success: <CheckCircle className="h-5 w-5 text-green-500" />,
-    error: <XCircle className="h-5 w-5 text-red-500" />,
-    warning: <AlertCircle className="h-5 w-5 text-yellow-500" />,
-    info: <Info className="h-5 w-5 text-blue-500" />,
-  }
-
-  const bgColors = {
-    success: 'bg-green-50 border-green-200 dark:bg-green-950/50 dark:border-green-800',
-    error: 'bg-red-50 border-red-200 dark:bg-red-950/50 dark:border-red-800',
-    warning: 'bg-yellow-50 border-yellow-200 dark:bg-yellow-950/50 dark:border-yellow-800',
-    info: 'bg-blue-50 border-blue-200 dark:bg-blue-950/50 dark:border-blue-800',
+  // 관리자 톤 — void 바탕 + 종류별 작은 사각 표시 (Paper 'Blog Admin')
+  const marks: Record<ToastType, string> = {
+    success: 'bg-paper',
+    error: 'bg-[#C2553F]',
+    warning: 'bg-amber',
+    info: 'border border-paper/60',
   }
 
   return (
     <div
-      className={`
-        flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg
-        animate-in slide-in-from-bottom-5 fade-in duration-300
-        ${bgColors[toast.type]}
-      `}
+      role={toast.type === 'error' ? 'alert' : 'status'}
+      className="flex max-w-[560px] items-center gap-3 bg-void px-4 py-3 text-paper shadow-[0_10px_30px_rgb(10_9_8/0.25)] animate-in fade-in slide-in-from-bottom-2 duration-200"
     >
-      {icons[toast.type]}
-      <p className="text-sm font-medium text-foreground">{toast.message}</p>
-      <button
-        onClick={onClose}
-        className="ml-2 p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded transition-colors"
-      >
-        <X className="h-4 w-4 text-muted-foreground" />
+      <span className={`size-1.5 shrink-0 ${marks[toast.type]}`} aria-hidden />
+      <p className="text-[13px] font-light leading-5">{toast.message}</p>
+      <button onClick={onClose} className="ml-2 shrink-0 p-1 text-paper/50 transition-colors hover:text-paper" aria-label="닫기">
+        <X className="h-3.5 w-3.5" />
       </button>
     </div>
   )

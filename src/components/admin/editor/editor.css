@@ -1,0 +1,419 @@
+/*
+ * 기록 편집 캔버스 — Paper IIL-0. 공개 글(article-body.css)과 같은 타이포, 편집용 표시(라벨·번호·점선)만 덧붙인다.
+ * 칼럼 640px. 번호(소제목 01·02, FIG)는 CSS 카운터로 보여 주기만 하고 저장하지 않는다.
+ */
+
+.ed-body {
+  --ed-ink: #312E2A;
+  --ed-amber: #A8874F;
+  width: min(640px, 100%);
+  margin-inline: auto;
+  color: var(--ed-ink);
+}
+
+.ed-body .ProseMirror {
+  counter-reset: ed-heading ed-fig;
+  outline: none;
+  min-height: 320px;
+  padding-bottom: 120px;
+  word-break: keep-all;
+}
+
+.ed-body .ProseMirror > * + * {
+  margin-top: 26px;
+}
+
+/* ── 문단 ── */
+.ed-body .ProseMirror p,
+.ed-body .ProseMirror li {
+  font-family: var(--font-sans-kr);
+  font-size: 16.5px;
+  font-weight: 300;
+  line-height: 31px;
+}
+
+.ed-body .ProseMirror strong {
+  font-weight: 500;
+}
+
+.ed-body .ProseMirror a {
+  text-decoration: underline;
+  text-decoration-color: rgb(168 135 79 / 0.6);
+  text-underline-offset: 4px;
+}
+
+.ed-body .ProseMirror mark {
+  background: rgb(204 173 123 / 0.38);
+  color: inherit;
+}
+
+.ed-body .ProseMirror code {
+  font-family: var(--font-plex);
+  font-size: 0.9em;
+}
+
+/* 리드 */
+.ed-body .ProseMirror p.lead {
+  font-family: var(--font-serif-kr);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 37px;
+}
+
+.ed-body .ProseMirror p.lead::before {
+  content: 'LEAD';
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font-plex);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  line-height: 12px;
+  color: var(--ed-amber);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 번호 소제목 (h1~h3 = 공개 화면의 번호 소제목) */
+.ed-body .ProseMirror :is(h1, h2, h3) {
+  counter-increment: ed-heading;
+  margin-top: 48px;
+  font-family: var(--font-serif-kr);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 36px;
+}
+
+.ed-body .ProseMirror :is(h1, h2, h3)::before {
+  content: counter(ed-heading, decimal-leading-zero) ' · 자동 번호';
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--font-plex);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  line-height: 14px;
+  color: var(--ed-amber);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ed-body .ProseMirror :is(h4, h5, h6) {
+  margin-top: 40px;
+  font-family: var(--font-serif-kr);
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+/* 인용 */
+.ed-body .ProseMirror blockquote {
+  margin-top: 48px;
+  padding-left: 32px;
+  border-left: 1px solid var(--ed-amber);
+}
+
+.ed-body .ProseMirror blockquote p {
+  font-family: var(--font-serif-kr);
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 42px;
+}
+
+.ed-body .ProseMirror blockquote > * + * {
+  margin-top: 18px;
+}
+
+.ed-body .ProseMirror blockquote cite {
+  display: block;
+  font-style: normal;
+  font-family: var(--font-plex);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: #8C857B;
+}
+
+/* 용어 목록 */
+.ed-body .ProseMirror dl {
+  border-top: 1px solid rgb(49 46 42 / 0.2);
+}
+
+.ed-body .ProseMirror dl > div {
+  display: flex;
+  gap: 28px;
+  padding-block: 18px;
+  border-bottom: 1px solid rgb(49 46 42 / 0.14);
+}
+
+.ed-body .ProseMirror dt {
+  flex-shrink: 0;
+  width: 132px;
+  font-family: var(--font-serif-kr);
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.ed-body .ProseMirror dd {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-sans-kr);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 28px;
+  color: rgb(49 46 42 / 0.8);
+}
+
+/* 목록 */
+.ed-body .ProseMirror :is(ul, ol) {
+  padding-left: 1.25em;
+}
+
+.ed-body .ProseMirror ul {
+  list-style: none;
+}
+
+.ed-body .ProseMirror ul > li {
+  position: relative;
+}
+
+.ed-body .ProseMirror ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1.05em;
+  top: 15px;
+  width: 6px;
+  height: 1px;
+  background: var(--ed-amber);
+}
+
+.ed-body .ProseMirror ol {
+  list-style: decimal-leading-zero;
+}
+
+.ed-body .ProseMirror ol > li::marker {
+  font-family: var(--font-plex);
+  font-size: 11px;
+  color: var(--ed-amber);
+}
+
+.ed-body .ProseMirror li + li {
+  margin-top: 8px;
+}
+
+/* 구분선 */
+.ed-body .ProseMirror hr {
+  margin-block: 40px;
+  border: 0;
+  border-top: 1px solid rgb(49 46 42 / 0.2);
+}
+
+.ed-body .ProseMirror hr.ProseMirror-selectednode {
+  border-top-color: var(--ed-amber);
+}
+
+/* ── 그림 (노드뷰) ── */
+.ed-figure {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: rgb(241 239 235 / 0.5);
+  outline: 1px solid rgb(49 46 42 / 0.12);
+}
+
+.ed-figure[data-labelled] {
+  counter-increment: ed-fig;
+}
+
+.ed-figure.is-selected,
+.ed-figure:focus-within {
+  outline-color: var(--ed-amber);
+}
+
+.ed-fig-num::after {
+  content: 'FIG. ' var(--ed-fig-prefix, '') counter(ed-fig, decimal-leading-zero);
+}
+
+.ed-figure-fields {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.ed-figure-fields [data-node-view-content] {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 캡션·크레딧 칸: 노드뷰 콘텐츠 안의 span 두 개를 가로로 */
+.ed-figure-fields [data-node-view-content-react],
+.ed-figure-fields [data-node-view-content] > div {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.ed-body .ProseMirror span[data-caption],
+.ed-body .ProseMirror span[data-credit] {
+  display: block;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgb(49 46 42 / 0.35);
+  min-height: 22px;
+}
+
+.ed-body .ProseMirror span[data-caption] {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-sans-kr);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 16px;
+}
+
+.ed-body .ProseMirror span[data-credit] {
+  flex-shrink: 0;
+  width: 196px;
+  font-family: var(--font-plex);
+  font-size: 10.5px;
+  line-height: 14px;
+  color: #55504A;
+}
+
+.ed-body .ProseMirror span[data-caption]::before,
+.ed-body .ProseMirror span[data-credit]::before {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-plex);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  line-height: 12px;
+  color: #8C857B;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ed-body .ProseMirror span[data-caption]::before {
+  content: 'CAPTION';
+}
+
+.ed-body .ProseMirror span[data-credit]::before {
+  content: 'CREDIT';
+}
+
+/* ── 빈 칸 안내 (Placeholder 확장이 is-empty + data-placeholder를 단다) ──
+   ::before는 라벨(LEAD·01·CAPTION)이 쓰므로 안내는 ::after를 글자 줄 자리에 겹쳐 띄운다 */
+.ed-body .ProseMirror .is-empty {
+  position: relative;
+}
+
+.ed-body .ProseMirror .is-empty::after {
+  content: attr(data-placeholder);
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  color: rgb(49 46 42 / 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ed-body .ProseMirror span.is-empty::after {
+  bottom: 6px;
+}
+
+/* ── 이미지 자리 ── */
+.ed-slot-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 300px;
+  padding: 24px 60px;
+  background: rgb(241 239 235 / 0.55);
+  border: 1px dashed rgb(49 46 42 / 0.45);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.ed-slot-box[data-drag-over] {
+  background: rgb(204 173 123 / 0.18);
+  border-color: var(--ed-amber);
+}
+
+.ed-slot.is-selected .ed-slot-box {
+  border-color: var(--ed-amber);
+}
+
+.ed-slot[data-labelled] {
+  counter-increment: ed-fig;
+}
+
+/* 입력칸 공용 (노드뷰 안의 input) */
+.ed-input {
+  width: 100%;
+  background: transparent;
+  outline: none;
+  border: 0;
+  padding: 0;
+}
+
+.ed-input::placeholder {
+  color: rgb(49 46 42 / 0.4);
+}
+
+/* 규격 밖 HTML 블록 */
+.ed-html {
+  padding: 14px;
+  border: 1px dashed rgb(49 46 42 / 0.3);
+  background: rgb(241 239 235 / 0.4);
+}
+
+.ed-html.is-selected {
+  border-color: var(--ed-amber);
+}
+
+.ed-html-preview {
+  max-height: 320px;
+  overflow: auto;
+  font-size: 14px;
+}
+
+.ed-html-preview table {
+  border-collapse: collapse;
+}
+
+.ed-html-preview :is(td, th) {
+  border: 1px solid rgb(49 46 42 / 0.2);
+  padding: 4px 8px;
+}
+
+.ed-html-preview :is(iframe, img, video) {
+  max-width: 100%;
+}
+
+/* 영상 */
+.ed-video {
+  padding: 14px;
+  outline: 1px solid rgb(49 46 42 / 0.12);
+}
+
+.ed-video.is-selected {
+  outline-color: var(--ed-amber);
+}
+
+.ed-video video {
+  display: block;
+  max-width: 100%;
+  max-height: 480px;
+  margin-inline: auto;
+}
+
+/* 드래그 중 놓일 자리 */
+.ed-body .ProseMirror-dropcursor,
+.ed-body .ProseMirror .ProseMirror-gapcursor::after {
+  border-color: var(--ed-amber);
+}

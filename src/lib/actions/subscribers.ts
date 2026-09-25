@@ -5,7 +5,7 @@ import { resend, FROM_EMAIL, isResendConfigured } from '@/lib/resend/client'
 import { render } from '@react-email/render'
 import { WelcomeEmail, getWelcomeEmailSubject } from '@/lib/resend/templates/WelcomeEmail'
 import type { Subscriber } from '@/lib/supabase/types'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requireAdmin, checkAdmin, ADMIN_FORBIDDEN_MESSAGE } from '@/lib/auth/admin'
 import { buildUnsubscribeUrl, verifyUnsubscribeToken } from '@/lib/unsubscribe-token'
 
 export interface SubscribeInput {
@@ -268,4 +268,19 @@ export async function getSubscriberStats() {
     active: active || 0,
     thisMonth: thisMonth || 0,
   }
+}
+
+/** 관리자 해지 — 구독자 목록의 '해지' 버튼. 기록은 지우지 않고 상태만 바꾼다 */
+export async function adminUnsubscribe(id: string): Promise<{ success: boolean; error?: string }> {
+  if (!(await checkAdmin()).ok) return { success: false, error: ADMIN_FORBIDDEN_MESSAGE }
+  const supabase = await createAdminClient()
+  const { error } = await supabase
+    .from('subscribers')
+    .update({ status: 'unsubscribed', unsubscribed_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) {
+    console.error('Error unsubscribing (admin):', error)
+    return { success: false, error: '해지하지 못했습니다.' }
+  }
+  return { success: true }
 }

@@ -66,7 +66,7 @@ function useVideoAutoplay(root: React.RefObject<HTMLDivElement | null>, deps: un
   }, [root, deps])
 }
 
-export function PostView({ data }: { data: PostViewData }) {
+export function PostView({ data, preview = false }: { data: PostViewData; preview?: boolean }) {
   const t = useTranslation()
   const j = t.journal
   const { locale } = useLocale()
@@ -74,7 +74,7 @@ export function PostView({ data }: { data: PostViewData }) {
   const blocks = locale === 'en' && data.blocksEn?.length ? data.blocksEn : data.blocks
   const title = recordTitle(record, locale)
   const excerpt = recordExcerpt(record, locale)
-  const seriesName = record.series ? getCategoryName(t, record.series.slug, record.series.name) : ''
+  const seriesName = record.series ? getCategoryName(t, record.series.slug, record.series.name, record.series.nameEn) : ''
   const bodyRef = useRef<HTMLDivElement>(null)
   useVideoAutoplay(bodyRef, blocks)
 
@@ -139,7 +139,7 @@ export function PostView({ data }: { data: PostViewData }) {
       )}
 
       <div ref={bodyRef} className="pt-12 md:pt-24">
-        <ArticleBody blocks={blocks} postNumber={record.number} />
+        <ArticleBody blocks={blocks} postNumber={record.number} showSlots={preview} />
       </div>
 
       {/* 끝 — 사인오프 심볼 + PHOTO 크레딧 */}

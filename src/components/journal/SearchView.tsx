@@ -86,7 +86,7 @@ export function SearchView({
             {records.map((r) => {
               const title = recordTitle(r, locale)
               const excerpt = recordExcerpt(r, locale)
-              const seriesName = r.series ? getCategoryName(t, r.series.slug, r.series.name) : ''
+              const seriesName = r.series ? getCategoryName(t, r.series.slug, r.series.name, r.series.nameEn) : ''
               return (
                 <Link
                   key={r.id}

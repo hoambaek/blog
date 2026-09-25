@@ -14,7 +14,7 @@ export interface RecordSummary {
   cover: string | null
   publishedAt: string | null
   readingMinutes: number | null
-  series: { slug: string; name: string } | null
+  series: { slug: string; name: string; nameEn?: string | null } | null
   /** 발행일까지 직전 365일 40m 보정 수온 평균 — 계산하지 않았거나 데이터가 모자라면 null */
   seaAvg: number | null
 }

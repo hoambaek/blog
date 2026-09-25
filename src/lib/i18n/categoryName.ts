@@ -1,4 +1,5 @@
 import type { Dictionary } from './dictionaries'
+import { en } from './dictionaries/en'
 
 /**
  * Resolve a category's display name for the active locale.
@@ -11,7 +12,10 @@ export function getCategoryName(
   t: Dictionary,
   slug?: string | null,
   fallback?: string | null,
+  /** categories.name_en (005 마이그레이션) — EN 화면에서 사전값보다 먼저 쓴다 */
+  nameEn?: string | null,
 ): string {
+  if (t === en && nameEn) return nameEn
   if (!slug) return fallback ?? ''
   const map: Record<string, string> = {
     'sea-log': t.nav.seaLog,
@@ -44,7 +48,10 @@ export function getCategoryDescription(
   locale: string,
   slug?: string | null,
   fallback?: string | null,
+  /** categories.description_en (005 마이그레이션) — 있으면 사전값보다 먼저 쓴다 */
+  descriptionEn?: string | null,
 ): string {
+  if (locale === 'en' && descriptionEn) return descriptionEn
   if (locale === 'en' && slug && CATEGORY_DESCRIPTION_EN[slug]) {
     return CATEGORY_DESCRIPTION_EN[slug]
   }

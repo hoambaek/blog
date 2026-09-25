@@ -119,6 +119,9 @@ export interface JournalSeries {
   slug: string
   name: string
   description: string | null
+  /** 연재 영문 이름·설명 (005 마이그레이션 컬럼, 적용 전엔 null) */
+  nameEn: string | null
+  descriptionEn: string | null
   count: number
   /** 발행 글이 있는 연재 중 순번 (SERIES 01, 02…) */
   index: number
@@ -134,6 +137,8 @@ export const getJournalSeries = cache(async (): Promise<JournalSeries[]> => {
       slug: c.slug,
       name: c.name,
       description: c.description,
+      nameEn: c.name_en ?? null,
+      descriptionEn: c.description_en ?? null,
       count: c.post_count,
       index: i + 1,
     }))
@@ -175,7 +180,7 @@ export async function toRecords(
       cover: p.cover_image_url,
       publishedAt: p.published_at,
       readingMinutes: p.reading_time_minutes,
-      series: p.category ? { slug: p.category.slug, name: p.category.name } : null,
+      series: p.category ? { slug: p.category.slug, name: p.category.name, nameEn: p.category.name_en ?? null } : null,
       seaAvg: options.withSea ? await getSeaYearAvg(p.published_at) : null,
     })),
   )

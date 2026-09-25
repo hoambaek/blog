@@ -21,8 +21,8 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
-    if (status && ['draft', 'scheduled', 'sent', 'failed'].includes(status)) {
-      query = query.eq('status', status as 'draft' | 'scheduled' | 'sent' | 'failed')
+    if (status && ['draft', 'sent', 'failed'].includes(status)) {
+      query = query.eq('status', status as 'draft' | 'sent' | 'failed')
     }
 
     const { data, error, count } = await query

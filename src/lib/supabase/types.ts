@@ -19,6 +19,9 @@ export type Database = {
           sort_order: number
           created_at: string
           updated_at: string
+          /* 005_admin_redesign */
+          name_en?: string | null
+          description_en?: string | null
         }
         Insert: {
           id?: string
@@ -29,6 +32,8 @@ export type Database = {
           sort_order?: number
           created_at?: string
           updated_at?: string
+          name_en?: string | null
+          description_en?: string | null
         }
         Update: {
           id?: string
@@ -39,6 +44,8 @@ export type Database = {
           sort_order?: number
           created_at?: string
           updated_at?: string
+          name_en?: string | null
+          description_en?: string | null
         }
         Relationships: []
       }
@@ -107,6 +114,10 @@ export type Database = {
           created_by: string | null
           created_at: string
           updated_at: string
+          /* 005_admin_redesign */
+          post_ids?: string[] | null
+          intro?: string | null
+          failed_recipients?: Json | null
         }
         Insert: {
           id?: string
@@ -127,6 +138,9 @@ export type Database = {
           created_by?: string | null
           created_at?: string
           updated_at?: string
+          post_ids?: string[] | null
+          intro?: string | null
+          failed_recipients?: Json | null
         }
         Update: {
           id?: string
@@ -147,6 +161,9 @@ export type Database = {
           created_by?: string | null
           created_at?: string
           updated_at?: string
+          post_ids?: string[] | null
+          intro?: string | null
+          failed_recipients?: Json | null
         }
         Relationships: []
       }
@@ -208,6 +225,11 @@ export type Database = {
           created_at: string
           updated_at: string
           deleted_at: string | null
+          /* 005_admin_redesign — 적용 전 DB에는 없어서 선택 필드로 둔다 */
+          next_post_id?: string | null
+          draft_source?: string | null
+          draft_uploaded_at?: string | null
+          en_review?: Json | null
         }
         Insert: {
           id?: string
@@ -236,6 +258,10 @@ export type Database = {
           created_at?: string
           updated_at?: string
           deleted_at?: string | null
+          next_post_id?: string | null
+          draft_source?: string | null
+          draft_uploaded_at?: string | null
+          en_review?: Json | null
         }
         Update: {
           id?: string
@@ -264,6 +290,10 @@ export type Database = {
           created_at?: string
           updated_at?: string
           deleted_at?: string | null
+          next_post_id?: string | null
+          draft_source?: string | null
+          draft_uploaded_at?: string | null
+          en_review?: Json | null
         }
         Relationships: [
           {

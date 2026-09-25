@@ -23,6 +23,7 @@ const DIRECTION_THRESHOLD = 8
 export interface HeaderSeries {
   slug: string
   name: string
+  nameEn?: string | null
 }
 
 function SearchIcon({ color }: { color: string }) {
@@ -179,7 +180,7 @@ export function JournalHeader({ series, seaTemp }: { series: HeaderSeries[]; sea
 
   const links = [
     { key: 'all', href: '/', label: j.nav.allRecords },
-    ...visibleSeries.map((s) => ({ key: s.slug, href: `/category/${s.slug}`, label: getCategoryName(t, s.slug, s.name) })),
+    ...visibleSeries.map((s) => ({ key: s.slug, href: `/category/${s.slug}`, label: getCategoryName(t, s.slug, s.name, s.nameEn) })),
     { key: 'about', href: '/about', label: j.nav.about },
   ]
 

@@ -1,27 +1,32 @@
 import { notFound } from 'next/navigation'
-import { getCategories } from '@/lib/actions/categories'
 import { getAdminPostById } from '@/lib/actions/posts'
-import { PostEditorForm } from '@/components/admin/PostEditorForm'
+import { getAdminSeries, getPublishedIndex } from '@/lib/admin/data'
+import { getPostNumbers, getSeaYearAvg } from '@/lib/journal/data'
+import { PostEditor } from '@/components/admin/editor/PostEditor'
 
-interface PageProps {
-  params: Promise<{ id: string }>
-}
+/* 기록 편집 — Paper IIL-0. 관측 줄·N°는 공개 화면과 같은 계산(lib/journal/data)을 쓴다. */
+export const dynamic = 'force-dynamic'
 
-export default async function EditPostPage({ params }: PageProps) {
+export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const post = await getAdminPostById(id)
+  if (!post) notFound()
 
-  const [post, categories] = await Promise.all([
-    getAdminPostById(id),
-    getCategories(),
+  const [series, index, numbers, seaAvg] = await Promise.all([
+    getAdminSeries(),
+    getPublishedIndex(),
+    getPostNumbers(),
+    getSeaYearAvg(post.status === 'published' ? post.published_at : null),
   ])
 
-  if (!post) {
-    notFound()
-  }
-
   return (
-    <div className="max-w-6xl mx-auto">
-      <PostEditorForm categories={categories} post={post} />
-    </div>
+    <PostEditor
+      post={post}
+      series={series.map((s) => ({ id: s.id, name: s.name, slug: s.slug }))}
+      publishedIndex={index}
+      number={numbers.get(post.id) ?? null}
+      seaAvg={seaAvg}
+      today={new Date().toISOString()}
+    />
   )
 }

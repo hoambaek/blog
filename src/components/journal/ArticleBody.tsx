@@ -8,7 +8,7 @@ import './article-body.css'
  *
  * - 소제목 번호: h2·h3 순서대로 01, 02…
  * - FIG 번호: 캡션이나 크레딧이 있는 그림만 {글번호}–{순서}. 캡션·크레딧이 없는 그림(기존 글)은 번호 줄 없이 사진만.
- * - 이미지 자리(slot)는 그리지 않는다.
+ * - 이미지 자리(slot)는 공개 화면에서 그리지 않는다. 관리자 미리보기(showSlots)에서만 점선 상자로 보인다.
  * - 영상은 muted·playsInline·loop로만 그린다. 자동재생(화면에 보일 때만)은 감싸는 쪽이 data-autoplay를 보고 건다.
  */
 
@@ -17,6 +17,8 @@ export interface ArticleBodyProps {
   /** 글 번호 N° (발행 순서). 초안처럼 번호가 없으면 null — FIG는 순서만 쓴다 */
   postNumber: number | null
   className?: string
+  /** 관리자 미리보기 — 비어 있는 이미지 자리를 점선 상자로 그린다 */
+  showSlots?: boolean
 }
 
 const pad = (n: number, width: number) => String(n).padStart(width, '0')
@@ -73,7 +75,7 @@ function numberBlocks(blocks: ArticleBlock[]): (number | null)[] {
   })
 }
 
-export function ArticleBody({ blocks, postNumber, className }: ArticleBodyProps) {
+export function ArticleBody({ blocks, postNumber, className, showSlots = false }: ArticleBodyProps) {
   const numbers = numberBlocks(blocks)
   const figPrefix = postNumber ? `${pad(postNumber, 3)}–` : ''
 
@@ -125,8 +127,23 @@ export function ArticleBody({ blocks, postNumber, className }: ArticleBodyProps)
               </figure>
             )
           }
-          case 'slot':
-            return null
+          case 'slot': {
+            if (!showSlots) return null
+            const [w, h] = (block.ratio ?? '').split(':').map(Number)
+            return (
+              <figure key={i} className="ab-figure ab-slot">
+                <div className="ab-slot-box" style={w && h ? { aspectRatio: `${w} / ${h}` } : undefined}>
+                  <span className="ab-slot-label">IMAGE SLOT{block.ratio ? ` · ${block.ratio}` : ''} · 공개 화면에는 보이지 않음</span>
+                  {block.hint && <span className="ab-slot-hint">{block.hint}</span>}
+                </div>
+                {block.caption && (
+                  <figcaption>
+                    <span className="ab-fig-caption">{block.caption}</span>
+                  </figcaption>
+                )}
+              </figure>
+            )
+          }
           case 'quote':
             return (
               <blockquote key={i} className="ab-quote">

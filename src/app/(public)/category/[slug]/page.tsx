@@ -38,7 +38,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   return (
     <SeriesView
-      category={{ slug: category.slug, name: category.name, description: category.description }}
+      category={{
+        slug: category.slug,
+        name: category.name,
+        description: category.description,
+        nameEn: category.name_en ?? null,
+        descriptionEn: category.description_en ?? null,
+      }}
       records={records}
       total={total}
       currentPage={currentPage}

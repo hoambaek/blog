@@ -211,6 +211,51 @@ body:has(.journal) {
   }
 }
 
+/* ═══════════════════════════════════════════════════
+   Admin (관리자) — Paper 'Blog Admin'. 종이 바탕 + void 사이드바, 서체는 저널과 같은 4종.
+   admin/layout의 .admin 래퍼 안에서만 적용된다. 데스크톱 전용.
+   ═══════════════════════════════════════════════════ */
+html:has(.admin),
+body:has(.admin) {
+  background-color: #F1EFEB;
+}
+
+.admin {
+  --background: #F1EFEB;
+  --foreground: #312E2A;
+  --muted-foreground: #6E675D;
+  --border: rgb(49 46 42 / 0.14);
+  --ring: #A8874F;
+  min-height: 100vh;
+  background-color: #F1EFEB;
+  color: #312E2A;
+  font-family: var(--font-sans-kr);
+  font-synthesis: none;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+@layer base {
+  /* 전역 타이포(h1~p 크기·줄간격)가 관리자로 새지 않게 되돌린다 */
+  .admin :where(h1, h2, h3, h4, p) {
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    margin: 0;
+  }
+
+  .admin ::selection {
+    background-color: rgb(204 173 123 / 0.45);
+    color: inherit;
+  }
+
+  .admin :focus-visible {
+    outline: 1px solid #A8874F;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
 @layer components {
   /* Display Typography (Playfair for English) */
   .font-display {

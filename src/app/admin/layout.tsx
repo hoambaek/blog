@@ -1,192 +1,23 @@
-'use client'
-
-import Link from 'next/link'
-import Image from 'next/image'
-import { usePathname } from 'next/navigation'
-import { ClerkProvider, UserButton } from '@clerk/nextjs'
-import {
-  LayoutDashboard,
-  FileText,
-  FolderOpen,
-  Mail,
-  Users,
-  Settings,
-  Menu,
-} from 'lucide-react'
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import type { Metadata } from 'next'
+import { ClerkProvider } from '@clerk/nextjs'
 import { ToastProvider } from '@/components/ui/toast'
-import { useLocale } from '@/lib/i18n'
-import { legacyFontClassName } from './legacy-fonts'
 
-function SidebarContent() {
-  const pathname = usePathname()
-  const { locale } = useLocale()
-
-  const text = {
-    ko: {
-      dashboard: '대시보드',
-      posts: '포스트',
-      categories: '카테고리',
-      newsletter: '뉴스레터',
-      subscribers: '구독자',
-      settings: '설정',
-      backToSite: '← 사이트로 돌아가기',
-      openMenu: '메뉴 열기',
-    },
-    en: {
-      dashboard: 'Dashboard',
-      posts: 'Posts',
-      categories: 'Categories',
-      newsletter: 'Newsletter',
-      subscribers: 'Subscribers',
-      settings: 'Settings',
-      backToSite: '← Back to Site',
-      openMenu: 'Open menu',
-    },
-  }
-
-  const t = locale === 'ko' ? text.ko : text.en
-
-  const sidebarLinks = [
-    { name: t.dashboard, href: '/admin', icon: LayoutDashboard },
-    { name: t.posts, href: '/admin/posts', icon: FileText },
-    { name: t.categories, href: '/admin/categories', icon: FolderOpen },
-    { name: t.newsletter, href: '/admin/newsletter', icon: Mail },
-    { name: t.subscribers, href: '/admin/subscribers', icon: Users },
-    { name: t.settings, href: '/admin/settings', icon: Settings },
-  ]
-
-  return (
-    <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="p-6 border-b border-border">
-        <Link href="/admin" className="block" aria-label="Muse de Marée Admin">
-          <Image
-            src="/images/logo/logo_text_trim.png"
-            alt="Muse de Marée"
-            width={150}
-            height={24}
-            className="h-[19px] w-auto"
-          />
-        </Link>
-        <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mt-2">Admin</p>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-1">
-        {sidebarLinks.map((link) => {
-          const isActive = pathname === link.href ||
-            (link.href !== '/admin' && pathname.startsWith(link.href))
-          const Icon = link.icon
-
-          return (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`
-                flex items-center gap-3 px-3 py-2 text-sm transition-colors
-                ${isActive
-                  ? 'bg-muted text-foreground font-medium'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                }
-              `}
-            >
-              <Icon className="h-4 w-4" />
-              {link.name}
-            </Link>
-          )
-        })}
-      </nav>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-border">
-        <Link
-          href="/"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {t.backToSite}
-        </Link>
-      </div>
-    </div>
-  )
+/*
+ * 관리자 공통 틀 — Clerk·토스트·.admin 톤(globals.css).
+ * 사이드바가 있는 화면은 (main)/layout, 편집·검수·미리보기는 사이드바 없이 전체 화면을 쓴다(Paper 'Blog Admin').
+ * 서체는 공개 화면과 같은 4종(root layout)만 쓴다 — 옛 관리자 서체(legacy-fonts)는 걷어냈다.
+ */
+export const metadata: Metadata = {
+  title: 'Le Journal · Admin',
+  robots: { index: false, follow: false },
 }
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const { locale } = useLocale()
-
-  const text = {
-    ko: { openMenu: '메뉴 열기' },
-    en: { openMenu: 'Open menu' },
-  }
-
-  const t = locale === 'ko' ? text.ko : text.en
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-    <ToastProvider>
-    <div className={`min-h-screen bg-background ${legacyFontClassName}`}>
-      {/* 관리자 화면의 한글 서체(Pretendard) — 공개 화면에서는 싣지 않는다 */}
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        precedence="default"
-      />
-      {/* Mobile header */}
-      <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b border-border bg-background px-4 lg:hidden">
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">{t.openMenu}</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-64 p-0">
-            <SidebarContent />
-          </SheetContent>
-        </Sheet>
-        <div className="flex-1">
-          <Link href="/admin" className="inline-flex items-center gap-2" aria-label="Muse de Marée Admin">
-            <Image
-              src="/images/logo/logo_text_trim.png"
-              alt="Muse de Marée"
-              width={130}
-              height={20}
-              className="h-[17px] w-auto"
-            />
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Admin</span>
-          </Link>
-        </div>
-        <UserButton afterSignOutUrl="/" />
-      </header>
-
-      <div className="flex">
-        {/* Desktop sidebar */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 border-r border-border bg-card">
-          <SidebarContent />
-        </aside>
-
-        {/* Main content */}
-        <main className="flex-1 lg:pl-64">
-          {/* Desktop header */}
-          <header className="hidden lg:flex h-14 items-center justify-end gap-4 border-b border-border bg-background px-6">
-            <UserButton afterSignOutUrl="/" />
-          </header>
-
-          {/* Page content */}
-          <div className="p-6">
-            {children}
-          </div>
-        </main>
-      </div>
-    </div>
-    </ToastProvider>
+      <ToastProvider>
+        <div className="admin">{children}</div>
+      </ToastProvider>
     </ClerkProvider>
   )
 }

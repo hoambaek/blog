@@ -28,7 +28,7 @@ export default async function PublicLayout({
       <div className="journal flex min-h-screen flex-col">
         <SubscribeProvider>
           <JournalHeader
-            series={categories.map((c) => ({ slug: c.slug, name: c.name }))}
+            series={categories.map((c) => ({ slug: c.slug, name: c.name, nameEn: c.name_en ?? null }))}
             seaTemp={seaTemp}
           />
           <main className="flex-1">{children}</main>

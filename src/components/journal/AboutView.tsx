@@ -11,7 +11,7 @@ import { JournalCoda, type CodaSeries } from './JournalCoda'
 export function AboutView({ recordCount, series }: { recordCount: number; series: CodaSeries[] }) {
   const t = useTranslation()
   const a = t.journal.about
-  const seriesNames = series.map((s) => getCategoryName(t, s.slug, s.name))
+  const seriesNames = series.map((s) => getCategoryName(t, s.slug, s.name, s.nameEn))
 
   const label = 'font-plex text-[10.5px] leading-[14px] tracking-[0.18em] text-stone-light'
   const stats = [

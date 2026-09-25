@@ -14,7 +14,7 @@ export function FeaturedRecord({ record }: { record: RecordSummary }) {
   const { locale } = useLocale()
   const title = recordTitle(record, locale)
   const excerpt = recordExcerpt(record, locale)
-  const seriesName = record.series ? getCategoryName(t, record.series.slug, record.series.name) : ''
+  const seriesName = record.series ? getCategoryName(t, record.series.slug, record.series.name, record.series.nameEn) : ''
 
   return (
     <section className="px-5 pb-12 pt-10 md:px-24 md:pb-[88px] md:pt-16">
@@ -98,7 +98,7 @@ export function RecordIndex({
       {records.map((r) => {
         const title = recordTitle(r, locale)
         const excerpt = recordExcerpt(r, locale)
-        const seriesName = r.series ? getCategoryName(t, r.series.slug, r.series.name) : ''
+        const seriesName = r.series ? getCategoryName(t, r.series.slug, r.series.name, r.series.nameEn) : ''
         return (
           <Link
             key={r.id}

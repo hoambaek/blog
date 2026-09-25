@@ -49,7 +49,7 @@ export async function PATCH(
 
   try {
     const body = await request.json()
-    const { subject, preview_text, html_content, plain_text_content, status, scheduled_at } = body
+    const { subject, preview_text, html_content, plain_text_content, status } = body
 
     const supabase = await createAdminClient()
 
@@ -58,8 +58,8 @@ export async function PATCH(
     if (preview_text !== undefined) updateData.preview_text = preview_text
     if (html_content !== undefined) updateData.html_content = html_content
     if (plain_text_content !== undefined) updateData.plain_text_content = plain_text_content
-    if (status !== undefined) updateData.status = status
-    if (scheduled_at !== undefined) updateData.scheduled_at = scheduled_at
+    // 예약 발송은 없다 — 상태는 초안·발송·실패만
+    if (status !== undefined && ['draft', 'sent', 'failed'].includes(status)) updateData.status = status
 
     const { data, error } = await supabase
       .from('newsletters')

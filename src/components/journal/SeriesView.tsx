@@ -19,7 +19,7 @@ export function SeriesView({
   totalPages,
   series,
 }: {
-  category: { slug: string; name: string; description: string | null }
+  category: { slug: string; name: string; description: string | null; nameEn?: string | null; descriptionEn?: string | null }
   records: RecordSummary[]
   total: number
   currentPage: number
@@ -30,8 +30,8 @@ export function SeriesView({
   const j = t.journal
   const { locale } = useLocale()
   const index = series.find((s) => s.slug === category.slug)?.index
-  const name = getCategoryName(t, category.slug, category.name)
-  const description = getCategoryDescription(locale, category.slug, category.description)
+  const name = getCategoryName(t, category.slug, category.name, category.nameEn)
+  const description = getCategoryDescription(locale, category.slug, category.description, category.descriptionEn)
   const french = seriesFrench(category.slug)
   const count = countText(j.series.countOne, j.series.count, total)
   const [featured, ...rest] = currentPage === 1 ? records : [undefined, ...records]

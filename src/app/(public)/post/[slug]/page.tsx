@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation'
-import { getPostBySlug, getAdjacentPosts, getPublishedSlugs } from '@/lib/actions/posts'
+import { getPostBySlug, getAdjacentPosts, getPublishedSlugs, getPublishedPostById } from '@/lib/actions/posts'
 import { ViewBeacon } from '@/components/post/ViewBeacon'
 import { PostView } from '@/components/journal/PostView'
 import { collectFigureCredits, htmlFromContent, parseArticleHtml } from '@/lib/article/parse'
@@ -33,12 +33,16 @@ export default async function PostPage({
     notFound()
   }
 
-  // 다음 기록 = 발행일 순으로 바로 앞(더 오래된) 글 하나. 가장 오래된 글이면 없다.
-  const [{ prev }, [record]] = await Promise.all([
+  // 다음 기록 = 관리자에서 지정한 글(발행 글일 때만). 지정이 없으면 발행일 순으로 바로 앞(더 오래된) 글 하나.
+  // next_post_id는 005 마이그레이션 컬럼 — 적용 전에는 undefined라 자동으로 떨어진다.
+  const pinnedNextId = post.next_post_id && post.next_post_id !== post.id ? post.next_post_id : null
+  const [pinned, { prev }, [record]] = await Promise.all([
+    pinnedNextId ? getPublishedPostById(pinnedNextId) : Promise.resolve(null),
     getAdjacentPosts(post.published_at || '', post.id),
     toRecords([post], { withSea: true }),
   ])
-  const next = prev ? (await toRecords([prev], { withSea: true }))[0] : null
+  const nextPost = pinned ?? prev
+  const next = nextPost ? (await toRecords([nextPost], { withSea: true }))[0] : null
 
   const breadcrumbItems = [
     { name: 'Home', url: 'https://blog.musedemaree.com' },

@@ -3,7 +3,7 @@
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { checkAdmin, requireAdmin, ADMIN_FORBIDDEN_MESSAGE } from '@/lib/auth/admin'
-import type { Post, PostWithCategory, Category } from '@/lib/supabase/types'
+import type { PostWithCategory, InsertTables } from '@/lib/supabase/types'
 import Anthropic from '@anthropic-ai/sdk'
 import {
   buildTranslationPrompt,
@@ -379,50 +379,26 @@ export async function getAdjacentPosts(
   }
 }
 
+/** 발행된 글 하나(id) — 글에 지정한 "다음 기록"을 읽을 때. 발행 글이 아니면 null */
+export async function getPublishedPostById(id: string): Promise<PostWithCategory | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('posts')
+    .select(`*, category:categories(*)`)
+    .eq('id', id)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .maybeSingle()
+  if (error) {
+    console.error('Error fetching post by id:', error)
+    return null
+  }
+  return (data as PostWithCategory | null) ?? null
+}
+
 // ═══════════════════════════════════════════════════
 // Admin Data Fetching (uses service role, bypasses RLS)
 // ═══════════════════════════════════════════════════
-
-export async function getAdminPosts(
-  status?: string,
-  categoryId?: string,
-  search?: string,
-  limit = 20,
-  offset = 0
-): Promise<{ posts: PostWithCategory[]; total: number }> {
-  await requireAdmin()
-  const supabase = await createAdminClient()
-
-  let query = supabase
-    .from('posts')
-    .select(`
-      *,
-      category:categories(*)
-    `, { count: 'exact' })
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-
-  if (status) {
-    query = query.eq('status', status)
-  }
-
-  if (categoryId) {
-    query = query.eq('category_id', categoryId)
-  }
-
-  if (search) {
-    query = query.ilike('title', `%${search}%`)
-  }
-
-  const { data, error, count } = await query.range(offset, offset + limit - 1)
-
-  if (error) {
-    console.error('Error fetching admin posts:', error)
-    return { posts: [], total: 0 }
-  }
-
-  return { posts: data as PostWithCategory[], total: count || 0 }
-}
 
 export async function getAdminPostById(id: string): Promise<PostWithCategory | null> {
   await requireAdmin()
@@ -446,6 +422,22 @@ export async function getAdminPostById(id: string): Promise<PostWithCategory | n
   return data as PostWithCategory
 }
 
+/** 관리자 기록 목록 — 지워지지 않은 글 전부(본문 포함: EN 검수 상태·빈 이미지 자리 계산에 쓴다) */
+export async function getAdminAllPosts(): Promise<PostWithCategory[]> {
+  await requireAdmin()
+  const supabase = await createAdminClient()
+  const { data, error } = await supabase
+    .from('posts')
+    .select(`*, category:categories(*)`)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+  if (error) {
+    console.error('Error fetching admin posts:', error)
+    return []
+  }
+  return data as PostWithCategory[]
+}
+
 // ═══════════════════════════════════════════════════
 // Admin CRUD Operations
 // ═══════════════════════════════════════════════════
@@ -454,17 +446,18 @@ interface CreatePostInput {
   title: string
   slug: string
   excerpt?: string
-  /** 사진·자료 출처 (언어 공용, 비우면 본문에 표시 안 함) */
+  /** 사진·자료 출처 수동 추가분 (한 줄에 하나, 그림 크레딧은 본문에서 자동 수집) */
   photo_credits?: string | null
   content: string
-  category_id?: string
+  category_id?: string | null
   /** 예약 발행은 없앴다(2026-09-25) — DB enum에는 'scheduled'가 남아 있지만 새로 쓰지 않는다 */
   status: PostStatusInput
-  is_featured?: boolean
-  cover_image_url?: string
-  meta_title?: string
-  meta_description?: string
+  cover_image_url?: string | null
+  meta_title?: string | null
+  meta_description?: string | null
   author_id?: string
+  /** 다음 기록 지정 (null = 발행일 순 자동) — 005 마이그레이션 컬럼 */
+  next_post_id?: string | null
 }
 
 type PostStatusInput = 'draft' | 'published'
@@ -475,14 +468,48 @@ function isInvalidStatus(status: unknown): boolean {
   return status !== undefined && !WRITABLE_STATUSES.includes(status as string)
 }
 
+/*
+ * 005_admin_redesign 마이그레이션 컬럼. 적용 전 DB에 쓰면 PostgREST가 PGRST204(컬럼 없음)로 거부한다.
+ * 그때는 이 컬럼만 빼고 다시 써서 글 저장 자체는 되게 하고, 빠진 것을 경고로 알린다.
+ */
+const MIGRATION_005_POST_COLUMNS = ['next_post_id', 'en_review', 'draft_source', 'draft_uploaded_at'] as const
+const MIGRATION_005_WARNING =
+  'DB에 005 마이그레이션이 아직 적용되지 않아 다음 기록 지정·영문 검수 상태는 저장되지 않았습니다.'
+
+function isMissingColumnError(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false
+  return error.code === 'PGRST204' || error.code === '42703' || /column .* (does not exist|of '.*' in the schema cache)/i.test(error.message ?? '')
+}
+
+function stripMigrationColumns<T extends Record<string, unknown>>(data: T): { data: T; stripped: boolean } {
+  const copy: Record<string, unknown> = { ...data }
+  let stripped = false
+  for (const key of MIGRATION_005_POST_COLUMNS) {
+    if (key in copy) {
+      delete copy[key]
+      stripped = true
+    }
+  }
+  return { data: copy as T, stripped }
+}
+
+function readingMinutes(html: string): number {
+  const wordCount = html.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.ceil(wordCount / 200))
+}
+
+function revalidatePostPaths(slug?: string) {
+  revalidatePath('/')
+  if (slug) revalidatePath(`/post/${slug}`)
+  revalidatePath('/admin')
+  /* 사이트맵도 캐시를 탄다(2026-07-27) — 새 글이 한 시간 늦게 실리지 않도록 같이 비운다 */
+  revalidatePath('/sitemap.xml')
+}
+
 export async function createPost(input: CreatePostInput, pretranslated?: TranslatedContent | null) {
   if (!(await checkAdmin()).ok) return { success: false, error: ADMIN_FORBIDDEN_MESSAGE }
   if (isInvalidStatus(input.status)) return { success: false, error: '허용되지 않는 상태입니다.' }
   const supabase = await createAdminClient()
-
-  // Calculate reading time (roughly 200 words per minute)
-  const wordCount = input.content.replace(/<[^>]*>/g, '').split(/\s+/).length
-  const readingTime = Math.max(1, Math.ceil(wordCount / 200))
 
   // 클라이언트가 스트리밍 라우트(/api/admin/translate)로 미리 번역한 결과가 있으면 재사용,
   // 없으면(다른 호출 경로·번역 실패 폴백) 여기서 직접 번역
@@ -492,15 +519,15 @@ export async function createPost(input: CreatePostInput, pretranslated?: Transla
         title: input.title,
         excerpt: input.excerpt,
         content: input.content,
-        metaTitle: input.meta_title,
-        metaDescription: input.meta_description,
+        metaTitle: input.meta_title ?? undefined,
+        metaDescription: input.meta_description ?? undefined,
       })
   const translated = translation.content
 
-  const postData = {
+  const postData: Record<string, unknown> = {
     ...input,
     content: { html: input.content },
-    reading_time_minutes: readingTime,
+    reading_time_minutes: readingMinutes(input.content),
     published_at: input.status === 'published' ? new Date().toISOString() : null,
     title_en: translated.title_en,
     excerpt_en: translated.excerpt_en,
@@ -509,25 +536,26 @@ export async function createPost(input: CreatePostInput, pretranslated?: Transla
     meta_description_en: translated.meta_description_en,
   }
 
-  const { data, error } = await supabase
-    .from('posts')
-    .insert(postData)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error creating post:', error)
-    return { success: false, error: error.message }
+  let result = await supabase.from('posts').insert(postData as InsertTables<'posts'>).select().single()
+  let migrationWarning: string | undefined
+  if (result.error && isMissingColumnError(result.error)) {
+    const { data: retryData, stripped } = stripMigrationColumns(postData)
+    if (stripped) {
+      result = await supabase.from('posts').insert(retryData as InsertTables<'posts'>).select().single()
+      migrationWarning = MIGRATION_005_WARNING
+    }
   }
 
-  revalidatePath('/')
-  revalidatePath('/admin/posts')
-  /* 사이트맵도 이제 캐시를 탄다(2026-07-27) — 새 글이 한 시간 늦게 실리지 않도록 같이 비운다 */
-  revalidatePath('/sitemap.xml')
+  if (result.error) {
+    console.error('Error creating post:', result.error)
+    return { success: false, error: result.error.message }
+  }
+
+  revalidatePostPaths(result.data.slug)
 
   // Post saved, but flag when the English translation did not go through.
-  const warning = translation.attempted && !translation.ok ? translation.error : undefined
-  return { success: true, data, warning }
+  const warnings = [translation.attempted && !translation.ok ? translation.error : undefined, migrationWarning].filter(Boolean)
+  return { success: true, data: result.data, warning: warnings.join(' ') || undefined }
 }
 
 /**
@@ -544,8 +572,7 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>, pr
   // If content is provided, wrap it in object and recalculate reading time
   if (input.content) {
     updateData.content = { html: input.content }
-    const wordCount = input.content.replace(/<[^>]*>/g, '').split(/\s+/).length
-    updateData.reading_time_minutes = Math.max(1, Math.ceil(wordCount / 200))
+    updateData.reading_time_minutes = readingMinutes(input.content)
   }
 
   // Translate any changed fields to English
@@ -559,8 +586,8 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>, pr
           title: input.title,
           excerpt: input.excerpt,
           content: input.content,
-          metaTitle: input.meta_title,
-          metaDescription: input.meta_description,
+          metaTitle: input.meta_title ?? undefined,
+          metaDescription: input.meta_description ?? undefined,
         })
     const translated = translation.content
     // On failure, keep the existing English fields (do not overwrite with null) and warn.
@@ -587,24 +614,68 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>, pr
     }
   }
 
-  const { data, error } = await supabase
-    .from('posts')
-    .update(updateData)
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) {
-    console.error('Error updating post:', error)
-    return { success: false, error: error.message }
+  let result = await supabase.from('posts').update(updateData).eq('id', id).select().single()
+  let migrationWarning: string | undefined
+  if (result.error && isMissingColumnError(result.error)) {
+    const { data: retryData, stripped } = stripMigrationColumns(updateData)
+    if (stripped) {
+      result = await supabase.from('posts').update(retryData).eq('id', id).select().single()
+      migrationWarning = MIGRATION_005_WARNING
+    }
   }
 
-  revalidatePath('/')
-  revalidatePath(`/post/${data.slug}`)
-  revalidatePath('/admin/posts')
-  revalidatePath('/sitemap.xml')
+  if (result.error) {
+    console.error('Error updating post:', result.error)
+    return { success: false, error: result.error.message }
+  }
 
-  return { success: true, data, warning: translationWarning }
+  revalidatePostPaths(result.data.slug)
+
+  const warnings = [translationWarning, migrationWarning].filter(Boolean)
+  return { success: true, data: result.data, warning: warnings.join(' ') || undefined }
+}
+
+/**
+ * 영문 검수 저장 — 번역 검수 화면에서 고친 영문과 검수 상태(en_review)만 쓴다. 한국어 원문·상태는 건드리지 않는다.
+ * 넘기지 않은 필드는 그대로 둔다.
+ */
+export async function saveEnglishReview(
+  id: string,
+  input: {
+    title_en?: string | null
+    excerpt_en?: string | null
+    content_en?: string | null
+    meta_title_en?: string | null
+    meta_description_en?: string | null
+    en_review: { confirmed: string[]; known: string[]; completed_at: string | null }
+  },
+) {
+  if (!(await checkAdmin()).ok) return { success: false, error: ADMIN_FORBIDDEN_MESSAGE }
+  const supabase = await createAdminClient()
+
+  const updateData: Record<string, unknown> = {
+    en_review: {
+      confirmed: [...new Set(input.en_review.confirmed.filter((x) => typeof x === 'string'))],
+      known: [...new Set(input.en_review.known.filter((x) => typeof x === 'string'))],
+      completed_at: input.en_review.completed_at,
+    },
+  }
+  if (input.title_en !== undefined) updateData.title_en = input.title_en
+  if (input.excerpt_en !== undefined) updateData.excerpt_en = input.excerpt_en
+  if (input.content_en !== undefined) updateData.content_en = input.content_en ? { html: input.content_en } : null
+  if (input.meta_title_en !== undefined) updateData.meta_title_en = input.meta_title_en
+  if (input.meta_description_en !== undefined) updateData.meta_description_en = input.meta_description_en
+
+  const { data, error } = await supabase.from('posts').update(updateData).eq('id', id).select('slug').single()
+  if (error) {
+    console.error('Error saving English review:', error)
+    return {
+      success: false,
+      error: isMissingColumnError(error) ? MIGRATION_005_WARNING : error.message,
+    }
+  }
+  revalidatePostPaths(data.slug)
+  return { success: true }
 }
 
 export async function deletePost(id: string) {
@@ -622,9 +693,7 @@ export async function deletePost(id: string) {
     return { success: false, error: error.message }
   }
 
-  revalidatePath('/')
-  revalidatePath('/admin/posts')
-  revalidatePath('/sitemap.xml')
+  revalidatePostPaths()
 
   return { success: true }
 }
@@ -632,82 +701,3 @@ export async function deletePost(id: string) {
 /* incrementViewCount는 2026-07-27에 여기서 걷어냈다 — 집계 자리가 POST /api/views로 옮겨졌다.
    이 파일은 'use server'라, 남겨 두면 아무 검증 없이 밖에서 부를 수 있는 서버 액션이
    하나 더 열린 채로 남는다. 입구는 origin·uuid를 검사하는 라우트 하나면 된다. */
-
-// ═══════════════════════════════════════════════════
-// Dashboard Stats
-// ═══════════════════════════════════════════════════
-
-export async function getDashboardStats() {
-  await requireAdmin()
-  const supabase = await createAdminClient()
-
-  // Get total posts count
-  const { count: totalPosts } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true })
-    .is('deleted_at', null)
-
-  // Get published posts count
-  const { count: publishedPosts } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'published')
-    .is('deleted_at', null)
-
-  // Get draft posts count
-  const { count: draftPosts } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'draft')
-    .is('deleted_at', null)
-
-  // Get this month's published posts
-  const startOfMonth = new Date()
-  startOfMonth.setDate(1)
-  startOfMonth.setHours(0, 0, 0, 0)
-
-  const { count: thisMonthPosts } = await supabase
-    .from('posts')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'published')
-    .gte('published_at', startOfMonth.toISOString())
-    .is('deleted_at', null)
-
-  // Get total views this month
-  const { data: viewsData } = await supabase
-    .from('posts')
-    .select('view_count')
-    .is('deleted_at', null)
-
-  const totalViews = viewsData?.reduce((sum, post) => sum + (post.view_count || 0), 0) || 0
-
-  return {
-    totalPosts: totalPosts || 0,
-    publishedPosts: publishedPosts || 0,
-    draftPosts: draftPosts || 0,
-    thisMonthPosts: thisMonthPosts || 0,
-    totalViews,
-  }
-}
-
-export async function getRecentPosts(limit = 5): Promise<PostWithCategory[]> {
-  await requireAdmin()
-  const supabase = await createAdminClient()
-
-  const { data, error } = await supabase
-    .from('posts')
-    .select(`
-      *,
-      category:categories(*)
-    `)
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-    .limit(limit)
-
-  if (error) {
-    console.error('Error fetching recent posts:', error)
-    return []
-  }
-
-  return data as PostWithCategory[]
-}
