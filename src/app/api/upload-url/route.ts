@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import {
   getPresignedUploadUrl,
   generateUniqueFilename,
@@ -12,10 +12,8 @@ import {
 // over 4.5MB, so /api/upload cannot receive large images or videos.
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const guard = await guardAdminApi()
+    if (!guard.ok) return guard.response
 
     const { filename, contentType, size, folder = 'posts' } = await request.json()
 

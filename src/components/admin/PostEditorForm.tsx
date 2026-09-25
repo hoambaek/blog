@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Save, Eye, Send, Check, Loader2 } from 'lucide-react'
+import { ArrowLeft, Save, Eye, Send, Check, Loader2, Undo2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -52,11 +52,14 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     view: '보기',
     save: '저장',
     publish: '발행',
+    unpublish: '발행 취소',
+    unpublishConfirm: '이 글을 발행 취소하고 초안으로 돌립니다. 공개 페이지에서 내려갑니다. 계속할까요?',
     titlePlaceholder: '제목을 입력하세요',
     status: '상태',
     draft: '초안',
-    published: '발행',
-    scheduled: '예약',
+    published: '발행됨',
+    legacyScheduled: '예약 (예약 발행 기능은 없어졌습니다)',
+    statusHelp: '저장은 현재 상태를 유지합니다. 상태는 발행 / 발행 취소 버튼으로만 바뀝니다.',
     category: '카테고리',
     selectCategory: '카테고리 선택',
     slug: '슬러그',
@@ -81,7 +84,12 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     content: '본문',
     savedSuccess: '포스트가 저장되었습니다.',
     publishedSuccess: '포스트가 발행되었습니다.',
+    unpublishedSuccess: '발행을 취소하고 초안으로 돌렸습니다.',
   }
+
+  // 현재 저장된 상태. 저장 버튼은 이 값을 바꾸지 않는다.
+  const currentStatus = post?.status || 'draft'
+  const isPublished = currentStatus === 'published'
 
   // Get HTML content from post
   const getHtmlContent = () => {
@@ -99,7 +107,6 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     photoCredits: post?.photo_credits || '',
     content: getHtmlContent(),
     categoryId: post?.category_id || '',
-    status: (post?.status || 'draft') as 'draft' | 'published' | 'scheduled',
     isFeatured: post?.is_featured || false,
     coverImageUrl: post?.cover_image_url || '',
     metaTitle: post?.meta_title || '',
@@ -226,7 +233,8 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
     }
   }
 
-  const handleSave = async (status: 'draft' | 'published' = 'draft') => {
+  // targetStatus 생략 = 일반 저장(현재 상태 유지). 'published' = 발행, 'draft' = 발행 취소.
+  const handleSave = async (targetStatus?: 'draft' | 'published') => {
     if (!formData.title.trim()) {
       setError(t.titleRequired)
       return
@@ -236,9 +244,13 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       return
     }
 
+    if (targetStatus === 'draft' && isPublished && !window.confirm(t.unpublishConfirm)) {
+      return
+    }
+
     setIsSaving(true)
     setError(null)
-    const publishing = status === 'published'
+    const publishing = targetStatus === 'published'
     setSaveProgress({ step: 'check', pct: 3, publishing })
 
     try {
@@ -249,7 +261,9 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
         photo_credits: formData.photoCredits.trim() || null,
         content: formData.content,
         category_id: formData.categoryId || undefined,
-        status,
+        // 수정 저장에서 상태를 명시하지 않으면 서버는 status를 건드리지 않는다.
+        // (새 글은 아래 createPost 호출에서 발행 버튼이 아니면 초안으로 만든다.)
+        ...(targetStatus ? { status: targetStatus } : {}),
         is_featured: formData.isFeatured,
         cover_image_url: formData.coverImageUrl || undefined,
         meta_title: formData.metaTitle || undefined,
@@ -331,12 +345,18 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
       if (post) {
         result = await updatePost(post.id, postData, pretranslated)
       } else {
-        result = await createPost(postData, pretranslated)
+        result = await createPost({ ...postData, status: postData.status ?? 'draft' }, pretranslated)
       }
 
       if (result.success) {
         setSaveProgress({ step: 'save', pct: 100, publishing })
-        showToast(status === 'published' ? t.publishedSuccess : t.savedSuccess, 'success')
+        const successMessage =
+          targetStatus === 'published'
+            ? t.publishedSuccess
+            : targetStatus === 'draft' && isPublished
+              ? t.unpublishedSuccess
+              : t.savedSuccess
+        showToast(successMessage, 'success')
         // Post saved but the English auto-translation failed — surface it instead of silently keeping stale English.
         if (result.warning) {
           showToast(result.warning, 'warning')
@@ -461,16 +481,23 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
           )}
           <Button
             variant="outline"
-            onClick={() => handleSave('draft')}
+            onClick={() => handleSave()}
             disabled={isSaving}
           >
             <Save className="h-4 w-4 mr-2" />
             {t.save}
           </Button>
-          <Button onClick={() => handleSave('published')} disabled={isSaving}>
-            <Send className="h-4 w-4 mr-2" />
-            {t.publish}
-          </Button>
+          {isPublished ? (
+            <Button variant="outline" onClick={() => handleSave('draft')} disabled={isSaving}>
+              <Undo2 className="h-4 w-4 mr-2" />
+              {t.unpublish}
+            </Button>
+          ) : (
+            <Button onClick={() => handleSave('published')} disabled={isSaving}>
+              <Send className="h-4 w-4 mr-2" />
+              {t.publish}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -515,20 +542,14 @@ export function PostEditorForm({ categories, post }: PostEditorFormProps) {
           {/* Status */}
           <div className="border border-border p-4 bg-card">
             <Label className="text-sm font-medium mb-2 block">{t.status}</Label>
-            <select
-              className="w-full px-3 py-2 border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              value={formData.status}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  status: e.target.value as 'draft' | 'published' | 'scheduled',
-                }))
-              }
-            >
-              <option value="draft">{t.draft}</option>
-              <option value="published">{t.published}</option>
-              <option value="scheduled">{t.scheduled}</option>
-            </select>
+            <p className="text-sm">
+              {currentStatus === 'published'
+                ? t.published
+                : currentStatus === 'scheduled'
+                  ? t.legacyScheduled
+                  : t.draft}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">{t.statusHelp}</p>
           </div>
 
           {/* Category */}

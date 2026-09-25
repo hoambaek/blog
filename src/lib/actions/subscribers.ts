@@ -5,6 +5,8 @@ import { resend, FROM_EMAIL, isResendConfigured } from '@/lib/resend/client'
 import { render } from '@react-email/render'
 import { WelcomeEmail, getWelcomeEmailSubject } from '@/lib/resend/templates/WelcomeEmail'
 import type { Subscriber } from '@/lib/supabase/types'
+import { requireAdmin } from '@/lib/auth/admin'
+import { buildUnsubscribeUrl, verifyUnsubscribeToken } from '@/lib/unsubscribe-token'
 
 export interface SubscribeInput {
   email: string
@@ -155,7 +157,8 @@ async function sendWelcomeEmail(email: string, locale: 'ko' | 'en') {
     }
 
     // Render React component to HTML string
-    const html = await render(WelcomeEmail({ email, locale }))
+    // (UNSUBSCRIBE_TOKEN_SECRET이 없으면 여기서 예외 → 해지 링크 없는 메일은 보내지 않는다)
+    const html = await render(WelcomeEmail({ unsubscribeUrl: buildUnsubscribeUrl(email), locale }))
 
     await resend.emails.send({
       from: FROM_EMAIL,
@@ -171,7 +174,26 @@ async function sendWelcomeEmail(email: string, locale: 'ko' | 'en') {
   }
 }
 
-export async function unsubscribe(email: string) {
+/**
+ * 구독 해지 — 메일에 담긴 서명 토큰(HMAC)이 맞을 때만 수행한다.
+ * 이메일 주소만으로는 남의 구독을 끊을 수 없다.
+ */
+export async function unsubscribe(
+  email: string,
+  token: string
+): Promise<{ success: true } | { success: false; error: string; expired?: boolean }> {
+  let valid = false
+  try {
+    valid = typeof email === 'string' && typeof token === 'string' && verifyUnsubscribeToken(email, token)
+  } catch (error) {
+    // 비밀키 미설정 등 서버 설정 문제
+    console.error('Unsubscribe token verification failed:', error)
+    return { success: false, error: '구독 취소 처리 중 오류가 발생했습니다.' }
+  }
+  if (!valid) {
+    return { success: false, error: '링크가 만료되었습니다.', expired: true }
+  }
+
   const supabase = await createAdminClient()
 
   const { error } = await supabase
@@ -180,7 +202,7 @@ export async function unsubscribe(email: string) {
       status: 'unsubscribed',
       unsubscribed_at: new Date().toISOString(),
     })
-    .eq('email', email.toLowerCase())
+    .eq('email', email.trim().toLowerCase())
 
   if (error) {
     return { success: false, error: '구독 취소 처리 중 오류가 발생했습니다.' }
@@ -195,6 +217,7 @@ export async function getSubscribers(
   limit = 50,
   offset = 0
 ): Promise<{ subscribers: Subscriber[]; total: number }> {
+  await requireAdmin()
   const supabase = await createAdminClient()
 
   let query = supabase
@@ -217,6 +240,7 @@ export async function getSubscribers(
 }
 
 export async function getSubscriberStats() {
+  await requireAdmin()
   const supabase = await createAdminClient()
 
   const { count: total } = await supabase

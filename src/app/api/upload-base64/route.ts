@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import { uploadToR2, generateUniqueFilename } from '@/lib/r2/client'
 import {
   optimizeCoverImage,
@@ -18,13 +18,8 @@ interface UploadBase64Request {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    const guard = await guardAdminApi()
+    if (!guard.ok) return guard.response
 
     const body: UploadBase64Request = await request.json()
     const { base64, folder = 'ai-images', type = 'content', filename = 'ai-generated' } = body

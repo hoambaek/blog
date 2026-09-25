@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/server'
 
 // DELETE - 구독자 삭제
@@ -7,10 +7,8 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   try {
     const { id } = await params

@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 
 // 시스템 프롬프트 (가이드라인 요약)
 const SYSTEM_PROMPT = `당신은 뮤즈드마레(Muse de Marée)의 브랜드 에디터입니다.
@@ -218,10 +218,8 @@ interface GeneratePostRequest {
 
 export async function POST(request: NextRequest) {
   // 인증 확인
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   // API 키 확인
   if (!process.env.ANTHROPIC_API_KEY) {

@@ -132,7 +132,6 @@ export function AdminPostsListContent({
             <option value="">{t.allStatus}</option>
             <option value="published">{t.published}</option>
             <option value="draft">{t.draft}</option>
-            <option value="scheduled">{t.scheduled}</option>
           </select>
           <select
             name="category"

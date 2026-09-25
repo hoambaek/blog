@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
+import { guardAdminApi } from '@/lib/auth/admin'
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY!,
@@ -14,6 +15,10 @@ const CATEGORY_CONTEXT: Record<string, string> = {
 }
 
 export async function POST(request: NextRequest) {
+  // 이 라우트는 전에는 인증 확인이 아예 없었다(middleware에만 의존)
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
+
   try {
     const { title, content, category } = await request.json()
 

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import Anthropic from '@anthropic-ai/sdk'
 import {
   buildTranslationPrompt,
@@ -15,10 +15,8 @@ export const maxDuration = 300
 
 // 진행 이벤트를 ndjson으로 스트리밍: {type:'progress',pct} ... {type:'result',translation} | {type:'error',message}
 export async function POST(request: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) {
-    return Response.json({ type: 'error', message: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   const input: TranslationInput = await request.json()
   const hasAnything = input.title || input.excerpt || input.content || input.metaTitle || input.metaDescription

@@ -11,7 +11,8 @@ import {
 } from '@react-email/components'
 
 interface WelcomeEmailProps {
-  email: string
+  /** 서명 토큰이 담긴 해지 링크 — buildUnsubscribeUrl(email)로 만든다 */
+  unsubscribeUrl: string
   locale?: 'ko' | 'en'
 }
 
@@ -22,7 +23,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://blog.musedemaree.co
  * 구독 환영 메일 — Email v2 (Paper 시안: 그레이지 프레임 + 카드 + 다크 법적 푸터).
  * landing의 ApplicantEmail과 같은 디자인 언어를 공유한다.
  */
-export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
+export function WelcomeEmail({ unsubscribeUrl, locale = 'ko' }: WelcomeEmailProps) {
   const content = {
     ko: {
       eyebrow: 'LE JOURNAL',
@@ -59,7 +60,6 @@ export function WelcomeEmail({ email, locale = 'ko' }: WelcomeEmailProps) {
   }
 
   const t = locale === 'ko' ? content.ko : content.en
-  const unsubscribeUrl = `${BASE_URL}/unsubscribe?email=${encodeURIComponent(email)}`
 
   return (
     <Html lang={locale}>

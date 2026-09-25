@@ -2,6 +2,7 @@
 
 import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { checkAdmin, requireAdmin, ADMIN_FORBIDDEN_MESSAGE } from '@/lib/auth/admin'
 import type { Post, PostWithCategory, Category } from '@/lib/supabase/types'
 import Anthropic from '@anthropic-ai/sdk'
 import {
@@ -389,6 +390,7 @@ export async function getAdminPosts(
   limit = 20,
   offset = 0
 ): Promise<{ posts: PostWithCategory[]; total: number }> {
+  await requireAdmin()
   const supabase = await createAdminClient()
 
   let query = supabase
@@ -423,6 +425,7 @@ export async function getAdminPosts(
 }
 
 export async function getAdminPostById(id: string): Promise<PostWithCategory | null> {
+  await requireAdmin()
   const supabase = await createAdminClient()
 
   const { data, error } = await supabase
@@ -455,16 +458,26 @@ interface CreatePostInput {
   photo_credits?: string | null
   content: string
   category_id?: string
-  status: 'draft' | 'published' | 'scheduled'
+  /** 예약 발행은 없앴다(2026-09-25) — DB enum에는 'scheduled'가 남아 있지만 새로 쓰지 않는다 */
+  status: PostStatusInput
   is_featured?: boolean
   cover_image_url?: string
   meta_title?: string
   meta_description?: string
-  scheduled_at?: string
   author_id?: string
 }
 
+type PostStatusInput = 'draft' | 'published'
+const WRITABLE_STATUSES: readonly string[] = ['draft', 'published']
+
+// 서버 액션은 클라이언트 타입을 믿을 수 없다 — 허용하지 않은 status는 거부
+function isInvalidStatus(status: unknown): boolean {
+  return status !== undefined && !WRITABLE_STATUSES.includes(status as string)
+}
+
 export async function createPost(input: CreatePostInput, pretranslated?: TranslatedContent | null) {
+  if (!(await checkAdmin()).ok) return { success: false, error: ADMIN_FORBIDDEN_MESSAGE }
+  if (isInvalidStatus(input.status)) return { success: false, error: '허용되지 않는 상태입니다.' }
   const supabase = await createAdminClient()
 
   // Calculate reading time (roughly 200 words per minute)
@@ -517,7 +530,13 @@ export async function createPost(input: CreatePostInput, pretranslated?: Transla
   return { success: true, data, warning }
 }
 
+/**
+ * input.status를 생략하면 현재 상태를 그대로 둔다(일반 저장).
+ * 상태는 발행('published')·발행 취소('draft')처럼 명시적으로 넘길 때만 바뀐다.
+ */
 export async function updatePost(id: string, input: Partial<CreatePostInput>, pretranslated?: TranslatedContent | null) {
+  if (!(await checkAdmin()).ok) return { success: false, error: ADMIN_FORBIDDEN_MESSAGE }
+  if (isInvalidStatus(input.status)) return { success: false, error: '허용되지 않는 상태입니다.' }
   const supabase = await createAdminClient()
 
   const updateData: Record<string, unknown> = { ...input }
@@ -589,6 +608,7 @@ export async function updatePost(id: string, input: Partial<CreatePostInput>, pr
 }
 
 export async function deletePost(id: string) {
+  if (!(await checkAdmin()).ok) return { success: false, error: ADMIN_FORBIDDEN_MESSAGE }
   const supabase = await createAdminClient()
 
   // Soft delete
@@ -618,6 +638,7 @@ export async function deletePost(id: string) {
 // ═══════════════════════════════════════════════════
 
 export async function getDashboardStats() {
+  await requireAdmin()
   const supabase = await createAdminClient()
 
   // Get total posts count
@@ -670,6 +691,7 @@ export async function getDashboardStats() {
 }
 
 export async function getRecentPosts(limit = 5): Promise<PostWithCategory[]> {
+  await requireAdmin()
   const supabase = await createAdminClient()
 
   const { data, error } = await supabase

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/server'
 
 // GET - 뉴스레터 목록 조회
 export async function GET(request: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   const { searchParams } = new URL(request.url)
   const status = searchParams.get('status')
@@ -43,10 +41,8 @@ export async function GET(request: NextRequest) {
 
 // POST - 새 뉴스레터 생성
 export async function POST(request: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   try {
     const body = await request.json()
@@ -62,7 +58,7 @@ export async function POST(request: NextRequest) {
         html_content,
         plain_text_content,
         status: status || 'draft',
-        created_by: userId,
+        created_by: guard.userId,
       })
       .select()
       .single()

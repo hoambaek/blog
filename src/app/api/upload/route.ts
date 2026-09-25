@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import {
   uploadToR2,
   generateUniqueFilename,
@@ -26,13 +26,8 @@ function shouldSkipOptimization(type: string): boolean {
 export async function POST(request: NextRequest) {
   try {
     // Check authentication
-    const { userId } = await auth()
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+    const guard = await guardAdminApi()
+    if (!guard.ok) return guard.response
 
     // Get form data
     const formData = await request.formData()

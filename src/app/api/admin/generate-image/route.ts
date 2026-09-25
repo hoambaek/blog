@@ -1,6 +1,6 @@
 import { GoogleGenAI } from '@google/genai'
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 import { uploadToR2, generateUniqueFilename } from '@/lib/r2/client'
 
 // 공통 스타일 프리픽스
@@ -84,10 +84,8 @@ interface GenerateImageRequest {
 
 export async function POST(request: NextRequest) {
   // 인증 확인
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   // API 키 확인
   if (!process.env.GEMINI_API_KEY) {

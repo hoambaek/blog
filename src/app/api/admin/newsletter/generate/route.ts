@@ -1,6 +1,6 @@
 import { GoogleGenAI, ThinkingLevel } from '@google/genai'
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
+import { guardAdminApi } from '@/lib/auth/admin'
 
 // Gemini 3 Pro Preview를 사용한 뉴스레터 생성
 const SYSTEM_PROMPT = `당신은 뮤즈드마레(Muse de Marée)의 뉴스레터 에디터입니다.
@@ -45,10 +45,8 @@ interface GenerateNewsletterRequest {
 }
 
 export async function POST(request: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
 
   if (!process.env.GOOGLE_AI_API_KEY) {
     return NextResponse.json(

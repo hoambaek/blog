@@ -1,13 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 import { FROM_EMAIL } from '@/lib/resend/client'
+import { guardAdminApi } from '@/lib/auth/admin'
+import { buildUnsubscribeUrl, UNSUBSCRIBE_SECRET_ENV } from '@/lib/unsubscribe-token'
+
+const UNSUBSCRIBE_PLACEHOLDER = '{{unsubscribe_url}}'
+
+// 수신자별 서명 해지 링크로 자리표시를 모두 치환 (본문에 여러 번 나와도 전부)
+function personalize(template: string | null, unsubscribeUrl: string): string | undefined {
+  return template ? template.replaceAll(UNSUBSCRIBE_PLACEHOLDER, unsubscribeUrl) : undefined
+}
 
 export async function POST(request: NextRequest) {
-  const { userId } = await auth()
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const guard = await guardAdminApi()
+  if (!guard.ok) return guard.response
+
+  // 해지 링크 없이 메일이 나가지 않도록 발송 전에 확인
+  try {
+    buildUnsubscribeUrl('config-check@example.com')
+  } catch {
+    return NextResponse.json(
+      { error: `${UNSUBSCRIBE_SECRET_ENV} is not configured` },
+      { status: 500 }
+    )
   }
 
   if (!process.env.RESEND_API_KEY) {
@@ -45,12 +61,13 @@ export async function POST(request: NextRequest) {
 
     // 테스트 발송인 경우
     if (testEmail) {
+      const unsubscribeUrl = buildUnsubscribeUrl(testEmail)
       const { error: sendError } = await resend.emails.send({
         from: FROM_EMAIL,
         to: testEmail,
         subject: `[테스트] ${newsletter.subject}`,
-        html: newsletter.html_content,
-        text: newsletter.plain_text_content || undefined,
+        html: personalize(newsletter.html_content, unsubscribeUrl) ?? '',
+        text: personalize(newsletter.plain_text_content, unsubscribeUrl),
       })
 
       if (sendError) {
@@ -99,18 +116,16 @@ export async function POST(request: NextRequest) {
       const batch = recipientEmails.slice(i, i + batchSize)
 
       // 각 수신자에게 개별 이메일 발송
-      const emailPromises = batch.map((email) =>
-        resend.emails.send({
+      const emailPromises = batch.map((email) => {
+        const unsubscribeUrl = buildUnsubscribeUrl(email)
+        return resend.emails.send({
           from: FROM_EMAIL,
           to: email,
           subject: newsletter.subject,
-          html: newsletter.html_content.replace(
-            '{{unsubscribe_url}}',
-            `${process.env.NEXT_PUBLIC_APP_URL || 'https://musedemaree.com'}/unsubscribe?email=${encodeURIComponent(email)}`
-          ),
-          text: newsletter.plain_text_content || undefined,
+          html: personalize(newsletter.html_content, unsubscribeUrl) ?? '',
+          text: personalize(newsletter.plain_text_content, unsubscribeUrl),
         })
-      )
+      })
 
       const results = await Promise.allSettled(emailPromises)
       const successful = results.filter((r) => r.status === 'fulfilled').length

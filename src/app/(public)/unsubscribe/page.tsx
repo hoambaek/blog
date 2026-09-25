@@ -9,23 +9,28 @@ import { useLocale } from '@/lib/i18n'
 
 function UnsubscribeContent() {
   const searchParams = useSearchParams()
-  const emailParam = searchParams.get('email') || ''
+  const email = searchParams.get('email') || ''
+  const token = searchParams.get('token') || ''
 
-  const [email, setEmail] = useState(emailParam)
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  // 서명 토큰이 있는 링크만 해지할 수 있다. ?email=만 있는 옛 링크는 만료 안내.
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'expired'>(
+    email && token ? 'idle' : 'expired'
+  )
   const [message, setMessage] = useState('')
   const { locale } = useLocale()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) return
+    if (!email || !token) return
 
     setStatus('loading')
 
     try {
-      const result = await unsubscribe(email)
+      const result = await unsubscribe(email, token)
       if (result.success) {
         setStatus('success')
+      } else if (result.expired) {
+        setStatus('expired')
       } else {
         setStatus('error')
         setMessage(result.error || content[locale].error)
@@ -49,6 +54,8 @@ function UnsubscribeContent() {
       resubscribe: '다시 구독하기',
       backHome: '돌아가기',
       error: '오류가 발생했습니다.',
+      expiredTitle: '링크가 만료되었습니다',
+      expiredDesc: '최근 메일의 링크를 이용해 주세요.',
     },
     en: {
       title: 'Unsubscribe',
@@ -62,6 +69,8 @@ function UnsubscribeContent() {
       resubscribe: 'Resubscribe',
       backHome: 'Go back',
       error: 'An error occurred.',
+      expiredTitle: 'This link has expired',
+      expiredDesc: 'Please use the link in our most recent email.',
     },
   }
 
@@ -102,6 +111,28 @@ function UnsubscribeContent() {
     )
   }
 
+  if (status === 'expired') {
+    return (
+      <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
+        <div className="text-center max-w-sm">
+          <h1 className="font-display text-2xl text-white mb-2">
+            {c.expiredTitle}
+          </h1>
+          <p className="text-sm text-white/40 mb-8">
+            {c.expiredDesc}
+          </p>
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center gap-2 text-sm text-white/40 hover:text-white/60 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            {c.backHome}
+          </Link>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
       <div className="w-full max-w-sm">
@@ -117,14 +148,13 @@ function UnsubscribeContent() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 해지 대상은 서명된 링크가 정한다 — 주소는 보여주기만 하고 바꿀 수 없다 */}
           <input
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={c.emailPlaceholder}
-            className="w-full bg-white/[0.03] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/20 transition-colors"
-            required
-            disabled={status === 'loading'}
+            readOnly
+            aria-label={c.emailPlaceholder}
+            className="w-full bg-white/[0.03] border border-white/10 px-4 py-3 text-sm text-white/60 focus:outline-none"
           />
 
           {status === 'error' && (
