@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -379,11 +380,10 @@
   box-shadow: none;
 }
 
-/* Preserve line breaks in post content */
+/* 본문의 빈 <p></p> 간격 문단은 접는다 — 문단·제목·이미지 간격은 prose 여백이 맡는다
+   (예전엔 prose 플러그인이 없어 이 빈 문단이 유일한 간격이었다) */
 .post-content p:empty {
-  display: block !important;
-  min-height: 1.5rem;
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
 .post-content br,

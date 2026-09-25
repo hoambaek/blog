@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { ArrowRight, Globe } from 'lucide-react'
 import { useTranslation, useLocale, type Locale } from '@/lib/i18n'
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { useVisibleCategories } from '@/components/layout/VisibleCategories'
 
 const footerLocaleNames: Record<Locale, string> = {
   ko: '한국어',
@@ -59,14 +60,17 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
   const t = useTranslation()
 
+  // 발행 글이 있는 카테고리만 노출 (VisibleCategoriesProvider 참고)
+  const journalLinks = useVisibleCategories([
+    { name: t.nav.seaLog, slug: 'sea-log' },
+    { name: t.nav.maison, slug: 'maison' },
+    { name: t.nav.culture, slug: 'culture' },
+    { name: t.nav.table, slug: 'table' },
+    { name: t.nav.news, slug: 'news' },
+  ]).map(({ name, slug }) => ({ name, href: `/category/${slug}` }))
+
   const footerLinks = {
-    journal: [
-      { name: t.nav.seaLog, href: '/category/sea-log' },
-      { name: t.nav.maison, href: '/category/maison' },
-      { name: t.nav.culture, href: '/category/culture' },
-      { name: t.nav.table, href: '/category/table' },
-      { name: t.nav.news, href: '/category/news' },
-    ],
+    journal: journalLinks,
     about: [
       { name: t.footer.home, href: 'https://musedemaree.com/', external: true },
       { name: t.footer.aboutJournal, href: '/about' },

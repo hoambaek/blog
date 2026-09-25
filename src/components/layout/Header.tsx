@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/sheet'
 import { LanguageSelector } from '@/components/LanguageSelector'
 import { useTranslation, useLocale, getCategoryName } from '@/lib/i18n'
+import { useVisibleCategories } from '@/components/layout/VisibleCategories'
 
 export function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -59,13 +60,14 @@ export function Header() {
     }
   }, [isSearchOpen])
 
-  const categories = [
+  // 발행 글이 있는 카테고리만 노출 (VisibleCategoriesProvider 참고)
+  const categories = useVisibleCategories([
     { name: t.nav.seaLog, slug: 'sea-log' },
     { name: t.nav.maison, slug: 'maison' },
     { name: t.nav.culture, slug: 'culture' },
     { name: t.nav.table, slug: 'table' },
     { name: t.nav.news, slug: 'news' },
-  ]
+  ])
 
   // Handle mobile navigation - close menu on link click
   const handleMobileNavClick = () => {

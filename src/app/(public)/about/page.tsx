@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { useTranslation, useLocale } from '@/lib/i18n'
+import { useVisibleCategories } from '@/components/layout/VisibleCategories'
 
 export default function AboutPage() {
   const t = useTranslation()
@@ -24,7 +25,7 @@ export default function AboutPage() {
         { title: '소유는 맡아둠이다', desc: '마시는 것이 아니라, 바다가 만든 시간을 맡아두는 일입니다.', icon: '04' },
       ],
       journalTitle: '저널 카테고리',
-      journalDesc: '뮤즈드마레의 세계를 다섯 가지 시선으로 탐험합니다.',
+      journalDesc: '뮤즈드마레의 세계를 여러 시선으로 탐험합니다.',
       categories: [
         { name: '바다의 일지', desc: '해저 숙성의 기록과 바다의 관측 일지', slug: 'sea-log' },
         { name: '메종 이야기', desc: '브랜드의 철학과 비하인드 스토리', slug: 'maison' },
@@ -56,7 +57,7 @@ export default function AboutPage() {
         { title: 'Custody, Not Consumption', desc: 'Not to drink, but to keep the time the sea made.', icon: '04' },
       ],
       journalTitle: 'Journal Categories',
-      journalDesc: 'Explore the world of Muse de Marée through five distinct perspectives.',
+      journalDesc: 'Explore the world of Muse de Marée through distinct perspectives.',
       categories: [
         { name: 'Sea Log', desc: 'The record of sea-aging and the sea\'s observation log', slug: 'sea-log' },
         { name: 'Maison Stories', desc: 'Brand philosophy and behind-the-scenes stories', slug: 'maison' },
@@ -77,6 +78,8 @@ export default function AboutPage() {
   }
 
   const c = locale === 'ko' ? content.ko : content.en
+  // 발행 글이 있는 카테고리만 노출 (VisibleCategoriesProvider 참고)
+  const visibleCategories = useVisibleCategories(c.categories)
 
   return (
     <div>
@@ -196,7 +199,7 @@ export default function AboutPage() {
 
           {/* Categories List */}
           <div className="space-y-0 border-t border-border">
-            {c.categories.map((cat, index) => (
+            {visibleCategories.map((cat, index) => (
               <Link
                 key={index}
                 href={`/category/${cat.slug}`}
