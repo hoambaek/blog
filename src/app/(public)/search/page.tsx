@@ -1,29 +1,34 @@
 import { searchPosts } from '@/lib/actions/posts'
-import { SearchContent } from '@/components/search/SearchContent'
+import { toRecords } from '@/lib/journal/data'
+import { SearchView } from '@/components/journal/SearchView'
 
 interface PageProps {
   searchParams: Promise<{ q?: string; page?: string }>
 }
 
+const POSTS_PER_PAGE = 12
+
 export default async function SearchPage({ searchParams }: PageProps) {
   const { q = '', page } = await searchParams
-  const currentPage = Number(page) || 1
-  const postsPerPage = 12
-  const offset = (currentPage - 1) * postsPerPage
+  const query = q.trim()
+  const currentPage = Math.max(1, Number(page) || 1)
+  const offset = (currentPage - 1) * POSTS_PER_PAGE
 
-  const { posts, total } = q
-    ? await searchPosts(q, postsPerPage, offset)
+  const { posts, total } = query
+    ? await searchPosts(query, POSTS_PER_PAGE, offset)
     : { posts: [], total: 0 }
 
-  const totalPages = Math.ceil(total / postsPerPage)
+  const records = await toRecords(posts)
 
   return (
-    <SearchContent
-      query={q}
-      posts={posts}
+    <SearchView
+      // 검색어가 바뀌면 입력칸 상태를 새로 잡는다
+      key={query}
+      query={query}
+      records={records}
       total={total}
       currentPage={currentPage}
-      totalPages={totalPages}
+      totalPages={Math.ceil(total / POSTS_PER_PAGE)}
     />
   )
 }

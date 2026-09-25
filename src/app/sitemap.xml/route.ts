@@ -41,7 +41,7 @@ export async function GET() {
   // Static pages
   const staticPages = [
     { url: '', priority: '1.0', changefreq: 'daily' },
-    { url: '/category/all', priority: '0.8', changefreq: 'daily' },
+    // /category/all은 목록(/)으로 합쳐 308로 넘긴다(2026-09 저널 개편) — 사이트맵에서 뺐다
   ]
 
   const staticUrls = staticPages.map((page) => `

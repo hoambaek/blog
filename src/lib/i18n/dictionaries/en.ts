@@ -1,6 +1,9 @@
 import type { Dictionary } from './ko'
+import { journalEn } from './journal'
 
 export const en: Dictionary = {
+  journal: journalEn,
+
   // Navigation
   nav: {
     journal: 'Journal',

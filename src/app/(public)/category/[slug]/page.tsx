@@ -1,7 +1,8 @@
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import { getCategoryBySlug } from '@/lib/actions/categories'
-import { getPostsByCategory, getAllPublishedPosts } from '@/lib/actions/posts'
-import { CategoryContent } from '@/components/category/CategoryContent'
+import { getPostsByCategory } from '@/lib/actions/posts'
+import { getJournalSeries, toRecords } from '@/lib/journal/data'
+import { SeriesView } from '@/components/journal/SeriesView'
 
 export const revalidate = 3600
 
@@ -10,44 +11,39 @@ interface PageProps {
   searchParams: Promise<{ page?: string }>
 }
 
+const POSTS_PER_PAGE = 12
+
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   const { slug } = await params
+  // 전체 기록은 목록(/)이 맡는다 — 예전 링크는 목록으로 보낸다
+  if (slug === 'all') permanentRedirect('/')
+
   const { page } = await searchParams
-  const currentPage = Number(page) || 1
-  const postsPerPage = 12
-  const offset = (currentPage - 1) * postsPerPage
+  const currentPage = Math.max(1, Number(page) || 1)
+  const offset = (currentPage - 1) * POSTS_PER_PAGE
 
-  // Handle "all" category specially
-  let category
-  let postsData
+  const category = await getCategoryBySlug(slug)
+  if (!category) notFound()
 
-  if (slug === 'all') {
-    category = {
-      id: 'all',
-      name: 'All Posts',
-      slug: 'all',
-      description: null,
-    }
-    postsData = await getAllPublishedPosts(postsPerPage, offset)
-  } else {
-    category = await getCategoryBySlug(slug)
-    if (!category) {
-      notFound()
-    }
-    postsData = await getPostsByCategory(slug, postsPerPage, offset)
-  }
+  const [{ posts, total }, series] = await Promise.all([
+    getPostsByCategory(slug, POSTS_PER_PAGE, offset),
+    getJournalSeries(),
+  ])
 
-  const { posts, total } = postsData
-  const totalPages = Math.ceil(total / postsPerPage)
+  // 첫 쪽의 첫 글은 대표 글로 크게 — 관측 줄 수온은 그 글만 계산한다
+  const records =
+    currentPage === 1
+      ? [...(await toRecords(posts.slice(0, 1), { withSea: true })), ...(await toRecords(posts.slice(1)))]
+      : await toRecords(posts)
 
   return (
-    <CategoryContent
-      category={category}
-      posts={posts}
+    <SeriesView
+      category={{ slug: category.slug, name: category.name, description: category.description }}
+      records={records}
       total={total}
       currentPage={currentPage}
-      totalPages={totalPages}
-      slug={slug}
+      totalPages={Math.ceil(total / POSTS_PER_PAGE)}
+      series={series}
     />
   )
 }
@@ -56,22 +52,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const brandPrefix = '뮤즈드마레(Muse de Marée)'
   const siteUrl = 'https://blog.musedemaree.com'
-
-  if (slug === 'all') {
-    const description = `해저숙성 샴페인 ${brandPrefix}의 모든 이야기 — 바다의 일지, 메종, 문화와 예술, 테이블 위에서.`
-    return {
-      title: `모든 포스트 | ${brandPrefix}`,
-      description,
-      openGraph: {
-        title: `모든 포스트 | ${brandPrefix}`,
-        description,
-        type: 'website',
-        siteName: 'Muse de Marée',
-        url: `${siteUrl}/category/all`,
-      },
-      alternates: { canonical: `${siteUrl}/category/all` },
-    }
-  }
 
   const category = await getCategoryBySlug(slug)
 

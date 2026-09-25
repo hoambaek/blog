@@ -1,4 +1,8 @@
+import { journalKo, type JournalDictionary } from './journal'
+
 export interface Dictionary {
+  /** 저널(공개 화면) 문구 — journal.ts */
+  journal: JournalDictionary
   nav: {
     journal: string
     seaLog: string
@@ -124,6 +128,8 @@ export interface Dictionary {
 }
 
 export const ko: Dictionary = {
+  journal: journalKo,
+
   // Navigation
   nav: {
     journal: '저널',

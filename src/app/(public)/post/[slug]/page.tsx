@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation'
-import { getPostBySlug, getRelatedPosts, getAdjacentPosts, getPublishedSlugs } from '@/lib/actions/posts'
-import { PostContent } from '@/components/post/PostContent'
+import { getPostBySlug, getAdjacentPosts, getPublishedSlugs } from '@/lib/actions/posts'
 import { ViewBeacon } from '@/components/post/ViewBeacon'
+import { PostView } from '@/components/journal/PostView'
+import { collectFigureCredits, htmlFromContent, parseArticleHtml } from '@/lib/article/parse'
+import { toRecords } from '@/lib/journal/data'
 import { ArticleJsonLd, BreadcrumbJsonLd, FAQPageJsonLd, extractFAQFromContent } from '@/components/seo/JsonLd'
 
 export const revalidate = 3600
@@ -31,11 +33,12 @@ export default async function PostPage({
     notFound()
   }
 
-  // Fetch related posts and navigation
-  const [relatedPosts, { prev, next }] = await Promise.all([
-    getRelatedPosts(post.id, post.category_id, 3),
+  // 다음 기록 = 발행일 순으로 바로 앞(더 오래된) 글 하나. 가장 오래된 글이면 없다.
+  const [{ prev }, [record]] = await Promise.all([
     getAdjacentPosts(post.published_at || '', post.id),
+    toRecords([post], { withSea: true }),
   ])
+  const next = prev ? (await toRecords([prev], { withSea: true }))[0] : null
 
   const breadcrumbItems = [
     { name: 'Home', url: 'https://blog.musedemaree.com' },
@@ -43,10 +46,20 @@ export default async function PostPage({
     { name: post.title, url: `https://blog.musedemaree.com/post/${post.slug}` },
   ]
 
+  // 본문은 서버에서 블록으로 파싱해 넘긴다(두 언어 모두 — 화면이 KO/EN 쿠키에 맞춰 고른다)
+  const htmlContent = htmlFromContent(post.content)
+  const blocks = parseArticleHtml(htmlContent)
+  const htmlEn = htmlFromContent(post.content_en)
+  const blocksEn = htmlEn ? parseArticleHtml(htmlEn) : null
+
+  // 글 끝 PHOTO — 그림 크레딧 자동 수집 + photo_credits 필드(줄마다 한 항목, 앞의 · - • 기호는 뗀다)
+  const manualCredits = (post.photo_credits ?? '')
+    .split('\n')
+    .map((line) => line.replace(/^\s*[·•\-*]\s*/, '').trim())
+    .filter(Boolean)
+  const credits = [...new Set([...collectFigureCredits(blocks), ...manualCredits])]
+
   // AEO: Extract FAQ items from post content for FAQ Schema
-  const htmlContent = typeof post.content === 'object' && post.content !== null
-    ? (post.content as { html?: string }).html || ''
-    : ''
   const faqs = extractFAQFromContent(htmlContent)
 
   return (
@@ -57,12 +70,7 @@ export default async function PostPage({
       <ArticleJsonLd post={post} />
       <BreadcrumbJsonLd items={breadcrumbItems} />
       {faqs.length > 0 && <FAQPageJsonLd faqs={faqs} />}
-      <PostContent
-        post={post}
-        relatedPosts={relatedPosts}
-        prev={prev}
-        next={next}
-      />
+      <PostView data={{ record, blocks, blocksEn, credits, next }} />
     </>
   )
 }

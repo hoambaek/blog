@@ -16,6 +16,24 @@
   --font-serif: var(--font-lora), var(--font-noto-serif-kr), "Lora", "Noto Serif KR", Georgia, serif;
   --font-display-ko: var(--font-noto-serif-kr), "Noto Serif KR", serif;
 
+  /* Journal (공개 화면) 서체 — Paper 'Blog — Le Journal de Marée' 정본 */
+  --font-garamond: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-serif-kr: var(--font-noto-serif-kr), "Noto Serif KR", serif;
+  --font-sans-kr: var(--font-noto-sans-kr), "Noto Sans KR", system-ui, sans-serif;
+  --font-plex: var(--font-plex-mono), "IBM Plex Mono", var(--font-noto-sans-kr), ui-monospace, monospace;
+
+  /* Journal 색 토큰 */
+  --color-sand: #E8E5E1;        /* 라이트 바탕 */
+  --color-paper: #F1EFEB;       /* 종이(모달·다크 위 글자) */
+  --color-earth: #312E2A;       /* 본문 잉크 */
+  --color-amber: #CCAD7B;       /* 앰버(다크 위) */
+  --color-amber-deep: #A8874F;  /* 짙은 앰버(라이트 위) */
+  --color-amber-light: #E3C997; /* 헤더·히어로 이탤릭 */
+  --color-stone: #6E675D;
+  --color-stone-dark: #55504A;
+  --color-stone-light: #8C857B;
+  --color-panel: #141210;       /* 검색 펼침 */
+
   /* Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -81,8 +99,8 @@
   --ring: #000000;
 
   /* Editorial surfaces & the one inline color */
-  --void: #000000;             /* Dark band (footer) */
-  --void-text: #FFFFFF;
+  --void: #0A0908;             /* Dark band (footer) — 순흑 대신 저널 void */
+  --void-text: #F1EFEB;
   --link: #057DBC;             /* Inline article link blue — the only color */
 
   /* Legacy accents retired → ink (Wired has no chromatic accent) */
@@ -132,6 +150,64 @@
   /* Focus styles */
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   Journal (공개 화면) — 관리자 화면과 토큰을 나눈다.
+   (public)/layout의 .journal 래퍼 안에서만 적용된다.
+   ═══════════════════════════════════════════════════ */
+/* 일반 CSS 파일(article-body.css·journal.css)이 쓰는 서체 변수.
+   next/font 변수가 body 클래스에 걸리므로 같은 body에서 풀어야 값이 잡힌다. */
+body {
+  --font-garamond: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-serif-kr: var(--font-noto-serif-kr), "Noto Serif KR", serif;
+  --font-sans-kr: var(--font-noto-sans-kr), "Noto Sans KR", system-ui, sans-serif;
+  --font-plex: var(--font-plex-mono), "IBM Plex Mono", var(--font-noto-sans-kr), ui-monospace, monospace;
+  --ease-water: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-slow: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html:has(.journal) {
+  background-color: #0A0908;
+}
+
+body:has(.journal) {
+  background-color: #E8E5E1;
+}
+
+.journal {
+  --background: #E8E5E1;
+  --foreground: #312E2A;
+  --muted-foreground: #6E675D;
+  --border: rgb(49 46 42 / 0.14);
+  --ring: #A8874F;
+  background-color: #E8E5E1;
+  color: #312E2A;
+  font-family: var(--font-sans-kr);
+  font-synthesis: none;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+@layer base {
+  /* 관리자용 전역 타이포(h1~p 크기·줄간격)가 저널로 새지 않게 되돌린다 */
+  .journal :where(h1, h2, h3, h4, p) {
+    font: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    margin: 0;
+  }
+
+  .journal ::selection {
+    background-color: #CCAD7B;
+    color: #0A0908;
+  }
+
+  .journal :focus-visible {
+    outline: 1px solid #A8874F;
+    outline-offset: 3px;
+    box-shadow: none;
   }
 }
 
@@ -369,59 +445,7 @@
   animation: fade-in 0.3s ease-out forwards;
 }
 
-/* ═══════════════════════════════════════════════════
-   Post Content Image Styles
-   ═══════════════════════════════════════════════════ */
-
-/* Post content image styling */
-.post-content img {
-  position: relative;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-/* 본문의 빈 <p></p> 간격 문단은 접는다 — 문단·제목·이미지 간격은 prose 여백이 맡는다
-   (예전엔 prose 플러그인이 없어 이 빈 문단이 유일한 간격이었다) */
-.post-content p:empty {
-  margin: 0;
-}
-
-.post-content br,
-.post-content .hard-break {
-  display: block;
-  content: "";
-  margin-top: 1rem;
-}
-
-/* Preserve whitespace in paragraphs */
-.post-content p {
-  white-space: pre-wrap;
-}
-
-/* Add proper spacing after images */
-.post-content p:has(img) {
-  margin-bottom: 2rem;
-}
-
-.post-content p:has(img) + p {
-  margin-top: 2rem;
-}
-
-/* Image figure styling if wrapped */
-.post-content figure {
-  margin: 3rem 0;
-}
-
-.post-content figure img {
-  margin-bottom: 0.75rem;
-}
-
-.post-content figcaption {
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-  font-style: italic;
-}
+/* 글 본문 스타일은 src/components/journal/article-body.css(ArticleBody)로 옮겼다 — .post-content는 JSON-LD speakable 선택자용으로만 남는다 */
 
 /* ═══════════════════════════════════════════════════
    Touch feedback — 누르면 서서히 스며들듯 옅어지고, 떼면 부드럽게 복귀.

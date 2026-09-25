@@ -1,0 +1,413 @@
+/*
+ * 글 본문 블록 — Paper 'Journal — 글 상세' (Desktop 1440 / Mobile 390) 값 그대로.
+ * 본문 칼럼 640px, 그림은 1040px까지 넓게. 모바일은 좌우 20px, 그림은 화면 끝까지.
+ */
+
+.article-body {
+  --ab-ink: #312E2A;
+  --ab-amber: #A8874F;
+  width: 100%;
+  color: var(--ab-ink);
+}
+
+.article-body > * {
+  width: min(640px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+.article-body > * + * {
+  margin-top: 28px;
+}
+
+/* ── 문단 ── */
+.ab-p,
+.ab-list,
+.ab-html {
+  font-family: var(--font-sans-kr);
+  font-size: 16.5px;
+  font-weight: 300;
+  line-height: 31px;
+}
+
+.ab-lead {
+  font-family: var(--font-serif-kr);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 38px;
+}
+
+.article-body strong {
+  font-weight: 500;
+}
+
+.article-body a {
+  text-decoration: underline;
+  text-decoration-color: rgb(168 135 79 / 0.6);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.article-body a:hover {
+  text-decoration-color: var(--ab-amber);
+}
+
+.article-body mark {
+  background: rgb(204 173 123 / 0.38);
+  color: inherit;
+}
+
+/* ── 번호 소제목 ── */
+.article-body > .ab-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 68px;
+}
+
+.ab-heading-num {
+  font-family: var(--font-plex);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  line-height: 14px;
+  color: var(--ab-amber);
+}
+
+.ab-heading-text {
+  font-family: var(--font-serif-kr);
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 36px;
+}
+
+.article-body > .ab-subheading {
+  margin-top: 44px;
+  font-family: var(--font-serif-kr);
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+/* ── 그림 ── */
+.article-body > .ab-figure {
+  width: min(1040px, 100%);
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.article-body > .ab-figure + * {
+  margin-top: 80px;
+}
+
+.article-body > .ab-figure + .ab-heading {
+  margin-top: 96px;
+}
+
+.article-body > .ab-figure + .ab-figure {
+  margin-top: 40px;
+}
+
+.ab-figure img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 88vh;
+  margin-inline: auto;
+}
+
+.ab-figure figcaption {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding-top: 4px;
+}
+
+.ab-fig-num {
+  flex-shrink: 0;
+  font-family: var(--font-plex);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  line-height: 14px;
+  color: var(--ab-amber);
+}
+
+.ab-fig-caption {
+  flex: 1 1 0%;
+  font-family: var(--font-sans-kr);
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 20px;
+  color: #55504A;
+}
+
+.ab-fig-credit {
+  margin-left: auto;
+  font-family: var(--font-plex);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  line-height: 14px;
+  color: #8C857B;
+}
+
+/* ── 인용 ── */
+.article-body > .ab-quote {
+  margin-top: 76px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-left: 32px;
+  border-left: 1px solid var(--ab-amber);
+}
+
+.article-body > .ab-quote + * {
+  margin-top: 36px;
+}
+
+.ab-quote p {
+  font-family: var(--font-serif-kr);
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 42px;
+}
+
+.ab-quote cite {
+  font-style: normal;
+  font-family: var(--font-plex);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: #8C857B;
+}
+
+/* ── 용어 목록 ── */
+.ab-terms {
+  border-top: 1px solid rgb(49 46 42 / 0.2);
+}
+
+.ab-terms > div {
+  display: flex;
+  gap: 28px;
+  padding-block: 18px;
+  border-bottom: 1px solid rgb(49 46 42 / 0.14);
+}
+
+.ab-terms dt {
+  flex-shrink: 0;
+  width: 132px;
+  font-family: var(--font-serif-kr);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 28px;
+}
+
+.ab-terms dd {
+  margin: 0;
+  font-family: var(--font-sans-kr);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 28px;
+  color: rgb(49 46 42 / 0.8);
+}
+
+/* ── 목록 ── */
+.ab-list {
+  padding-left: 1.25em;
+}
+
+ul.ab-list {
+  list-style: none;
+}
+
+ul.ab-list > li {
+  position: relative;
+}
+
+ul.ab-list > li::before {
+  content: '';
+  position: absolute;
+  left: -1.05em;
+  top: 15px;
+  width: 6px;
+  height: 1px;
+  background: var(--ab-amber);
+}
+
+ol.ab-list {
+  list-style: decimal-leading-zero;
+}
+
+ol.ab-list > li::marker {
+  font-family: var(--font-plex);
+  font-size: 11px;
+  color: var(--ab-amber);
+}
+
+.ab-list > li + li {
+  margin-top: 8px;
+}
+
+/* ── 영상 ── */
+.article-body > .ab-video {
+  width: min(1040px, 100%);
+  margin-top: 64px;
+}
+
+.article-body > .ab-video + * {
+  margin-top: 64px;
+}
+
+.ab-video video {
+  display: block;
+  max-width: 100%;
+  max-height: 88vh;
+  margin-inline: auto;
+  cursor: pointer;
+}
+
+/* ── 구분선 ── */
+.article-body > .ab-rule {
+  margin-top: 56px;
+  border: 0;
+  border-top: 1px solid rgb(49 46 42 / 0.2);
+}
+
+.article-body > .ab-rule + * {
+  margin-top: 56px;
+}
+
+.ab-html img,
+.ab-html iframe,
+.ab-html table {
+  max-width: 100%;
+}
+
+/* 1040 그림이 화면에 꽉 찰 때 캡션이 가장자리에 붙지 않게 */
+@media (max-width: 1100px) {
+  .ab-figure figcaption {
+    padding-inline: 20px;
+  }
+}
+
+/* ── 모바일 (Paper 390) ── */
+@media (max-width: 767px) {
+  .article-body > * + * {
+    margin-top: 22px;
+  }
+
+  .ab-p,
+  .ab-list,
+  .ab-html {
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+  .ab-lead {
+    font-size: 18px;
+    line-height: 33px;
+  }
+
+  .article-body > .ab-heading {
+    gap: 10px;
+    margin-top: 50px;
+  }
+
+  .ab-heading-num {
+    font-size: 10.5px;
+  }
+
+  .ab-heading-text {
+    font-size: 22px;
+    line-height: 31px;
+  }
+
+  .article-body > .ab-figure {
+    width: 100%;
+    margin-top: 40px;
+    gap: 12px;
+  }
+
+  .article-body > .ab-figure + * {
+    margin-top: 48px;
+  }
+
+  .article-body > .ab-figure + .ab-heading {
+    margin-top: 48px;
+  }
+
+  .ab-figure img {
+    width: 100%;
+    max-height: none;
+  }
+
+  .ab-figure figcaption {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 12px;
+    padding: 0 20px;
+  }
+
+  .ab-fig-num {
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .ab-fig-credit {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    line-height: 12px;
+  }
+
+  .ab-fig-caption {
+    grid-column: 1 / -1;
+  }
+
+  .article-body > .ab-quote {
+    margin-top: 46px;
+    gap: 14px;
+    padding-left: 20px;
+  }
+
+  .ab-quote p {
+    font-size: 21px;
+    line-height: 34px;
+  }
+
+  .ab-quote cite {
+    font-size: 10px;
+    line-height: 12px;
+  }
+
+  .ab-terms > div {
+    flex-direction: column;
+    gap: 4px;
+    padding-block: 14px;
+  }
+
+  .ab-terms dt {
+    width: auto;
+    font-size: 15.5px;
+    line-height: 20px;
+  }
+
+  .ab-terms dd {
+    font-size: 14.5px;
+    line-height: 25px;
+  }
+
+  .article-body > .ab-video {
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .ab-video video {
+    width: 100%;
+    max-height: none;
+  }
+}

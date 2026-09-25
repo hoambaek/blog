@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
-import { getFeaturedPosts, getLatestPosts } from '@/lib/actions/posts'
-import { HomeContent } from '@/components/home/HomeContent'
+import { getAllPublishedPosts } from '@/lib/actions/posts'
+import { getFirstPublishedAt, getJournalSeries, toRecords } from '@/lib/journal/data'
+import { kstYear } from '@/lib/journal/format'
+import { HomeView } from '@/components/journal/HomeView'
 
 export const revalidate = 3600
 
@@ -24,11 +26,31 @@ export const metadata: Metadata = {
   },
 }
 
+/**
+ * 목록에 한 번에 싣는 기록 수. 전체 기록(/category/all)을 이 화면으로 합쳤으므로
+ * 발행 글이 이 수를 넘으면 쪽 나눔을 붙여야 한다(2026-09 기준 4편).
+ */
+const LIST_LIMIT = 100
+
 export default async function HomePage() {
-  const [featuredPosts, latestPosts] = await Promise.all([
-    getFeaturedPosts(3),
-    getLatestPosts(4),
+  const [{ posts, total }, series, firstPublishedAt] = await Promise.all([
+    getAllPublishedPosts(LIST_LIMIT, 0),
+    getJournalSeries(),
+    getFirstPublishedAt(),
   ])
 
-  return <HomeContent featuredPosts={featuredPosts} latestPosts={latestPosts} />
+  // 대표 글(가장 최근)만 관측 줄 수온을 계산한다 — 번호 목록에는 수온 열이 없다
+  const [featured, rest] = await Promise.all([
+    toRecords(posts.slice(0, 1), { withSea: true }),
+    toRecords(posts.slice(1)),
+  ])
+
+  return (
+    <HomeView
+      records={[...featured, ...rest]}
+      total={total}
+      startYear={firstPublishedAt ? kstYear(firstPublishedAt) : null}
+      series={series}
+    />
+  )
 }

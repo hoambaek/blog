@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { ToastProvider } from '@/components/ui/toast'
 import { useLocale } from '@/lib/i18n'
+import { legacyFontClassName } from './legacy-fonts'
 
 function SidebarContent() {
   const pathname = usePathname()
@@ -130,7 +131,13 @@ export default function AdminLayout({
   return (
     <ClerkProvider>
     <ToastProvider>
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background ${legacyFontClassName}`}>
+      {/* 관리자 화면의 한글 서체(Pretendard) — 공개 화면에서는 싣지 않는다 */}
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        precedence="default"
+      />
       {/* Mobile header */}
       <header className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b border-border bg-background px-4 lg:hidden">
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>

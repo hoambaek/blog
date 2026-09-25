@@ -3,28 +3,31 @@
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Check, ArrowLeft } from 'lucide-react'
 import { unsubscribe } from '@/lib/actions/subscribers'
-import { useLocale } from '@/lib/i18n'
+import { useTranslation } from '@/lib/i18n'
+import { fillText } from '@/lib/i18n/dictionaries/journal'
+import { useSubscribe } from '@/components/journal/SubscribeModal'
 
+/*
+ * 구독 해지 — Paper 'Journal — 구독 해지' I86·I98.
+ * 해지 판단은 서버 액션(unsubscribe)의 HMAC 토큰 검증이 한다. 이 화면은 결과만 보여 준다.
+ * ?email=만 있는 옛 링크는 해지하지 않고 '만료' 안내.
+ */
 function UnsubscribeContent() {
   const searchParams = useSearchParams()
   const email = searchParams.get('email') || ''
   const token = searchParams.get('token') || ''
-
-  // 서명 토큰이 있는 링크만 해지할 수 있다. ?email=만 있는 옛 링크는 만료 안내.
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'expired'>(
-    email && token ? 'idle' : 'expired'
+    email && token ? 'idle' : 'expired',
   )
   const [message, setMessage] = useState('')
-  const { locale } = useLocale()
+  const u = useTranslation().journal.unsubscribe
+  const { openSubscribe } = useSubscribe()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !token) return
-
     setStatus('loading')
-
     try {
       const result = await unsubscribe(email, token)
       if (result.success) {
@@ -33,173 +36,83 @@ function UnsubscribeContent() {
         setStatus('expired')
       } else {
         setStatus('error')
-        setMessage(result.error || content[locale].error)
+        setMessage(u.error)
       }
     } catch {
       setStatus('error')
-      setMessage(content[locale].error)
+      setMessage(u.error)
     }
   }
 
-  const content = {
-    ko: {
-      title: '구독 취소',
-      description: '뉴스레터 수신을 중단합니다',
-      emailPlaceholder: '이메일 주소',
-      button: '구독 취소',
-      processing: '처리 중...',
-      cancel: '취소',
-      successTitle: '구독이 취소되었습니다',
-      successDesc: '언제든 다시 구독하실 수 있습니다.',
-      resubscribe: '다시 구독하기',
-      backHome: '돌아가기',
-      error: '오류가 발생했습니다.',
-      expiredTitle: '링크가 만료되었습니다',
-      expiredDesc: '최근 메일의 링크를 이용해 주세요.',
-    },
-    en: {
-      title: 'Unsubscribe',
-      description: 'Stop receiving our newsletter',
-      emailPlaceholder: 'Email address',
-      button: 'Unsubscribe',
-      processing: 'Processing...',
-      cancel: 'Cancel',
-      successTitle: 'You have been unsubscribed',
-      successDesc: 'You can resubscribe anytime.',
-      resubscribe: 'Resubscribe',
-      backHome: 'Go back',
-      error: 'An error occurred.',
-      expiredTitle: 'This link has expired',
-      expiredDesc: 'Please use the link in our most recent email.',
-    },
-  }
+  const lines = (template: string) =>
+    fillText(template, { email }).split('\n').map((line, i) => (
+      <span key={i} className="block">
+        {line}
+      </span>
+    ))
 
-  const c = content[locale] || content.ko
+  const title =
+    status === 'success' ? u.doneTitle : status === 'expired' ? u.expiredTitle : u.confirmTitle
+  const body =
+    status === 'success' ? lines(u.doneBody) : status === 'expired' ? u.expiredBody : lines(u.confirmBody)
 
-  if (status === 'success') {
-    return (
-      <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
-        <div className="text-center max-w-sm">
-          <div className="w-12 h-12 mx-auto mb-6 rounded-full border border-white/40 flex items-center justify-center">
-            <Check className="w-5 h-5 text-white" strokeWidth={1.5} />
-          </div>
-
-          <h1 className="font-display text-2xl text-white mb-2">
-            {c.successTitle}
-          </h1>
-          <p className="text-sm text-white/40 mb-8">
-            {c.successDesc}
-          </p>
-
-          <div className="flex flex-col gap-3">
-            <Link
-              href="/subscribe"
-              className="py-2.5 px-5 bg-white/10 border border-white/30 text-sm text-white hover:bg-white/20 transition-colors"
-            >
-              {c.resubscribe}
-            </Link>
-            <Link
-              href="/"
-              className="inline-flex items-center justify-center gap-2 text-sm text-white/40 hover:text-white/60 transition-colors"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              {c.backHome}
-            </Link>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (status === 'expired') {
-    return (
-      <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
-        <div className="text-center max-w-sm">
-          <h1 className="font-display text-2xl text-white mb-2">
-            {c.expiredTitle}
-          </h1>
-          <p className="text-sm text-white/40 mb-8">
-            {c.expiredDesc}
-          </p>
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center gap-2 text-sm text-white/40 hover:text-white/60 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            {c.backHome}
-          </Link>
-        </div>
-      </main>
-    )
-  }
+  const outline =
+    'flex items-center justify-center border border-earth/45 px-7 py-[14px] font-sans-kr text-[14px] leading-[18px] tracking-[0.06em] text-earth transition-colors hover:border-earth md:text-[15px]'
+  const solid =
+    'flex items-center justify-center gap-3 bg-void px-7 py-[14px] font-sans-kr text-[14px] leading-[18px] tracking-[0.06em] text-paper transition-opacity hover:opacity-90 disabled:opacity-60 md:py-[15px] md:text-[15px]'
 
   return (
-    <main className="min-h-screen bg-[#000000] flex items-center justify-center px-5">
-      <div className="w-full max-w-sm">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-display text-2xl text-white mb-2">
-            {c.title}
-          </h1>
-          <p className="text-sm text-white/40">
-            {c.description}
-          </p>
-        </div>
+    <section className="flex min-h-[calc(100svh-260px)] flex-col items-center justify-center gap-[18px] px-5 py-20 text-center md:min-h-[688px] md:gap-[22px] md:pb-10">
+      <span className="font-plex text-[10.5px] leading-[14px] tracking-[0.18em] text-amber-deep md:text-[11px]">
+        NEWSLETTER
+      </span>
+      <h1 className="font-serif-kr text-[30px] font-light leading-10 md:text-[40px] md:leading-[52px]">{title}</h1>
+      <p className="max-w-[560px] font-sans-kr text-[14.5px] font-light leading-[26px] text-earth/75 md:text-[15.5px] md:leading-7">
+        {body}
+      </p>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 해지 대상은 서명된 링크가 정한다 — 주소는 보여주기만 하고 바꿀 수 없다 */}
-          <input
-            type="email"
-            value={email}
-            readOnly
-            aria-label={c.emailPlaceholder}
-            className="w-full bg-white/[0.03] border border-white/10 px-4 py-3 text-sm text-white/60 focus:outline-none"
-          />
-
-          {status === 'error' && (
-            <p className="text-red-400/80 text-xs text-center">{message}</p>
-          )}
-
-          <div className="flex gap-3">
-            <Link
-              href="/"
-              className="flex-1 py-2.5 text-center border border-white/10 text-sm text-white/50 hover:bg-white/5 transition-colors"
-            >
-              {c.cancel}
-            </Link>
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="flex-1 py-2.5 bg-white/10 text-sm text-white hover:bg-white/15 transition-colors disabled:opacity-50"
-            >
-              {status === 'loading' ? c.processing : c.button}
-            </button>
-          </div>
-        </form>
-
-        {/* Back Link */}
-        <div className="text-center mt-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-xs text-white/30 hover:text-white/50 transition-colors"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            {c.backHome}
+      {status === 'success' && (
+        <div className="mt-2 flex w-full flex-col gap-3.5 sm:w-auto sm:flex-row md:mt-[18px]">
+          <button type="button" className={outline} onClick={() => openSubscribe(email, 'unsubscribe-page')}>
+            {u.resubscribe}
+          </button>
+          <Link href="/" className={solid}>
+            {u.toJournal} <span aria-hidden="true">›</span>
           </Link>
         </div>
-      </div>
-    </main>
+      )}
+
+      {status === 'expired' && (
+        <div className="mt-2 flex md:mt-[18px]">
+          <Link href="/" className={solid}>
+            {u.toJournal} <span aria-hidden="true">›</span>
+          </Link>
+        </div>
+      )}
+
+      {(status === 'idle' || status === 'loading' || status === 'error') && (
+        <form onSubmit={handleSubmit} className="mt-2 flex w-full flex-col gap-3.5 sm:w-auto sm:flex-row md:mt-[18px]">
+          <Link href="/" className={outline}>
+            {u.cancel}
+          </Link>
+          <button type="submit" disabled={status === 'loading'} className={solid}>
+            {status === 'loading' ? u.processing : u.submit}
+          </button>
+        </form>
+      )}
+
+      {status === 'error' && (
+        <p role="alert" className="font-sans-kr text-[13px] font-light leading-5 text-[#8A3B2E]">
+          {message}
+        </p>
+      )}
+    </section>
   )
 }
 
 export default function UnsubscribePage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
-        <div className="text-white/30 text-sm">Loading...</div>
-      </div>
-    }>
+    <Suspense fallback={<section className="min-h-[60vh]" />}>
       <UnsubscribeContent />
     </Suspense>
   )

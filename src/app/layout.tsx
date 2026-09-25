@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Playfair_Display,
-  Lora,
-  Inter,
+  Cormorant_Garamond,
   Noto_Serif_KR,
-  Mrs_Saint_Delafield,
+  Noto_Sans_KR,
+  IBM_Plex_Mono,
 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -12,44 +11,39 @@ import { I18nProvider } from "@/lib/i18n";
 import { WebsiteJsonLd, OrganizationJsonLd } from "@/components/seo/JsonLd";
 import "./globals.css";
 
-// Display serif for headlines (Wired: WiredDisplay → Playfair Display)
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+/*
+ * 저널 서체 4종 (Paper 'Blog — Le Journal de Marée' 정본).
+ * 옛 서체(Playfair·Lora·Inter·Pretendard·필기체)는 관리자 화면 전용으로 admin/legacy-fonts.ts에 옮겼다.
+ */
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
-// Humanist serif for long-form body (Wired: BreveText → Lora)
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
-// Humanist sans for UI / nav / metadata / buttons (Wired: Apercu → Inter)
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-// Korean serif companion for display/body serif
+// 한글 서체는 글리프가 커서 미리 받지 않는다(preload false) — 쓰는 글자 조각만 내려받는다
 const notoSerifKR = Noto_Serif_KR({
   variable: "--font-noto-serif-kr",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400"],
   display: "swap",
   preload: false,
 });
 
-// Handwritten signature script for brand motto (matches landing footer)
-const mrsSaintDelafield = Mrs_Saint_Delafield({
-  variable: "--font-motto",
+const notoSansKR = Noto_Sans_KR({
+  variable: "--font-noto-sans-kr",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["300", "400", "500"],
+  display: "swap",
+  preload: false,
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["300", "400"],
   display: "swap",
 });
 
@@ -108,10 +102,9 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev" />
         <link rel="dns-prefetch" href="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
       </head>
       <body
-        className={`${playfair.variable} ${lora.variable} ${inter.variable} ${notoSerifKR.variable} ${mrsSaintDelafield.variable} font-sans antialiased`}
+        className={`${cormorant.variable} ${notoSerifKR.variable} ${notoSansKR.variable} ${plexMono.variable} antialiased`}
       >
         <WebsiteJsonLd />
         <OrganizationJsonLd />

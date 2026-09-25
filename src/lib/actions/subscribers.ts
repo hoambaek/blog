@@ -21,7 +21,8 @@ export interface SubscribeInput {
 
 export type SubscribeResult =
   | { success: true; message: string }
-  | { success: false; error: string }
+  /** code — 화면이 상태를 나눠 보여 주기 위한 구분값('already_subscribed' = 이미 구독 중) */
+  | { success: false; error: string; code?: 'already_subscribed' }
 
 // Minimum time a human plausibly needs to fill and submit the form.
 const MIN_SUBMIT_MS = 2500
@@ -108,7 +109,7 @@ export async function subscribe(input: SubscribeInput): Promise<SubscribeResult>
 
   if (existing) {
     if (existing.status === 'active') {
-      return { success: false, error: t.alreadySubscribed }
+      return { success: false, error: t.alreadySubscribed, code: 'already_subscribed' }
     }
 
     // Reactivate if previously unsubscribed
