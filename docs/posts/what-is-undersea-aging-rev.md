@@ -13,7 +13,7 @@ meta_description: 해저숙성의 시작이 된 발트해 난파선과 PNAS 연�
 :::
 
 :::figure src="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev/posts/1783860621096-yt49xw.webp"
-caption: 발트해 난파선 안에 남아 있던 병들.
+caption: 발트해 난파선 안에 남아 있던 병들
 credit: Tomasz Stachura / Baltictech
 :::
 
@@ -22,14 +22,14 @@ credit: Tomasz Stachura / Baltictech
 시작은 실험실이 아니라 난파선이었습니다. 2010년, 발트해 올란드 제도 근처의 바다 밑에서 19세기 스쿠너선 한 척이 발견되었습니다. 배 안에는 1840년대 초에 실린 것으로 추정되는 병 168개가 남아 있었고 그중 47병이 뵈브 클리코였습니다. 약 170년을 바다 밑에서 보낸 병들입니다.
 
 :::figure src="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev/posts/1783863712084-jttqiq.webp"
-caption: 난파선 주변을 기록하는 잠수사.
+caption: 난파선 주변을 기록하는 잠수사
 credit: Tomasz Stachura / Baltictech
 :::
 
 프랑스 랭스 대학교 연구진은 인양된 병들의 내용물을 분석해 2015년 [미국국립과학원회보(PNAS)에 논문](https://www.pnas.org/doi/10.1073/pnas.1500783112)으로 발표했습니다. 낮고 일정한 수온, 빛이 들지 않는 어둠, 흔들림이 적은 환경. 연구진이 주목한 것은 바다 밑이 보존에 적합한 조건을 아주 오래 유지했다는 사실이었습니다. 이 발견 이후 뵈브 클리코는 같은 해역에 병을 다시 내려 두는 장기 실험을 시작했고 세계 곳곳에서 해저숙성을 시도하는 생산자들이 나타났습니다.
 
 :::figure src="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev/posts/1783860684578-z2du0e.webp"
-caption: 난파선 안에 남아 있던 병들.
+caption: 난파선 안에 남아 있던 병들
 credit: Tomasz Stachura / Baltictech
 :::
 
@@ -46,7 +46,7 @@ credit: Tomasz Stachura / Baltictech
 지상의 셀러가 인공으로 만들어 유지하는 조건을 바다는 스스로 유지합니다. 다만 그 조건은 바다마다, 깊이마다, 계절마다 다릅니다. 그래서 어느 바다에 얼마나 두었는지보다, 그 시간 동안 실제로 어떤 조건이 이어졌는지가 이 방식의 핵심 질문이 됩니다.
 
 :::figure src="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev/posts/1783860708947-7ekmvj.webp"
-caption: 바다의 병과 셀러의 병을 나란히 놓은 뵈브 클리코의 비교 시음.
+caption: 바다의 병과 셀러의 병을 나란히 놓은 뵈브 클리코의 비교 시음
 credit: © Veuve Clicquot
 :::
 
@@ -66,7 +66,7 @@ credit: © Veuve Clicquot
 우리는 이 관찰을 기록이라고 부릅니다. 증명은 그다음 단계입니다. 올해 바다에 둔 와인에는 같은 와인을 지상에 둔 대조군이 있고 12월 인양 때 두 기록을 나란히 놓고 대조합니다. 변화를 미리 예측해 적어 두고 병을 올린 뒤 실제 기록과 맞춰 봅니다. 관찰이 기록이 되고 기록이 증명이 되어 가는 중입니다.
 
 :::figure src="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev/posts/1783861909750-5vnhpz.webp"
-caption: 인양 직후, 바로 열어 기록하는 시음.
+caption: 인양 직후, 바로 열어 기록하는 시음
 credit: Muse de Marée
 :::
 
@@ -77,7 +77,7 @@ credit: Muse de Marée
 해저숙성의 가치는 바다가 무엇을 바꾸는가보다, 그 시간이 어떤 조건 속에서 흘렀는지를 남길 수 있다는 데 있다고 우리는 생각합니다. 측정은 이 방식이 스스로를 증명하는 형식입니다.
 
 :::figure src="https://pub-e7d9b0569247435fa5adc92a77955acd.r2.dev/posts/1783861962683-ebwfs4.webp"
-caption: 남해 바닷속에서 시간을 보내는 뮤즈드마레의 샴페인.
+caption: 남해 바닷속에서 시간을 보내는 뮤즈드마레의 샴페인
 credit: Muse de Marée
 :::
 

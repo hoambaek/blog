@@ -35,6 +35,7 @@ export type ManuscriptBlock = { line: number } & (
   | { type: 'terms'; items: { term: string; desc: string }[] }
   | { type: 'list'; ordered: boolean; items: string[] }
   | { type: 'rule' }
+  | { type: 'video'; src: string; poster: string }
 )
 
 export interface ManuscriptIssue {
@@ -280,6 +281,11 @@ export function parseManuscript(source: string): ParsedManuscript {
           if (fields[m[1]]) errors.push({ line: no, message: `${m[1]}: 가 두 번 적혀 있습니다.` })
           fields[m[1]] = { value: m[2].trim(), no }
         }
+        // 캡션 끝에는 마침표를 찍지 않는다(2026-09-26 대표 결정) — 원고에 있으면 떼고 경고한다
+        if (fields.caption && /[.。]\s*$/.test(fields.caption.value)) {
+          warnings.push({ line: fields.caption.no, message: '캡션 끝 마침표는 쓰지 않습니다 — 떼고 올립니다.' })
+          fields.caption.value = fields.caption.value.replace(/[.。]\s*$/, '')
+        }
         const caption = fields.caption ? inline(fields.caption.value, fields.caption.no) : { html: '', text: '' }
         const credit = fields.credit ? inline(fields.credit.value, fields.credit.no).text : ''
         const src = attrs.src?.trim()
@@ -333,12 +339,30 @@ export function parseManuscript(source: string): ParsedManuscript {
         continue
       }
 
+      if (name === 'video') {
+        // :::video src="https://…" poster="https://…" — 원격 주소만(영상 업로드는 관리자에서)
+        const { attrs, leftover } = parseFigureAttrs(fence[2])
+        if (leftover) errors.push({ line: start, message: `:::video 속성을 읽지 못했습니다: ${leftover} (예: src="https://….mp4")` })
+        const body = readFenced('video')
+        if (body && body.some((b) => b.line.trim())) errors.push({ line: start, message: ':::video 안에는 아무것도 쓰지 않습니다.' })
+        const src = attrs.src?.trim() ?? ''
+        if (!/^https:\/\//i.test(src)) {
+          errors.push({ line: start, message: ':::video 는 https 원격 주소(src)만 씁니다 — 로컬 영상은 관리자에서 올립니다.' })
+          continue
+        }
+        for (const key of Object.keys(attrs)) {
+          if (key !== 'src' && key !== 'poster') errors.push({ line: start, message: `:::video 에 알 수 없는 속성 "${key}" — src·poster 만 씁니다.` })
+        }
+        blocks.push({ type: 'video', src, poster: attrs.poster?.trim() ?? '', line: start })
+        continue
+      }
+
       if (!name) {
         errors.push({ line: start, message: '여는 줄 없이 ":::" 만 있습니다.' })
         i++
         continue
       }
-      errors.push({ line: start, message: `알 수 없는 블록 ":::${name}" — :::lead · :::figure · :::terms 만 씁니다.` })
+      errors.push({ line: start, message: `알 수 없는 블록 ":::${name}" — :::lead · :::figure · :::terms · :::video 만 씁니다.` })
       readFenced(name) // 안쪽 줄은 건너뛴다
       continue
     }
@@ -514,6 +538,8 @@ function blockHtml(block: ManuscriptBlock, resolve: (ref: ImageRef) => string): 
     }
     case 'rule':
       return '<hr>'
+    case 'video':
+      return `<video src="${escapeAttr(block.src)}"${block.poster ? ` poster="${escapeAttr(block.poster)}"` : ''} controls="true" playsinline="true" preload="metadata"></video>`
   }
 }
 
@@ -545,5 +571,7 @@ export function describeBlock(block: ManuscriptBlock): string {
       return `${block.ordered ? '번호목록' : '목록'}   ${block.items.length}개`
     case 'rule':
       return '구분선'
+    case 'video':
+      return `영상     ${block.src}`
   }
 }

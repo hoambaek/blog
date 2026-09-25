@@ -78,8 +78,8 @@ const SPEC_EXPECTED =
   '<p class="lead">리드 문단 한 단락.</p>' +
   '<p>일반 문단.</p>' +
   '<h3>소제목 (번호는 자동)</h3>' +
-  '<figure data-block="figure"><img src="./images/deck.jpg" alt="바다에서 막 올라온 병."><figcaption><span data-caption>바다에서 막 올라온 병.</span><span data-credit>촬영자 이름</span></figcaption></figure>' +
-  '<figure data-block="figure" data-slot data-hint="인양 직후 갑판 위, 따개비가 붙은 병 한 병의 클로즈업" data-ratio="4:5"><figcaption>바다에서 막 올라온 병.</figcaption></figure>' +
+  '<figure data-block="figure"><img src="./images/deck.jpg" alt="바다에서 막 올라온 병"><figcaption><span data-caption>바다에서 막 올라온 병</span><span data-credit>촬영자 이름</span></figcaption></figure>' +
+  '<figure data-block="figure" data-slot data-hint="인양 직후 갑판 위, 따개비가 붙은 병 한 병의 클로즈업" data-ratio="4:5"><figcaption>바다에서 막 올라온 병</figcaption></figure>' +
   '<blockquote><p>인용문 본문.</p><cite>출처 이름, 소속</cite></blockquote>' +
   '<dl data-block="terms"><div><dt>일정한 저온</dt><dd>지상의 계절이 오르내리는 동안 좁은 폭 안에서 움직입니다.</dd></div><div><dt>빛의 차단</dt><dd>바다 밑에는 그 변수가 없습니다.</dd></div></dl>' +
   '<ul><li><p>목록 항목</p></li></ul>'
@@ -176,7 +176,7 @@ async function parserTests() {
       '<p class="lead">첫 줄과 둘째 줄이 한 단락이 됩니다.</p>' +
       '<p><strong>굵게</strong>와 <em>기울임</em>, <a href="https://example.com/?a=1&amp;b=2">링크</a>, 그리고 *별표* 와 &lt;태그&gt; &amp; 기호. 이어지는 줄.</p>' +
       '<h3>첫 소제목</h3>' +
-      '<figure data-block="figure"><img src="https://pub.example.r2.dev/posts/a.webp" alt="대체 글"><figcaption><span data-caption>캡션에 <em>기울임</em>.</span><span data-credit>촬영 자리표시</span></figcaption></figure>'
+      '<figure data-block="figure"><img src="https://pub.example.r2.dev/posts/a.webp" alt="대체 글"><figcaption><span data-caption>캡션에 <em>기울임</em></span><span data-credit>촬영 자리표시</span></figcaption></figure>'
     assert.ok(r.html.startsWith(expected), r.html)
     assert.ok(r.html.includes('<figure data-block="figure" data-slot data-hint="힌트에 &quot;따옴표&quot; &amp; 기호 <x>" data-ratio="1:1" data-credit="자리 크레딧"><figcaption>자리 캡션 굵게는 글자만</figcaption></figure>'), r.html)
     assert.ok(r.html.includes('<figure data-block="figure" data-slot data-hint="캡션 없는 자리" data-ratio="4:5"></figure>'), r.html)
@@ -403,7 +403,7 @@ async function serviceTests() {
     assert.equal(row.category_id, 'cat-sea')
     assert.equal(row.next_post_id, 'older-id')
     assert.equal(row.cover_image_url, `${R2}/covers/1-cover.webp`)
-    assert.ok(row.content.html.includes(`<img src="${R2}/posts/2-a.webp" alt="그림.">`), row.content.html)
+    assert.ok(row.content.html.includes(`<img src="${R2}/posts/2-a.webp" alt="그림">`), row.content.html)
     assert.ok(!row.content.html.includes('./img/'), '로컬 경로가 남았습니다')
     assert.equal(row.reading_time_minutes, 1)
     assert.equal(row.title_en, 'EN 초안 테스트')

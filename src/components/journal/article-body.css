@@ -97,6 +97,26 @@
   gap: 14px;
 }
 
+/* 사진 그림은 표(table)로 감싸 폭을 사진에 맞춘다 — 세로 사진이어도 캡션 줄이 사진 폭 안에 들어간다.
+   (예전엔 그림 폭이 1040px 고정이라 세로 사진은 가운데 좁게, 캡션은 양끝으로 벌어졌다 — 2026-09-26) */
+.article-body > .ab-figure:not(.ab-slot) {
+  display: table;
+  width: auto;
+  margin-inline: auto;
+}
+
+.ab-figure:not(.ab-slot) figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  padding-top: 18px;
+}
+
+.ab-figcap-row {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+}
+
 .article-body > .ab-figure + * {
   margin-top: 80px;
 }
@@ -112,7 +132,8 @@
 .ab-figure img {
   display: block;
   width: auto;
-  max-width: 100%;
+  /* 표 안에서는 % 최대폭이 풀리므로 화면 기준으로 막는다 */
+  max-width: min(1040px, calc(100vw - 48px));
   height: auto;
   max-height: 88vh;
   margin-inline: auto;
@@ -357,10 +378,22 @@ ol.ab-list > li::marker {
     line-height: 31px;
   }
 
-  .article-body > .ab-figure {
+  .article-body > .ab-figure,
+  .article-body > .ab-figure:not(.ab-slot) {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     margin-top: 40px;
     gap: 12px;
+  }
+
+  .ab-figure:not(.ab-slot) figcaption {
+    display: grid;
+    padding-top: 0;
+  }
+
+  .ab-figcap-row {
+    display: contents;
   }
 
   .article-body > .ab-figure + * {
@@ -373,6 +406,7 @@ ol.ab-list > li::marker {
 
   .ab-figure img {
     width: 100%;
+    max-width: 100%;
     max-height: none;
   }
 

@@ -5,19 +5,19 @@
 
 ## 1. 저장 형식 (DB `posts.content.html`, `content_en.html`)
 
-본문은 HTML 문자열이다. 아래 블록만 쓴다. 번호(소제목 01·02, FIG 004–01)는 **저장하지 않고 렌더 시 순서로 매긴다**.
+본문은 HTML 문자열이다. 아래 블록만 쓴다. 번호(소제목 01·02)는 **저장하지 않고 렌더 시 순서로 매긴다**.
 
 | 블록 | HTML | 비고 |
 |---|---|---|
 | 리드 문단 | `<p class="lead">…</p>` | 글 첫 문단. 글당 1개 |
 | 문단 | `<p>…</p>` | 빈 `<p></p>`로 간격을 만들지 않는다 |
 | 번호 소제목 | `<h3>…</h3>` | 렌더러가 01, 02… 자동 부여. 기존 글의 h3도 그대로 번호가 붙는다 |
-| 그림 | `<figure data-block="figure"><img src alt><figcaption><span data-caption>…</span><span data-credit>…</span></figcaption></figure>` | FIG `{글번호}–{순서}` 자동 — 사진이 든 그림 전부, 나오는 순서대로(캡션 유무 무관). 크레딧은 글 끝 PHOTO 목록에 자동 수집 |
+| 그림 | `<figure data-block="figure"><img src alt><figcaption><span data-caption>…</span><span data-credit>…</span></figcaption></figure>` | 공개 글에는 캡션·크레딧만 나온다(FIG 번호는 관리자 에디터에서만 사진 순서대로 표시). 크레딧은 글 끝 PHOTO 목록에 자동 수집 |
 | 이미지 자리 | `<figure data-block="figure" data-slot data-hint="어떤 사진" data-ratio="4:5"><figcaption>…</figcaption></figure>` | `img` 없음. 관리자에서 점선 상자로 보이고, 공개 화면에서는 **렌더하지 않는다**. 발행 시 비어 있으면 경고 |
 | 인용·출처 | `<blockquote><p>…</p><cite>…</cite></blockquote>` | `cite` 없으면 출처 줄 생략 |
 | 용어 목록 | `<dl data-block="terms"><div><dt>용어</dt><dd>설명</dd></div>…</dl>` | 가는 선 행. 데스크톱 2열, 모바일 세로 |
 | 목록 | `<ul>/<ol><li>` | "- "로 시작하는 문단을 목록 대신 쓰지 않는다 |
-| 영상 | 기존 video 노드 유지 | |
+| 영상 | `<video src controls playsinline preload="metadata">` | 원고에서는 `:::video src="https://…"` (원격 주소만) |
 | 구분선 | `<hr>` | |
 | 링크·강조 | `<a>`, `<strong>`, `<em>` | |
 
@@ -52,13 +52,13 @@ meta_description: 선택
 ## 소제목 (번호는 자동)
 
 :::figure src="./images/deck.jpg" ratio="4:5"
-caption: 바다에서 막 올라온 병.
+caption: 바다에서 막 올라온 병
 credit: 촬영자 이름
 :::
 
 :::figure ratio="4:5"
 hint: 인양 직후 갑판 위, 따개비가 붙은 병 한 병의 클로즈업
-caption: 바다에서 막 올라온 병.
+caption: 바다에서 막 올라온 병
 :::
 
 > 인용문 본문.
@@ -73,6 +73,8 @@ caption: 바다에서 막 올라온 병.
 ```
 
 - `src` 없는 `:::figure` = 이미지 자리(`hint` 필수, `ratio` 기본 `4:5`). `src`가 있으면 `ratio`·`hint`는 쓰지 않는다. `alt="…"`를 따로 주지 않으면 캡션 글자가 대체 텍스트가 된다.
+- 캡션 끝에는 마침표를 찍지 않는다(찍으면 업로드 때 떼고 경고).
+- 영상: `:::video src="https://….mp4"` 다음 줄에 `:::` (poster 선택, 원격 주소만).
 - 인용의 마지막 줄이 `— `로 시작하면 출처(`cite`)가 된다. `>`만 있는 빈 줄로 인용 안 단락을 나눈다.
 - 인라인은 `**강조**` · `*기울임*` · `[글](https://…)`만. 기호를 그대로 쓰려면 `\*`처럼 역슬래시.
 - 줄을 바꿔 써도 빈 줄이 없으면 한 문단으로 합친다. `- `/`1. ` 목록은 한 단계만(중첩 없음).

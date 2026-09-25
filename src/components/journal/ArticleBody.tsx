@@ -7,15 +7,15 @@ import './article-body.css'
  * 상태·효과가 없는 순수 렌더 컴포넌트다. 공개 글 화면과 (다음 단계) 관리자 미리보기가 같이 쓴다.
  *
  * - 소제목 번호: h2·h3 순서대로 01, 02…
- * - FIG 번호: 사진이 들어간 그림은 전부 나오는 순서대로 {글번호}–01, 02… (2026-09-26 대표 결정 — 캡션 유무와 무관).
- *   이미지 자리(slot)는 번호를 받지 않는다. 사진이 채워지면 그때 순서에 들어간다.
+ * - FIG 번호는 공개 글·미리보기에 그리지 않는다(2026-09-26 대표 결정). 번호는 관리자 에디터에서만 사진 순서대로 보인다.
+ *   그림 아래에는 캡션·크레딧이 있을 때만 캡션 줄을 그린다.
  * - 이미지 자리(slot)는 공개 화면에서 그리지 않는다. 관리자 미리보기(showSlots)에서만 점선 상자로 보인다.
  * - 영상은 muted·playsInline·loop로만 그린다. 자동재생(화면에 보일 때만)은 감싸는 쪽이 data-autoplay를 보고 건다.
  */
 
 export interface ArticleBodyProps {
   blocks: ArticleBlock[]
-  /** 글 번호 N° (발행 순서). 초안처럼 번호가 없으면 null — FIG는 순서만 쓴다 */
+  /** 글 번호 N° (발행 순서). 초안처럼 번호가 없으면 null. 본문 FIG 표시는 없앴고 호출부 호환을 위해 받기만 한다 */
   postNumber: number | null
   className?: string
   /** 관리자 미리보기 — 비어 있는 이미지 자리를 점선 상자로 그린다 */
@@ -65,20 +65,17 @@ export function renderInline(nodes: InlineNode[], keyPrefix = ''): ReactNode[] {
   })
 }
 
-/** 블록마다 붙일 번호를 미리 매긴다 — 소제목 순번, 캡션·크레딧이 있는 그림의 순번 */
+/** 블록마다 붙일 번호를 미리 매긴다 — 소제목 순번 */
 function numberBlocks(blocks: ArticleBlock[]): (number | null)[] {
   let heading = 0
-  let fig = 0
   return blocks.map((block) => {
     if (block.type === 'heading') return ++heading
-    if (block.type === 'figure') return ++fig
     return null
   })
 }
 
-export function ArticleBody({ blocks, postNumber, className, showSlots = false }: ArticleBodyProps) {
+export function ArticleBody({ blocks, className, showSlots = false }: ArticleBodyProps) {
   const numbers = numberBlocks(blocks)
-  const figPrefix = postNumber ? `${pad(postNumber, 3)}–` : ''
 
   return (
     <div className={`post-content article-body${className ? ` ${className}` : ''}`}>
@@ -112,7 +109,7 @@ export function ArticleBody({ blocks, postNumber, className, showSlots = false }
               </h3>
             )
           case 'figure': {
-            const labelled = numbers[i] !== null
+            const labelled = Boolean(block.caption || block.credit)
             return (
               <figure key={i} className="ab-figure">
                 {/* 본문 이미지는 비율이 제각각이라 원본 비율 그대로 그린다 */}
@@ -120,9 +117,10 @@ export function ArticleBody({ blocks, postNumber, className, showSlots = false }
                 <img src={block.src} alt={block.alt} loading="lazy" decoding="async" />
                 {labelled && (
                   <figcaption>
-                    <span className="ab-fig-num">FIG. {figPrefix}{pad(numbers[i] ?? 0, 2)}</span>
-                    {block.caption && <span className="ab-fig-caption">{renderInline(block.caption)}</span>}
-                    {block.credit && <span className="ab-fig-credit">PHOTO {block.credit}</span>}
+                    <span className="ab-figcap-row">
+                      {block.caption && <span className="ab-fig-caption">{renderInline(block.caption)}</span>}
+                      {block.credit && <span className="ab-fig-credit">PHOTO {block.credit}</span>}
+                    </span>
                   </figcaption>
                 )}
               </figure>
