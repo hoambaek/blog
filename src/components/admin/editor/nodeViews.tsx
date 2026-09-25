@@ -111,12 +111,12 @@ function FigureView({ node, updateAttributes, deleteNode, selected }: ReactNodeV
       </div>
       <div className="ed-figure-fields">
         <span contentEditable={false} className="shrink-0 pb-[7px] font-plex text-[10.5px] leading-[14px] tracking-[0.14em] text-amber-deep">
-          {labelled ? <span className="ed-fig-num" /> : <span className="text-stone-light">FIG. —</span>}
+          <span className="ed-fig-num" />
         </span>
         <NodeViewContent className="flex min-w-0 flex-1 items-end gap-3.5" />
       </div>
       <span contentEditable={false} className="block text-[11.5px] font-light leading-[14px] text-stone-light">
-        크레딧은 글 끝 사진 출처에 자동으로 모입니다. 캡션·크레딧이 모두 비면 번호 없이 사진만 나갑니다.
+        크레딧은 글 끝 사진 출처에 자동으로 모입니다. FIG 번호는 사진 순서대로 자동으로 붙습니다.
       </span>
     </NodeViewWrapper>
   )
@@ -235,7 +235,7 @@ function SlotView({ node, updateAttributes, editor, getPos, selected, extension 
       </div>
       <div className="flex items-end gap-3.5">
         <span className="shrink-0 pb-[7px] font-plex text-[10.5px] leading-[14px] tracking-[0.14em] text-stone-light">
-          <span className="ed-fig-num" />
+          FIG. —
         </span>
         <label className="flex min-w-0 flex-1 flex-col gap-1 border-b border-earth/35 pb-1.5">
           <span className={monoLabel}>CAPTION{fromClaude && caption ? ' · CLAUDE 초안' : ''}</span>

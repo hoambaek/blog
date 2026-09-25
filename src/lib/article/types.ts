@@ -21,7 +21,7 @@ export type ArticleBlock =
   | { type: 'heading'; content: InlineNode[] }
   /** 번호 없는 작은 소제목 — <h4>~<h6> */
   | { type: 'subheading'; content: InlineNode[] }
-  /** 그림 — 캡션·크레딧이 있으면 FIG 번호가 붙는다 */
+  /** 그림 — 사진이 든 그림은 캡션 유무와 무관하게 순서대로 FIG 번호가 붙는다(이미지 자리는 제외) */
   | { type: 'figure'; src: string; alt: string; caption: InlineNode[] | null; credit: string | null }
   /** 이미지 자리 — 공개 화면에서는 그리지 않는다(관리자 미리보기용) */
   | { type: 'slot'; hint: string; ratio: string | null; caption: string | null }

@@ -12,7 +12,7 @@
 | 리드 문단 | `<p class="lead">…</p>` | 글 첫 문단. 글당 1개 |
 | 문단 | `<p>…</p>` | 빈 `<p></p>`로 간격을 만들지 않는다 |
 | 번호 소제목 | `<h3>…</h3>` | 렌더러가 01, 02… 자동 부여. 기존 글의 h3도 그대로 번호가 붙는다 |
-| 그림 | `<figure data-block="figure"><img src alt><figcaption><span data-caption>…</span><span data-credit>…</span></figcaption></figure>` | FIG `{글번호}–{순서}` 자동. 크레딧은 글 끝 PHOTO 목록에 자동 수집 |
+| 그림 | `<figure data-block="figure"><img src alt><figcaption><span data-caption>…</span><span data-credit>…</span></figcaption></figure>` | FIG `{글번호}–{순서}` 자동 — 사진이 든 그림 전부, 나오는 순서대로(캡션 유무 무관). 크레딧은 글 끝 PHOTO 목록에 자동 수집 |
 | 이미지 자리 | `<figure data-block="figure" data-slot data-hint="어떤 사진" data-ratio="4:5"><figcaption>…</figcaption></figure>` | `img` 없음. 관리자에서 점선 상자로 보이고, 공개 화면에서는 **렌더하지 않는다**. 발행 시 비어 있으면 경고 |
 | 인용·출처 | `<blockquote><p>…</p><cite>…</cite></blockquote>` | `cite` 없으면 출처 줄 생략 |
 | 용어 목록 | `<dl data-block="terms"><div><dt>용어</dt><dd>설명</dd></div>…</dl>` | 가는 선 행. 데스크톱 2열, 모바일 세로 |

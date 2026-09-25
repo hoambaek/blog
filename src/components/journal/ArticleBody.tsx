@@ -7,7 +7,8 @@ import './article-body.css'
  * 상태·효과가 없는 순수 렌더 컴포넌트다. 공개 글 화면과 (다음 단계) 관리자 미리보기가 같이 쓴다.
  *
  * - 소제목 번호: h2·h3 순서대로 01, 02…
- * - FIG 번호: 캡션이나 크레딧이 있는 그림만 {글번호}–{순서}. 캡션·크레딧이 없는 그림(기존 글)은 번호 줄 없이 사진만.
+ * - FIG 번호: 사진이 들어간 그림은 전부 나오는 순서대로 {글번호}–01, 02… (2026-09-26 대표 결정 — 캡션 유무와 무관).
+ *   이미지 자리(slot)는 번호를 받지 않는다. 사진이 채워지면 그때 순서에 들어간다.
  * - 이미지 자리(slot)는 공개 화면에서 그리지 않는다. 관리자 미리보기(showSlots)에서만 점선 상자로 보인다.
  * - 영상은 muted·playsInline·loop로만 그린다. 자동재생(화면에 보일 때만)은 감싸는 쪽이 data-autoplay를 보고 건다.
  */
@@ -70,7 +71,7 @@ function numberBlocks(blocks: ArticleBlock[]): (number | null)[] {
   let fig = 0
   return blocks.map((block) => {
     if (block.type === 'heading') return ++heading
-    if (block.type === 'figure' && (block.caption || block.credit)) return ++fig
+    if (block.type === 'figure') return ++fig
     return null
   })
 }

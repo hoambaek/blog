@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test:editor": "tsx scripts/editor-roundtrip.ts",
     "test:manuscript": "tsx scripts/manuscript-test.ts",
+    "test:revisions": "tsx scripts/revisions-test.ts",
     "draft": "tsx scripts/draft.ts"
   },
   "dependencies": {

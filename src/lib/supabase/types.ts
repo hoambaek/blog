@@ -197,6 +197,42 @@ export type Database = {
           }
         ]
       }
+      post_revisions: {
+        /* 006_post_revisions — 적용 전 DB에는 없다(조회 실패는 호출부가 처리) */
+        Row: {
+          id: string
+          post_id: string
+          snapshot: Json
+          reason: string | null
+          source_draft_id: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          snapshot: Json
+          reason?: string | null
+          source_draft_id?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          snapshot?: Json
+          reason?: string | null
+          source_draft_id?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_revisions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       posts: {
         Row: {
           id: string
@@ -366,6 +402,21 @@ export type Database = {
           post_id: string
         }
         Returns: undefined
+      }
+      /* 006_post_revisions */
+      replace_published_with_draft: {
+        Args: {
+          p_draft_id: string
+          p_target_id: string
+        }
+        Returns: Json
+      }
+      restore_post_revision: {
+        Args: {
+          p_post_id: string
+          p_revision_id: string
+        }
+        Returns: Json
       }
     }
     Enums: {

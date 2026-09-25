@@ -17,6 +17,8 @@ import type { PostWithCategory } from '@/lib/supabase/types'
 import { PREVIEW_MESSAGE, PREVIEW_READY, type PreviewPayload } from '../preview/protocol'
 import { Button, ConfirmDialog, Label } from '../ui'
 import { ArticleEditor } from './ArticleEditor'
+import { ReplacePublished, RevisionHistory } from './RevisionPanels'
+import type { RevisionItem } from '@/lib/revisions/data'
 
 /*
  * 기록 편집 화면 — Paper IIL-0
@@ -83,6 +85,7 @@ export function PostEditor({
   number,
   seaAvg,
   today,
+  revisions,
 }: {
   post: PostWithCategory | null
   series: SeriesOption[]
@@ -90,6 +93,8 @@ export function PostEditor({
   number: number | null
   seaAvg: number | null
   today: string
+  /** 이전 버전(post_revisions) — 새 기록 화면에는 없다 */
+  revisions?: { available: boolean; items: RevisionItem[] }
 }) {
   const router = useRouter()
   const { showToast } = useToast()
@@ -688,6 +693,18 @@ export function PostEditor({
                     저장은 상태를 바꾸지 않습니다. 발행된 글을 저장하면 바로 공개 화면에 반영됩니다.
                   </p>
                 </div>
+                {saved && status === 'draft' && (
+                  <ReplacePublished
+                    draft={{ id: saved.id, slug: saved.slug }}
+                    publishedIndex={publishedIndex}
+                    dirty={dirty}
+                    emptySlots={emptySlots}
+                    disabled={!!progress}
+                  />
+                )}
+                {saved && revisions && (isPublished || revisions.items.length > 0) && (
+                  <RevisionHistory postId={saved.id} revisions={revisions} dirty={dirty} disabled={!!progress} />
+                )}
                 {saved && (
                   <button
                     type="button"

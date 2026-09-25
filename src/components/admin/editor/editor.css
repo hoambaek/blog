@@ -223,7 +223,8 @@
   outline: 1px solid rgb(49 46 42 / 0.12);
 }
 
-.ed-figure[data-labelled] {
+/* FIG 번호: 사진이 든 그림은 전부 순서대로(캡션 유무 무관). 이미지 자리는 번호를 받지 않는다 — 공개 렌더러와 같은 규칙 */
+.ed-figure {
   counter-increment: ed-fig;
 }
 
@@ -348,9 +349,6 @@
   border-color: var(--ed-amber);
 }
 
-.ed-slot[data-labelled] {
-  counter-increment: ed-fig;
-}
 
 /* 입력칸 공용 (노드뷰 안의 input) */
 .ed-input {
