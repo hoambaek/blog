@@ -109,7 +109,7 @@ export function PostView({ data, preview = false }: { data: PostViewData; previe
           {title}
         </h1>
         {excerpt && (
-          <p className="aeo-summary font-sans-kr text-[15px] font-light leading-[26px] text-earth/75 md:max-w-[560px] md:text-[17px] md:leading-[30px]">
+          <p className="aeo-summary whitespace-pre-line font-sans-kr text-[15px] font-light leading-[26px] text-earth/75 md:max-w-[560px] md:text-[17px] md:leading-[30px]">
             {excerpt}
           </p>
         )}
