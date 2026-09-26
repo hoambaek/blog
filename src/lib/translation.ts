@@ -24,18 +24,21 @@ export const EMPTY_TRANSLATION: TranslatedContent = {
   meta_description_en: null,
 }
 
-export const TRANSLATION_MODEL = 'claude-opus-4-8'
+export const TRANSLATION_MODEL = 'claude-opus-5-5'
 export const TRANSLATION_MAX_TOKENS = 16384
 
 export function buildTranslationPrompt(input: TranslationInput): string {
-  return `You are translating content for Muse de Marée (뮤즈드마레), Korea's only sea-aged champagne brand.
+  return `You are translating content for Muse de Marée (뮤즈드마레), a brand that ages champagne in the sea off the south coast of Korea and records that time.
 
 ## Translation Guidelines
-- Maintain a sophisticated luxury tone with elegant, natural English.
+- Tone: quiet, restrained, plain. Match the Korean original sentence by sentence; do not make it more ornate than the source.
+- Write natural English, not translationese. Rephrase freely for idiom, but add nothing: no epigrams, aphorisms, dramatic closing lines, flourishes, or extra adjectives.
+- Do not use em dashes (—). Use commas, periods, or parentheses.
+- Korean pronunciation notes in parentheses after foreign names (e.g. "Venteuil(방퇴유)") are for Korean readers only: drop them in English.
 - ALWAYS use the full brand name "Muse de Marée" consistently — never use pronouns like "we", "our", or "they" to refer to the brand.
 - Preserve all specific data, numbers, and measurements exactly (e.g., depths, temperatures, aging periods).
 - For META_DESC: Include the brand name "Muse de Marée" and key data points. Keep it factual and specific, not abstract.
-  Example: "Muse de Marée ages champagne at 20m depth for 12 months at 10-14°C" instead of "A beautiful champagne from the sea."
+  Use only the data points that appear in the source; never add numbers that are not in it.
 - For TITLE: If the original title is poetic/abstract, translate faithfully but ensure it contains the core topic keyword.
 
 ## Content to Translate
