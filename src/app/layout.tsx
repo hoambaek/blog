@@ -62,15 +62,6 @@ export const metadata: Metadata = {
   description: "샴페인은 샹파뉴가 만들고, 그 시간은 한국 남해가 씁니다. 수심 30m에서 보낸 날들을 기록하는 뮤즈드마레의 저널.",
   keywords: ["뮤즈드마레", "Muse de Marée", "해저 숙성", "샴페인", "남해", "해양 숙성 와인", "기록"],
   authors: [{ name: "Muse de Marée" }],
-  icons: {
-    icon: [
-      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
-      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
-      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
-    ],
-    apple: '/apple-touch-icon.png',
-    shortcut: '/favicon-32x32.png',
-  },
   openGraph: {
     type: "website",
     locale: "ko_KR",
